@@ -2,6 +2,7 @@
 // Created by Gregorio Nicora on 27/12/23.
 //
 
+#include <filesystem>
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -11,6 +12,7 @@
 #include <ctime>
 #include <iomanip>
 #include <sstream>
+#include <tuple>
 
 using namespace std;
 
@@ -24,12 +26,14 @@ int main(int argc, char** argv) {
 
     // Generate nodes with random weights
     vector<pair<int, int>> nodes(num_nodes);
+
     for (int i = 0; i < num_nodes; i++) {
         nodes[i] = { i, rand() % 10 + 1 };
     }
 
     // Generate edges with random weights
     vector<tuple<int, int, int>> edges;
+
     for (int i = 0; i < num_edges; i++) {
         int u = rand() % num_nodes;
         int v = rand() % num_nodes;
@@ -45,12 +49,12 @@ int main(int argc, char** argv) {
     auto now_ms = chrono::time_point_cast<chrono::milliseconds>(now);
     auto now_c = now_ms.time_since_epoch().count();
 
-
     ostringstream filename;
     filename << "graph_" << num_nodes << "_" << num_edges << ".txt";
     ofstream outfile("../data/" + filename.str());
     outfile << num_nodes << endl;
     outfile << num_edges << endl;
+
     for (auto node : nodes) {
         outfile << node.first << " " << node.second << endl;
     }

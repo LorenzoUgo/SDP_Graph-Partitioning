@@ -10,40 +10,7 @@ void Graph::setNode(int n, int weight) {
     Node value;
     value.weight = weight;
     value.degree = 0;
-    value.coarse = nullptr;
     Nodes.insert({ n, value });
-}
-
-void Graph::setNode(int n, int weight, Coarse* coarse) {
-    Node value;
-    value.weight = weight;
-    value.degree = 0;
-    value.coarse = new Coarse;
-    value.coarse->n1 = coarse->n1;
-    value.coarse->n2 = coarse->n2;
-    value.coarse->weight1 = coarse->weight1;
-    value.coarse->weight2 = coarse->weight2;
-    value.coarse->adj = coarse->adj;
-    Nodes.insert({ n, value });
-}
-
-void Graph::removeNode(int nodeId) {
-    // Remove the node from the Nodes map
-    Nodes.erase(nodeId);
-
-    // Remove all edges connected to the node
-    Edges.erase(std::remove_if(Edges.begin(), Edges.end(), [nodeId](const Edge& edge) {
-        return edge.n1 == nodeId || edge.n2 == nodeId;
-    }), Edges.end());
-
-    // Remove the node from the adjacency list of all other nodes
-    for (auto& nodePair : Nodes) {
-        int id = nodePair.first;
-        std::vector<std::vector<std::vector<int>>>& adjList = nodePair.second.coarse->adj;
-        adjList.erase(std::remove_if(adjList.begin(), adjList.end(), [nodeId](const std::vector<std::vector<int>>& edge) {
-            return edge[0][0] == nodeId || edge[1][0] == nodeId;
-        }), adjList.end());
-    }
 }
 
 void Graph::setEdge(int n1, int n2, int weight) {
@@ -132,9 +99,6 @@ void Graph::printGraph() const {
     std::cout << "List of nodes and their weights:" << std::endl;
     for (const auto& [id, node] : Nodes) {
         std::cout << "Node " << id << ", weight: " << node.weight;
-        if (node.coarse != nullptr) {
-            std::cout << ", Coarse n1: " << node.coarse->n1 << ", Coarse n2: " << node.coarse->n2;
-        }
         std::cout << std::endl;
     }
 
@@ -143,35 +107,6 @@ void Graph::printGraph() const {
     for (const auto& edge : Edges) {
         std::cout << "Edge between Node " << edge.n1 << " and Node " << edge.n2 << ", weight: " << edge.weight << std::endl;
     }
-}
-
-// Function to find the ID of a node given two IDs from the Coarse struct
-int Graph::findNodeIdByCoarseIds(int n1, int n2) {
-    for (const auto& [id, node] : Nodes) {
-        if (node.coarse != nullptr && ((node.coarse->n1 == n1 && node.coarse->n2 == n2) ||
-                                       (node.coarse->n1 == n2 && node.coarse->n2 == n1))) {
-            return id;
-        }
-    }
-    return -1; // Return -1 if the node with the given Coarse IDs is not found
-}
-
-// Function to find the ID of a node given one ID from the Coarse struct
-int Graph::findNodeIdByCoarseSingleId(int n) {
-    for (const auto& [id, node] : Nodes) {
-        if (node.coarse != nullptr && (node.coarse->n1 == n || node.coarse->n2 == n)) {
-            return id;
-        }
-    }
-    return -1; // Return -1 if the node with the given Coarse IDs is not found
-}
-
-std::pair<int, int> Graph::getCoarseIdsById(int nodeId) {
-    auto it = Nodes.find(nodeId);
-    if (it != Nodes.end() && it->second.coarse != nullptr) {
-        return { it->second.coarse->n1, it->second.coarse->n2 };
-    }
-    return { -1, -1 }; // Return {-1, -1} if the node doesn't have valid coarse IDs.
 }
 
 int Graph::getTotalEdgesWeight() {

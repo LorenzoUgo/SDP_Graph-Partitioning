@@ -12,19 +12,8 @@
 
 typedef struct {
 
-    int n1;
-    int n2;
-    int weight1;
-    int weight2;
-    std::vector<std::vector<std::vector<int>>> adj;
-
-} Coarse;
-
-typedef struct {
-
     int weight;
     int degree;
-    Coarse* coarse;
 
 } Node;
 
@@ -49,7 +38,6 @@ private:
 
 public:
     Graph(int numNodes = 0, int numEdges = 0) : sizeN(numNodes), sizeE(numEdges) {}
-    void removeNode(int nodeId);
     int num_of_nodes() { return sizeN; }
     int num_of_edges() { return sizeE; }
     void setSizeNodes(int value) { sizeN = value; }
@@ -71,7 +59,6 @@ public:
     std::vector<std::vector<int>> getMatDegree() { return MatDegree; }
 
     void setNode(int n, int weight);
-    void setNode(int n, int weight, Coarse* coarse);
     void setEdge(int n1, int n2, int weight);
 
     void computeAdjacencyMatrix();
@@ -83,9 +70,6 @@ public:
     void incrementDegree(int idNode);
 
     int returnLastID() { return Nodes.size(); }
-    int findNodeIdByCoarseIds(int n1, int n2);
-    int findNodeIdByCoarseSingleId(int n);
-    std::pair<int, int> getCoarseIdsById(int nodeId);
 
     // Debug functions
     void printNodes();
@@ -107,9 +91,6 @@ public:
         Nodes.clear(); // Clear current Nodes
         for (const auto& nodePair : other.Nodes) {
             Node newNode = nodePair.second;
-            if (newNode.coarse != nullptr) {
-                newNode.coarse = new Coarse(*nodePair.second.coarse); // Deep copy Coarse
-            }
             Nodes[nodePair.first] = newNode;
         }
 
