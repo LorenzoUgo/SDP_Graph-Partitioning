@@ -4,7 +4,7 @@
 #include <chrono>
 
 #ifdef MUTATION
-#define MUTATION_RATE 0.01 // 1% probability
+#define MUTATION_RATE 0.1 // 10% probability
 #endif // MUTATION
 
 using namespace std;
@@ -55,8 +55,8 @@ class Individual {
             auto value = std::bind(mutation_value, generator);
 
             for (auto& g: genotype)
-                if (incidence() > MUTATION_RATE)
-                    g += value()%num_alleles;
+                if (incidence() < MUTATION_RATE)
+                    g = (g+value())%num_alleles;
         }
         #endif  // MUTATION      
 };

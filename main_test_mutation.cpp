@@ -25,19 +25,18 @@ int main(int argc, char** argv) {
 
 	cout << endl << "Mutating I1, I2, I3" << endl << endl;
 	I1.mutation();
-	I2.mutation();
-	I3.mutation();
-
 	cout << "I1: ";
 	for(auto g: I1.getGenotype())
 		cout << g << " ";
 	cout << endl;
 
+	I2.mutation();
 	cout << "I2:  ";
 	for(auto g: I2.getGenotype())
 		cout << g << " ";
 	cout << endl;
 
+	I3.mutation();
 	cout << "I3:  ";
 	for(auto g: I3.getGenotype())
 		cout << g << " ";
