@@ -1,4 +1,3 @@
-#define MUTATION
 
 #include "Individual/Individual.cpp"
 #include <iostream>

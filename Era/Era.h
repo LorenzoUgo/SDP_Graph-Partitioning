@@ -8,11 +8,17 @@
 #include "../Crossover/Crossover.h"
 #include "../Individual/Individual.h"
 #include "../fitness/Fitness.h"
+#include "../Randomizer/RandomGenerator.h"
 #include <set>
 #include <random>
 #include <algorithm>
 
+using namespace std;
+
 bool descending_order(Individual I1, Individual I2);
 
-vector<Individual> Era(vector<Individual> population, Graph G, int num_generations, int num_offspring, int population_size);
+bool ascending_order(Individual I1, Individual I2);
+
+vector<Individual> Era(vector<Individual> population, const Graph& G, int num_generations, int num_offspring, int population_size);
+
 #endif //SDP_GRAPH_PARTITIONING_GENERATION_H

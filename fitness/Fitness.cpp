@@ -2,12 +2,7 @@
 // Created by Gregorio Nicora on 07/01/24.
 //
 
-#include "../Graph/Graph.h"
-#include <vector>
-#include <algorithm>
-
-using namespace std;
-
+#include "Fitness.h"
 
 // calcola la dimensione del taglio sommando i pesi degli archi che vanno da una partizione ad un'altra
 int cut_size(vector<int> genotype, Graph G){
@@ -36,6 +31,8 @@ int balance_index(int num_partitions, vector<int> genotype, const Graph& G){
 
 
 // calcola il fitness value come combinazione lineare di dimensione taglio e bilanciamento peso partizioni
-float fitness(int num_partitions, const vector<int>& genotype, const Graph& G, float cut_size_weight = 0.5, float balance_index_weight = 0.5){
-    return (cut_size_weight * cut_size(genotype, G)) + (balance_index_weight * balance_index(num_partitions, genotype, G));
+float fitness(int num_partitions, const vector<int>& genotype, const Graph& G, float cut_size_weight , float balance_index_weight){
+    float cut = cut_size_weight * cut_size(genotype, G);
+    float index = balance_index_weight * balance_index(num_partitions, genotype, G);
+    return cut + index;
 }

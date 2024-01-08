@@ -3,14 +3,6 @@
 //
 
 #include "Crossover.h"
-#include <vector>
-#include <cstdlib>
-#include <ctime>
-#include <algorithm>
-#include <set>
-#include <random>
-
-using namespace std;
 
 Individual one_cut_crossover(Individual I1, Individual I2){
 
@@ -22,8 +14,6 @@ Individual one_cut_crossover(Individual I1, Individual I2){
     newVector.insert(newVector.end(), I2.getGenotype().begin() + cut, I2.getGenotype().end());
 
     Individual newIndividual(newVector);
-
-    newIndividual.setFitnessValue();
 
     return newIndividual;
 }
@@ -48,8 +38,6 @@ Individual two_cut_crossover(Individual I1, Individual I2){
     }
 
     Individual newIndividual(newVector);
-
-    newIndividual.setFitnessValue();
 
     return newIndividual;
 }
@@ -85,7 +73,6 @@ Individual n_cut_crossover(Individual I1, Individual I2){
             }
         }
     }else{
-
         for (int i = 0; i <= vett_cut.size(); ++i) {
             if(i==0){
                 newVector.insert(newVector.end(), I2.getGenotype().begin(), I2.getGenotype().begin() + vett_cut.front());
@@ -104,8 +91,6 @@ Individual n_cut_crossover(Individual I1, Individual I2){
     }
 
     Individual newIndividual(newVector);
-
-    newIndividual.setFitnessValue();
 
     return newIndividual;
 }
@@ -132,8 +117,6 @@ Individual uniform_crossover(Individual I1, Individual I2){
         newIndividual.setGenotype(newVector2);
     }
 
-    newIndividual.setFitnessValue();
-
     return newIndividual;
 }
 
@@ -153,11 +136,34 @@ Individual unform_random_crossover(Individual I1, Individual I2){
 
     Individual newIndividual(newVector);
 
-    newIndividual.setFitnessValue();
-
     return newIndividual;
 }
 
+Individual parent_selection_tournament(int num_partecipants, const vector<Individual>& population){
+    random_device rd;
+    uniform_int_distribution uid(1, (int) population.size());
+    default_random_engine dre(rd());
+
+    vector<Individual> partecipants;
+
+    for(int i=0; i<num_partecipants; i++){
+        int pos = uid(dre);
+        auto it = find(population.begin(), population.end(), population[pos]);
+
+        if(it == population.end()) {
+            partecipants.push_back(population[pos]);
+        }
+    }
+
+    sort(partecipants.begin(), partecipants.end(), descending_order);
+    return partecipants[0];
+}
+
+Individual random_parent_selection(const vector<Individual>& population){
+    srand(std::time(0));
+
+    return population[rand()%population.size()];
+}
 
 vector<int> crossover_VETT(vector<int> v1, vector<int> v2){
     /**
