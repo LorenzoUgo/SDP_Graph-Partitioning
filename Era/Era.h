@@ -19,6 +19,6 @@ bool descending_order(Individual I1, Individual I2);
 
 bool ascending_order(Individual I1, Individual I2);
 
-vector<Individual> Era(vector<Individual> population, const Graph& G, int num_generations, int num_offspring, int population_size);
+vector<Individual> Era(vector<Individual> population, const Graph& G, int num_generations, int num_offspring, int population_size, int num_partitions);
 
 #endif //SDP_GRAPH_PARTITIONING_GENERATION_H

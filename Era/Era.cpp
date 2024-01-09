@@ -11,7 +11,7 @@ bool ascending_order(Individual I1, Individual I2){
     return I1.getFitnessValue() < I2.getFitnessValue();
 }
 
-vector<Individual> Era(vector<Individual> population, const Graph& G, int num_generations, int num_offspring, int population_size){
+vector<Individual> Era(vector<Individual> population, const Graph& G, int num_generations, int num_offspring, int population_size, int num_partitions){
     float mutation_rate = .25;
     Individual parent1, parent2, offspring;
     srand(std::time(0));
@@ -24,9 +24,11 @@ vector<Individual> Era(vector<Individual> population, const Graph& G, int num_ge
 
         for (int i = 0; i < num_offspring; i++) {
 
-            /*if ((float) uid(dre) < mutation_rate) {
+            if ((float) uid(dre) < mutation_rate) {
 
-
+                offspring = random_parent_selection(population);
+                offspring.mutation();
+                offspring.setFitnessValue(fitness(num_partitions, offspring.getGenotype(), G));
 
             }else{
 
@@ -35,13 +37,10 @@ vector<Individual> Era(vector<Individual> population, const Graph& G, int num_ge
                 offspring = unform_random_crossover(parent1, parent2);
                 offspring.setFitnessValue(fitness(2, offspring.getGenotype(), G));
 
-            }*/
-
-            offspring = random_parent_selection(population);
-            offspring.mutation();
-            offspring.setFitnessValue(fitness(2, offspring.getGenotype(), G));
+            }
 
             population.push_back(offspring);
+
         }
 
         sort(population.begin(), population.end(), ascending_order);

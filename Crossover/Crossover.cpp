@@ -148,9 +148,9 @@ Individual parent_selection_tournament(int num_partecipants, const vector<Indivi
 
     for(int i=0; i<num_partecipants; i++){
         int pos = uid(dre);
-        auto it = find(population.begin(), population.end(), population[pos]);
+        auto it = find(partecipants.begin(), partecipants.end(), population[pos]);
 
-        if(it == population.end()) {
+        if(it == partecipants.end()) {
             partecipants.push_back(population[pos]);
         }
     }

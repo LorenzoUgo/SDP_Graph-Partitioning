@@ -5,8 +5,8 @@
 #include "Fitness.h"
 
 // calcola la dimensione del taglio sommando i pesi degli archi che vanno da una partizione ad un'altra
-int cut_size(vector<int> genotype, Graph G){
-    int cut_size = 0;
+float cut_size(vector<int> genotype, Graph G){
+    float cut_size = 0;
     for (auto edge : G.getEdges()){
         if(genotype[edge.n1] != genotype[edge.n2])
             cut_size += edge.weight;
@@ -16,15 +16,15 @@ int cut_size(vector<int> genotype, Graph G){
 
 
 // calcola la differenza tra la partizione con il maggior peso e quella con il minor peso dei nodi al suo interno
-int balance_index(int num_partitions, vector<int> genotype, const Graph& G){
-    vector<int> partitions_weight (num_partitions);
+float balance_index(int num_partitions, vector<int> genotype, const Graph& G){
+    vector<float> partitions_weight (num_partitions);
 
     for(auto it = genotype.begin();  it < genotype.end();  it++){
         partitions_weight[*it] += G.getNodeWeight(distance(genotype.begin(), it));
     }
 
-    int max_partition_weight = *max_element(partitions_weight.begin(), partitions_weight.end());
-    int min_partition_weight = *min_element(partitions_weight.begin(), partitions_weight.end());
+    float max_partition_weight = *max_element(partitions_weight.begin(), partitions_weight.end());
+    float min_partition_weight = *min_element(partitions_weight.begin(), partitions_weight.end());
 
     return max_partition_weight - min_partition_weight;
 }
@@ -32,7 +32,5 @@ int balance_index(int num_partitions, vector<int> genotype, const Graph& G){
 
 // calcola il fitness value come combinazione lineare di dimensione taglio e bilanciamento peso partizioni
 float fitness(int num_partitions, const vector<int>& genotype, const Graph& G, float cut_size_weight , float balance_index_weight){
-    float cut = cut_size_weight * cut_size(genotype, G);
-    float index = balance_index_weight * balance_index(num_partitions, genotype, G);
-    return cut + index;
+    return (cut_size_weight*cut_size(genotype, G)) + (balance_index_weight*balance_index(num_partitions, genotype, G));
 }

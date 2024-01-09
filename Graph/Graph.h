@@ -12,7 +12,7 @@
 
 typedef struct {
 
-    int weight;
+    float weight;
     int degree;
 
 } Node;
@@ -21,7 +21,7 @@ typedef struct {
 
     int n1;
     int n2;
-    int weight;
+    float weight;
 
 } Edge;
 
@@ -68,6 +68,8 @@ public:
 
     void computeMatrixDegree();
     void incrementDegree(int idNode);
+
+    void normalize();
 
     int returnLastID() { return Nodes.size(); }
 

@@ -3,6 +3,7 @@
 #include <filesystem>
 #include <fstream>
 #include <string>
+#include <chrono>
 #include "Graph/Graph.h"
 #include "Crossover/Crossover.h"
 #include "Individual/Individual.h"
@@ -85,18 +86,33 @@ int main(int argc, char** argv) {
 
     G.computeAdjacencyMatrix();
     G.computeMatrixDegree();
-    G.printAdjacencyMatrix();
-    G.printDegreeMatrix();
+
+    Graph G_normalize = G;
+    G_normalize.normalize();
+    //G.printAdjacencyMatrix();
+    //G.printDegreeMatrix();
 
     /** TEST PER FUNZIONE ERA, CROSSOVER, MUTATION, FITNESS E INDIVIDUAL */
     vector<Individual> startingPopulation;
 
-    for(int i = 0;i<=20; i++){
-        startingPopulation.emplace_back(Individual(num_partitions, G.num_of_nodes(), G));
+    for(int i = 0;i<=30; i++){
+        startingPopulation.emplace_back(Individual(num_partitions, G_normalize.num_of_nodes(), G_normalize));
     }
 
-    vector<Individual> end_era = Era(startingPopulation, G, 10, 10,
-                                                                                  20);
+    // Write nodes and edges to file
+    auto now = chrono::system_clock::now();
+    auto now_ms = chrono::time_point_cast<chrono::milliseconds>(now);
+    auto now_c = now_ms.time_since_epoch().count();
+
+    vector<Individual> end_era = Era(startingPopulation, G_normalize, 75, 15, 30, num_partitions);
+
+    auto now_now = chrono::system_clock::now();
+    auto now_now_ms = chrono::time_point_cast<chrono::milliseconds>(now_now);
+    auto now_now_c = now_now_ms.time_since_epoch().count();
+
+    cout << now_c << endl;
+    cout << now_now_c << endl;
+    cout << now_now_c - now_c << endl;
 
     Individual bestOf = end_era[0];
 
@@ -106,3 +122,14 @@ int main(int argc, char** argv) {
 }
 
 
+
+
+/**     TO-DO list:
+ * - Metis per confrontare i valori;
+ * - Implementazione isole -> SEQUENZIALE;
+ * - THREADS;
+ * - BARRIERS;
+ * - COMUNICAZIONE TRA THREADS;
+ * - LETTURA GRAFO PARALLELA;
+ * - VISUALIZZATORE GRAFO (OPZ);
+ * */

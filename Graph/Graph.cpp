@@ -124,3 +124,46 @@ int Graph::getTotalNodesWeight() {
     }
     return totalWeight;
 }
+
+void Graph::normalize(){
+    int min, max;
+
+    for(int i=0; i < this->Edges.size(); i++){
+        if (i == 0){
+            min = this->Edges[i].weight;
+            max = this->Edges[i].weight;
+        }else{
+            if(min > this->Edges[i].weight){
+                min = this->Edges[i].weight;
+            }
+            if(max < this->Edges[i].weight){
+                max = this->Edges[i].weight;
+            }
+        }
+    }
+
+    for(int i=0; i < this->Edges.size(); i++) {
+        this->Edges[i].weight = (this->Edges[i].weight - min)/(max-min);
+    }
+
+    for (const auto& node : this->Nodes) {
+        if (node.first == 0){
+            min = node.second.weight;
+            max = node.second.weight;
+        }else{
+            if(node.second.weight < min){
+                min = node.second.weight;
+            }
+            if(node.second.weight > max){
+                max = node.second.weight;
+            }
+        }
+    }
+
+    for (auto& node : this->Nodes) {
+        node.second.weight = (node.second.weight - min)/(max-min);
+    }
+
+
+
+    }
