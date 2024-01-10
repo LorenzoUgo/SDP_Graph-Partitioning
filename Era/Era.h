@@ -15,9 +15,9 @@
 
 using namespace std;
 
-bool descending_order(Individual I1, Individual I2);
+bool descending_order(const Individual& I1, const Individual& I2);
 
-bool ascending_order(Individual I1, Individual I2);
+bool ascending_order(const Individual& I1, const Individual& I2);
 
 vector<Individual> Era(vector<Individual> population, const Graph& G, int num_generations, int num_offspring, int population_size, int num_partitions);
 

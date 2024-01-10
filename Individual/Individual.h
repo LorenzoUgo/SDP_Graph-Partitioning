@@ -23,7 +23,7 @@ private:
 
 public:
     // constructor used for crossover computation
-    Individual(vector<int> genotype = {}, float fitness = -1) : genotype(move(genotype)), fitness_value(fitness){}
+    Individual(vector<int> genotype = {}, int num_alleles = -1, float fitness = -1) : genotype(move(genotype)), fitness_value(fitness), num_alleles(num_alleles){}
 
     // constructor used for building population, randomizes genotype with given size and given max value for each gene
     Individual(int n_alleles, int genotypeSize, const Graph& G) : num_alleles(n_alleles) {
@@ -38,19 +38,18 @@ public:
         fitness_value = fitness(num_alleles, genotype, G);
     }
 
-    int getNumAlleles() { return num_alleles; }
-
     // NOTA perchè usare setgenotype in crossover se esiste il constructor?
     void setGenotype(vector<int> &gtype) { genotype = gtype; }
-    const vector<int> &getGenotype() const { return genotype; }
-    int getGenotypeSize() const { return genotype.size(); }
-
-    float getFitnessValue() const { return fitness_value; }
     void setFitnessValue(float fitness_val) {
         // NOTA avrebbe senso che fosse la fitness a chiamare dopo aver calcolato il valore. Fitness prende l'individuo e il grafo, fa i calcoli e poi setta il valore
         fitness_value = fitness_val;
     }
 
+    const vector<int> &getGenotype() const { return genotype; }
+    float getFitnessValue() const { return fitness_value; }
+    int getNumAlleles() { return num_alleles; }
+
+    int getGenotypeSize() const { return genotype.size(); }
     void mutation();
 
     //Copy Constructor
@@ -60,7 +59,7 @@ public:
         fitness_value = altro.fitness_value;
         num_alleles = altro.num_alleles;
     }
-
+    // operation override
     Individual& operator=(const Individual& altro) {
         if (this != &altro) {
             genotype = altro.genotype;

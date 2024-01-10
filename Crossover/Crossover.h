@@ -22,7 +22,7 @@ Individual one_cut_crossover(Individual I1, Individual I2);
 Individual two_cut_crossover(Individual I1, Individual I2);
 Individual n_cut_crossover(Individual I1, Individual I2);
 Individual uniform_crossover(Individual I1, Individual I2);
-Individual unform_random_crossover(Individual I1, Individual I2);
+Individual uniform_random_crossover(Individual I1, Individual I2);
 vector<int> crossover_VETT(vector<int> v1, vector<int> v2);
 
 Individual parent_selection_tournament(int num_partecipants, const vector<Individual>& population);

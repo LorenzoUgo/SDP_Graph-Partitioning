@@ -13,7 +13,7 @@ Individual one_cut_crossover(Individual I1, Individual I2){
     newVector.insert(newVector.end(), I1.getGenotype().begin(), I1.getGenotype().begin() + cut);
     newVector.insert(newVector.end(), I2.getGenotype().begin() + cut, I2.getGenotype().end());
 
-    Individual newIndividual(newVector);
+    Individual newIndividual(newVector, I1.getNumAlleles());
 
     return newIndividual;
 }
@@ -37,7 +37,7 @@ Individual two_cut_crossover(Individual I1, Individual I2){
         newVector.insert(newVector.end(), I2.getGenotype().begin() + max(cut1, cut2), I2.getGenotype().end());
     }
 
-    Individual newIndividual(newVector);
+    Individual newIndividual(newVector, I1.getNumAlleles());
 
     return newIndividual;
 }
@@ -90,7 +90,7 @@ Individual n_cut_crossover(Individual I1, Individual I2){
         }
     }
 
-    Individual newIndividual(newVector);
+    Individual newIndividual(newVector, I1.getNumAlleles());
 
     return newIndividual;
 }
@@ -100,7 +100,6 @@ Individual uniform_crossover(Individual I1, Individual I2){
     srand(std::time(0));
 
     std::vector<int> newVector1, newVector2;
-    Individual newIndividual;
 
     for (int i = 0; i < I1.getGenotypeSize(); ++i) {
         if(i%2){
@@ -112,15 +111,13 @@ Individual uniform_crossover(Individual I1, Individual I2){
         }
     }
     if (rand() % 2) {
-        newIndividual.setGenotype(newVector1);
+        return {newVector1, I1.getNumAlleles()};
     } else {
-        newIndividual.setGenotype(newVector2);
+        return {newVector2, I1.getNumAlleles()};
     }
-
-    return newIndividual;
 }
 
-Individual unform_random_crossover(Individual I1, Individual I2){
+Individual uniform_random_crossover(Individual I1, Individual I2){
 
     srand(std::time(0));
 
@@ -134,14 +131,14 @@ Individual unform_random_crossover(Individual I1, Individual I2){
         }
     }
 
-    Individual newIndividual(newVector);
+    Individual newIndividual(newVector, I1.getNumAlleles());
 
     return newIndividual;
 }
 
 Individual parent_selection_tournament(int num_partecipants, const vector<Individual>& population){
     random_device rd;
-    uniform_int_distribution uid(1, (int) population.size());
+    uniform_int_distribution uid(0, (int) population.size()-1);
     default_random_engine dre(rd());
 
     vector<Individual> partecipants;

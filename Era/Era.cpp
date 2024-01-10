@@ -4,10 +4,10 @@
 
 #include "Era.h"
 
-bool descending_order(Individual I1, Individual I2){
+bool descending_order(const Individual& I1, const Individual& I2){
     return I1.getFitnessValue() > I2.getFitnessValue();
 }
-bool ascending_order(Individual I1, Individual I2){
+bool ascending_order(const Individual& I1, const Individual& I2){
     return I1.getFitnessValue() < I2.getFitnessValue();
 }
 
@@ -32,10 +32,10 @@ vector<Individual> Era(vector<Individual> population, const Graph& G, int num_ge
 
             }else{
 
-                parent1 = parent_selection_tournament(rand() % (population.size() / 5 - 1) + 1, population);
+                parent1 = parent_selection_tournament(rand()% (population.size() / 5 - 1) + 1, population);
                 parent2 = parent_selection_tournament(rand() % (population.size() / 5 - 1) + 1, population);
-                offspring = unform_random_crossover(parent1, parent2);
-                offspring.setFitnessValue(fitness(2, offspring.getGenotype(), G));
+                offspring = uniform_random_crossover(parent1, parent2);
+                offspring.setFitnessValue(fitness(num_partitions, offspring.getGenotype(), G));
 
             }
 
@@ -45,7 +45,12 @@ vector<Individual> Era(vector<Individual> population, const Graph& G, int num_ge
 
         sort(population.begin(), population.end(), ascending_order);
 
-        population.resize(population_size);
+        for(int i = 0;  i < num_offspring;  i++){
+            auto it = population.begin()+population_size;
+            //int d = (int) distance(genotype.begin(), it);
+            population.erase(it);
+        }
+        /*population.resize(population_size)*/
     }
 
     return population;

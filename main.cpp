@@ -95,8 +95,8 @@ int main(int argc, char** argv) {
     /** TEST PER FUNZIONE ERA, CROSSOVER, MUTATION, FITNESS E INDIVIDUAL */
     vector<Individual> startingPopulation;
 
-    for(int i = 0;i<=30; i++){
-        startingPopulation.emplace_back(Individual(num_partitions, G_normalize.num_of_nodes(), G_normalize));
+    for(int i = 0;i<20; i++){
+        startingPopulation.emplace_back(Individual(num_partitions, G.num_of_nodes(), G));
     }
 
     // Write nodes and edges to file
@@ -104,7 +104,7 @@ int main(int argc, char** argv) {
     auto now_ms = chrono::time_point_cast<chrono::milliseconds>(now);
     auto now_c = now_ms.time_since_epoch().count();
 
-    vector<Individual> end_era = Era(startingPopulation, G_normalize, 75, 15, 30, num_partitions);
+    vector<Individual> end_era = Era(startingPopulation, G, 50, 20, 40, num_partitions);
 
     auto now_now = chrono::system_clock::now();
     auto now_now_ms = chrono::time_point_cast<chrono::milliseconds>(now_now);
@@ -120,16 +120,3 @@ int main(int argc, char** argv) {
 
     return 0;
 }
-
-
-
-
-/**     TO-DO list:
- * - Metis per confrontare i valori;
- * - Implementazione isole -> SEQUENZIALE;
- * - THREADS;
- * - BARRIERS;
- * - COMUNICAZIONE TRA THREADS;
- * - LETTURA GRAFO PARALLELA;
- * - VISUALIZZATORE GRAFO (OPZ);
- * */
