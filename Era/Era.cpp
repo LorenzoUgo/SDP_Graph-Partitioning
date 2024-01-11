@@ -11,7 +11,9 @@ bool ascending_order(const Individual& I1, const Individual& I2){
     return I1.getFitnessValue() < I2.getFitnessValue();
 }
 
-vector<Individual> Era(vector<Individual> population, const Graph& G, int num_generations, int num_offspring, int population_size, int num_partitions){
+
+/**     Evoluzione Isola     */
+void Eras(vector<Individual>& population, const Graph& G, int num_generations, int num_offspring, int population_size, int num_partitions) {
     float mutation_rate = .25;
     Individual parent1, parent2, offspring;
     srand(std::time(0));
@@ -20,7 +22,8 @@ vector<Individual> Era(vector<Individual> population, const Graph& G, int num_ge
     uniform_int_distribution uid(0, 1);
     default_random_engine dre(rd());
 
-    for(int j = 0; j<num_generations; j++) {
+    for (int g = 0; g < num_generations; g++) {
+        cout << "Starting Generation n_" << g << endl;
 
         for (int i = 0; i < num_offspring; i++) {
 
@@ -30,9 +33,9 @@ vector<Individual> Era(vector<Individual> population, const Graph& G, int num_ge
                 offspring.mutation();
                 offspring.setFitnessValue(fitness(num_partitions, offspring.getGenotype(), G));
 
-            }else{
+            } else {
 
-                parent1 = parent_selection_tournament(rand()% (population.size() / 5 - 1) + 1, population);
+                parent1 = parent_selection_tournament(rand() % (population.size() / 5 - 1) + 1, population);
                 parent2 = parent_selection_tournament(rand() % (population.size() / 5 - 1) + 1, population);
                 offspring = uniform_random_crossover(parent1, parent2);
                 offspring.setFitnessValue(fitness(num_partitions, offspring.getGenotype(), G));
@@ -45,13 +48,145 @@ vector<Individual> Era(vector<Individual> population, const Graph& G, int num_ge
 
         sort(population.begin(), population.end(), ascending_order);
 
-        for(int i = 0;  i < num_offspring;  i++){
-            auto it = population.begin()+population_size;
+        for (int i = 0; i < num_offspring; i++) {
+            auto it = population.begin() + population_size;
             //int d = (int) distance(genotype.begin(), it);
             population.erase(it);
         }
         /*population.resize(population_size)*/
     }
+}
 
-    return population;
+
+/** Gestione Isole */
+Individual Galapagos_fixed(map<int, vector<Individual>>& populations, const Graph& G, int num_eras, int num_generations, int num_offspring, int population_size, int num_partitions, int num_migrants){
+    for(int e = 0; e<num_eras; e++){
+        cout << "Starting Era n_" << e << endl;
+        for(int i = 0; i<populations.size(); i++) {
+            cout << "Starting Isola n_" << i << endl;
+            Eras(populations.at(i), G, num_generations, num_offspring, population_size, num_partitions);
+        }
+        cout << "Migration phase now !! " << endl;
+
+        Migration_bestOnes(populations, num_migrants);
+    }
+
+    return BestOfGalapagos(populations);
+}
+
+/** Gestione Isole */
+Individual Galapagos(map<int, vector<Individual>>& populations, const Graph& G, int eras_no_upgrade, int num_generations, int num_offspring, int population_size, int num_partitions, int num_migrants){
+
+    vector<Individual> bestOfIslands = BestOfIslands(populations);
+    int e = 1;
+    while(check_early_end(bestOfIslands, populations, 0.05, eras_no_upgrade)){
+        cout << "Starting Era n_" << e << endl;
+        for(int i = 0; i<populations.size(); i++) {
+            cout << "Starting Isola n_" << i << endl;
+            Eras(populations.at(i), G, num_generations, num_offspring, population_size, num_partitions);
+        }
+        cout << "Migration phase now !! " << endl;
+
+        Migration_bestOnes(populations, num_migrants);
+        e++;
+    }
+
+    return BestOfGalapagos(populations);
+}
+
+void Migration_bestOnes(map<int, vector<Individual>>& galapagosPopulation, int migrants){
+    vector<Individual> bestOf;
+    srand(std::time(0));
+    Individual I;
+    int index = 0;
+
+    random_device rd;
+    uniform_int_distribution uid(0, 1);
+    default_random_engine dre(rd());
+
+
+    for(auto & i : galapagosPopulation){
+        for(int j = 0; j<migrants; j++){
+
+            bestOf.emplace_back(i.second.front());
+            i.second.erase(i.second.begin());
+
+        }
+    }
+
+    for(auto & i : galapagosPopulation){
+        for(int j = 0; j<migrants; j++){
+
+            index = rand() % (bestOf.size() - 1);
+            i.second.emplace_back(bestOf[index]);
+            bestOf.erase(bestOf.begin() + index);
+
+        }
+    }
+}
+
+void Migration_randomOnes(map<int, vector<Individual>>& galapagosPopulation, int migrants){
+    vector<Individual> bestOf;
+    srand(std::time(0));
+    Individual I;
+    int index = 0;
+
+    random_device rd;
+    uniform_int_distribution uid(0, 1);
+    default_random_engine dre(rd());
+
+
+    for(auto & i : galapagosPopulation){
+        for(int j = 0; j<migrants; j++){
+            index = rand() % (bestOf.size() - 1);
+
+            bestOf.emplace_back(i.second[index]);
+            i.second.erase(i.second.begin()+index);
+
+        }
+    }
+
+    for(auto & i : galapagosPopulation){
+        for(int j = 0; j<migrants; j++){
+            index = rand() % (bestOf.size() - 1);
+
+            i.second.emplace_back(bestOf[index]);
+            bestOf.erase(bestOf.begin() + index);
+
+        }
+    }
+}
+
+
+Individual BestOfGalapagos(map<int, vector<Individual>>& galapagosPopulation){
+    vector<Individual> v;
+
+    for(auto vI : galapagosPopulation){
+        v.emplace_back(vI.second[0]);
+    }
+    sort(v.begin(), v.end(), ascending_order);
+
+    return v[0];
+}
+
+vector<Individual> BestOfIslands(map<int, vector<Individual>>& galapagosPopulation){
+    vector<Individual> v;
+
+    for(auto vI : galapagosPopulation){
+        v.emplace_back(vI.second[0]);
+    }
+
+    return v;
+}
+
+
+bool check_early_end(vector<Individual>& islandsChamp, map<int, vector<Individual>>& populations, float learning_rate, int& eras_no_upgrade){
+
+
+    for(int i=0;i< islandsChamp.size(); i++){
+        if(islandsChamp)
+    }
+
+
+    return true;
 }

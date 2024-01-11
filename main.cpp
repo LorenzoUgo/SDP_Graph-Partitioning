@@ -10,30 +10,68 @@
 #include "fitness/Fitness.h"
 #include "Era/Era.h"
 
-int num_partitions;
-
 using namespace std;
 
-void printVett(vector<int> vett){
+void printVett(const vector<int>& vett){
     cout << "Partition --> ";
-    for (int i = 0; i < vett.size(); ++i) {
-        cout << vett[i] << " ";
+    for (int i : vett) {
+        cout << i << " ";
     }
     cout << " / / / ";
 }
 
-void printIndividual(Individual ind){
+void printIndividual(const Individual& ind){
 
     printVett(ind.getGenotype());
     cout << "Fitness --> " << ind.getFitnessValue();
     cout << endl;
 }
 
-void printPopulation(vector<Individual> population){
+void printPopulation(const vector<Individual>& population){
     for (auto& ind: population) {
         printIndividual(ind);
     }
     cout<<endl;
+}
+
+void time_conversion(auto delta_t){
+    int millisec, sec, min, h, day, year;
+    string string_to_print;
+
+    millisec = delta_t%1000;
+    delta_t /= 1000;
+
+    string_to_print.insert(0, to_string(millisec)+" Milliseconds. ");
+    if(delta_t > 0){
+        sec = delta_t % 60;
+        delta_t /= 60;
+        string_to_print.insert(0, to_string(sec)+" Seconds, ");
+
+        if(delta_t > 0){
+            min = delta_t%60;
+            delta_t /= 60;
+            string_to_print.insert(0, to_string(min)+" Minutes, ");
+        }
+
+        if(delta_t > 0){
+            h = delta_t%24;
+            delta_t /= 24;
+            string_to_print.insert(0, to_string(h)+" Hours, ");
+        }
+
+        if(delta_t > 0){
+            day = delta_t%365;
+            delta_t /= 365;
+            string_to_print.insert(0, to_string(day)+" Day, ");
+
+            if(delta_t > 0){
+                year = delta_t;
+                string_to_print.insert(0, to_string(year)+" Years, ");
+            }
+        }
+    }
+
+    cout << string_to_print <<endl;
 }
 
 int main(int argc, char** argv) {
@@ -42,9 +80,10 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    num_partitions = stoi(argv[2]);
 
     /** Apriamo il file in modalità di lettura  */
+    int nodes, edges, n1, n2, w;
+    string line;
     string nomeFile = argv[1];
     ifstream fpInput("../data/" + nomeFile);
 
@@ -53,27 +92,41 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    int nodes, edges, n1, n2, w;
-    string line;
+
 
     getline(fpInput, line);
+    cout << cin.gcount();
     nodes = std::stoi(line);
     getline(fpInput, line);
     edges = std::stoi(line);
 
-    /** Generazione del Grafo  */
 
+    /** Generazione del Grafo  */
     Graph G = Graph(nodes, edges);
 
     std::cout << "Graph dimension: " << nodes << " - " << edges << std::endl;
 
-    /** LETTURA DEL FILE graph_nodes_edges.TXT */
+    auto now = chrono::system_clock::now();
+    auto now_ms = chrono::time_point_cast<chrono::milliseconds>(now);
+    auto now_c = now_ms.time_since_epoch().count();
 
+
+    /** LETTURA DEL FILE graph_nodes_edges.TXT */
+    cout<< "Lettura di " << nodes << " dal file di testo. Tempo impiegato --> ";
     for(int i=0; i<nodes; i++){
         fpInput >> n1;
         fpInput >> w;
         G.setNode(n1, w);
     }
+
+    auto now_now = chrono::system_clock::now();
+    auto now_now_ms = chrono::time_point_cast<chrono::milliseconds>(now_now);
+    auto now_now_c = now_now_ms.time_since_epoch().count();
+
+    time_conversion(now_now_c - now_c);
+    now_c = now_now_c;
+
+    cout<< "Lettura di " << edges << " dal file di testo. Tempo impiegato --> ";
     for(int i=0; i<edges; i++){
         fpInput >> n1;
         fpInput >> n2;
@@ -84,39 +137,81 @@ int main(int argc, char** argv) {
     }
     fpInput.close();
 
+    now_now = chrono::system_clock::now();
+    now_now_ms = chrono::time_point_cast<chrono::milliseconds>(now_now);
+    now_now_c = now_now_ms.time_since_epoch().count();
+
+    time_conversion(now_now_c - now_c);
+    now_c = now_now_c;
+
+    /*cout<< "Generazione delle strutture interne del grafo: Matrice di Adiacenza + Grado dei nodi. Tempo impiegato -->";
+
     G.computeAdjacencyMatrix();
     G.computeMatrixDegree();
 
     Graph G_normalize = G;
     G_normalize.normalize();
-    //G.printAdjacencyMatrix();
-    //G.printDegreeMatrix();
+    G.printAdjacencyMatrix();
+    G.printDegreeMatrix();
 
-    /** TEST PER FUNZIONE ERA, CROSSOVER, MUTATION, FITNESS E INDIVIDUAL */
-    vector<Individual> startingPopulation;
+    now_now = chrono::system_clock::now();
+    now_now_ms = chrono::time_point_cast<chrono::milliseconds>(now_now);
+    now_now_c = now_now_ms.time_since_epoch().count();
 
-    for(int i = 0;i<20; i++){
-        startingPopulation.emplace_back(Individual(num_partitions, G.num_of_nodes(), G));
+    time_conversion(now_now_c - now_c);
+    now_c = now_now_c;*/
+
+    /**     TEST PER FUNZIONE ERA, CROSSOVER, MUTATION, FITNESS E INDIVIDUAL    */
+    int NUM_PARTITIONS = stoi(argv[2]);
+    int NUM_OFFSPRING = 5;
+    int NUM_GENERATIONS = 5;
+    int POPULATION_SIZE = 10;
+    int NUM_ISLANDS = 3;
+    int NUM_ERAS = 5;
+    int NUM_MIGRANTS = 2;
+
+
+    map<int, vector<Individual>> GalapagosPopulation;
+    //vector<Individual> startingPopulation;
+    cout<< "Creazione delle Isole ("<< NUM_ISLANDS <<" isole) e della loro popolazione("<< POPULATION_SIZE << " individui). Tempo impiegato -->";
+
+    for (int is = 0; is<NUM_ISLANDS; is++) {    /** Si potrà parallelizzare anche la creazione delle popolazioni iniziali delle varie isole?*/
+        cout << "Starting Population for Island n_" << is << endl;
+        for (int in = 0; in < POPULATION_SIZE; in++) {
+            GalapagosPopulation[is].emplace_back(Individual(NUM_PARTITIONS, G.num_of_nodes(), G));
+        }
     }
+    /*for (int i = 0; i < POPULATION_SIZE; i++) {
+        startingPopulation.emplace_back(Individual(NUM_PARTITIONS, G.num_of_nodes(), G));
+    }*/
 
-    // Write nodes and edges to file
-    auto now = chrono::system_clock::now();
-    auto now_ms = chrono::time_point_cast<chrono::milliseconds>(now);
-    auto now_c = now_ms.time_since_epoch().count();
+    now_now = chrono::system_clock::now();
+    now_now_ms = chrono::time_point_cast<chrono::milliseconds>(now_now);
+    now_now_c = now_now_ms.time_since_epoch().count();
 
-    vector<Individual> end_era = Era(startingPopulation, G, 50, 20, 40, num_partitions);
+    time_conversion(now_now_c - now_c);
+    now_c = now_now_c;
 
-    auto now_now = chrono::system_clock::now();
-    auto now_now_ms = chrono::time_point_cast<chrono::milliseconds>(now_now);
-    auto now_now_c = now_now_ms.time_since_epoch().count();
+    /**     STARTING GALAPAGOS    */
 
-    cout << now_c << endl;
-    cout << now_now_c << endl;
-    cout << now_now_c - now_c << endl;
+    cout<< "Inizio computazione della partizione dl grafo... \n GA con parametri:\n-> " << NUM_OFFSPRING << " nuovi individui ad ogni generazione.\n->" << NUM_GENERATIONS <<" generazioni per ogni era.\n->"<< NUM_MIGRANTS <<" individui da un scambiare tra le isole alla fine di ogni era.\n->"<< NUM_ERAS <<" ere definite prima di terminare.\n\n" << endl;
 
-    Individual bestOf = end_era[0];
+    /*cout<< "Creazione delle Isole ("<< NUM_ISLANDS <<" isole)e della loro popolazione("<< POPULATION_SIZE << individui"). Tempo impiegato -->";
 
-    printIndividual(bestOf);
+     Eras(startingPopulation, G, NUM_GENERATIONS, NUM_OFFSPRING, POPULATION_SIZE, NUM_PARTITIONS);*/
+
+    Individual bestOfGalapagos = Galapagos_fixed(GalapagosPopulation, G, NUM_ERAS, NUM_GENERATIONS, NUM_OFFSPRING, POPULATION_SIZE, NUM_PARTITIONS, NUM_MIGRANTS);
+
+    now_now = chrono::system_clock::now();
+    now_now_ms = chrono::time_point_cast<chrono::milliseconds>(now_now);
+    now_now_c = now_now_ms.time_since_epoch().count();
+    cout<< "Tempo impiegato -->";
+    time_conversion(now_now_c - now_c);
+
+    /*Individual bestOf = end_era[0];
+    Individual bestOf = startingPopulation[0];*/
+
+    printIndividual(bestOfGalapagos);
 
     return 0;
 }

@@ -9,6 +9,7 @@
 #include "../Individual/Individual.h"
 #include "../fitness/Fitness.h"
 #include "../Randomizer/RandomGenerator.h"
+#include <iostream>
 #include <set>
 #include <random>
 #include <algorithm>
@@ -19,6 +20,21 @@ bool descending_order(const Individual& I1, const Individual& I2);
 
 bool ascending_order(const Individual& I1, const Individual& I2);
 
-vector<Individual> Era(vector<Individual> population, const Graph& G, int num_generations, int num_offspring, int population_size, int num_partitions);
+void Eras(vector<Individual>& population, const Graph& G, int num_generations, int num_offspring, int population_size, int num_partitions);
+
+Individual Galapagos_fixed(map<int, vector<Individual>>& populations, const Graph& G, int num_eras, int num_generations, int num_offspring, int population_size, int num_partitions, int num_migrants=5);
+
+Individual Galapagos(map<int, vector<Individual>>& populations, const Graph& G, int eras_no_upgrade, int num_generations, int num_offspring, int population_size, int num_partitions, int num_migrants);
+
+void Migration_bestOnes(map<int, vector<Individual>>& galapagosPopulation, int migrants);
+
+void Migration_randomOnes(map<int, vector<Individual>>& galapagosPopulation, int migrants);
+
+
+Individual BestOfGalapagos(map<int, vector<Individual>>& galapagosPopulation);
+
+vector<Individual> BestOfIslands(map<int, vector<Individual>>& galapagosPopulation);
+
+bool check_early_end(vector<Individual>& islandsChamp, map<int, vector<Individual>>& populations, float learning_rate, int eras_no_upgrade);
 
 #endif //SDP_GRAPH_PARTITIONING_GENERATION_H

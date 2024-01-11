@@ -13,6 +13,7 @@
 #include <iomanip>
 #include <sstream>
 #include <tuple>
+#include <map>
 
 using namespace std;
 
@@ -32,16 +33,26 @@ int main(int argc, char** argv) {
     }
 
     // Generate edges with random weights
-    vector<tuple<int, int, int>> edges;
+    map<pair<int, int>, int> edges;
 
-    for (int i = 0; i < num_edges; i++) {
+    /**for (int i = 0; i < num_edges; i++) {
         int u = rand() % num_nodes;
         int v = rand() % num_nodes;
         while (u == v || find_if(edges.begin(), edges.end(), [&](auto e) { return get<0>(e) == u && get<1>(e) == v; }) != edges.end()) {
             u = rand() % num_nodes;
             v = rand() % num_nodes;
         }
+
+        cout <<"Arco: " << i+1 << endl;
         edges.push_back({ u, v, rand() % 10 + 1 });
+    }*/
+
+    while(edges.size() < num_edges) {
+        int u = (rand()*rand()) % num_nodes;
+        int v = (rand()*rand()) % num_nodes;
+
+        edges[{u, v}] = rand() % 10 + 1 ;
+        cout <<"Arco: " << edges.size() << endl;
     }
 
     // Write nodes and edges to file
@@ -58,8 +69,12 @@ int main(int argc, char** argv) {
     for (auto node : nodes) {
         outfile << node.first << " " << node.second << endl;
     }
-    for (auto edge : edges) {
+    /*for (auto edge : edges) {
         outfile << get<0>(edge) << " " << get<1>(edge) << " " << get<2>(edge) << endl;
+    }*/
+
+    for (auto edge : edges) {
+        outfile << edge.first.first << " " << edge.first.second << " " << edge.second << endl;
     }
     outfile.close();
 
