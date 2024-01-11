@@ -60,10 +60,13 @@ void Eras(vector<Individual>& population, const Graph& G, int num_generations, i
 
 /** Gestione Isole */
 Individual Galapagos_fixed(map<int, vector<Individual>>& populations, const Graph& G, int num_eras, int num_generations, int num_offspring, int population_size, int num_partitions, int num_migrants){
+
     for(int e = 0; e<num_eras; e++){
         cout << "Starting Era n_" << e << endl;
+
         for(int i = 0; i<populations.size(); i++) {
             cout << "Starting Isola n_" << i << endl;
+
             Eras(populations.at(i), G, num_generations, num_offspring, population_size, num_partitions);
         }
         cout << "Migration phase now !! " << endl;
@@ -157,7 +160,6 @@ void Migration_randomOnes(map<int, vector<Individual>>& galapagosPopulation, int
     }
 }
 
-
 Individual BestOfGalapagos(map<int, vector<Individual>>& galapagosPopulation){
     vector<Individual> v;
 
@@ -183,8 +185,8 @@ vector<Individual> BestOfIslands(map<int, vector<Individual>>& galapagosPopulati
 bool check_early_end(vector<Individual>& islandsChamp, map<int, vector<Individual>>& populations, float learning_rate, int& eras_no_upgrade){
 
 
-    for(int i=0;i< islandsChamp.size(); i++){
-        if(islandsChamp)
+    for(int i = 0; i < islandsChamp.size(); i++){
+        if(islandsChamp[i] == populations.at(i)[0]){}
     }
 
 
