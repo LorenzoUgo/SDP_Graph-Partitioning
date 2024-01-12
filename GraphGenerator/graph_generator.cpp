@@ -14,7 +14,7 @@
 #include <errno.h>
 #include <string.h>
 
-#define DEBUG
+//#define DEBUG
 #define MAX_EDGE_WEIGHT 10
 
 using namespace std;
