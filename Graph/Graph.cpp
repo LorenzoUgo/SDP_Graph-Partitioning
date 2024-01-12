@@ -5,6 +5,133 @@
 #include "Graph.h"
 #include <iostream>
 #include <algorithm>
+#include <fstream>
+#include <chrono>
+#include <iomanip>
+#include <thread>
+#include <mutex>
+#include <errno.h>
+#include <string.h>
+
+using namespace std;
+
+bool Graph::readFileSequential(string filename) {
+    auto now = chrono::system_clock::now();
+    auto now_ms = chrono::time_point_cast<chrono::milliseconds>(now);
+    auto now_c = now_ms.time_since_epoch().count();
+    int nodes, edges, n1, n2, w;
+    string line;
+    ifstream fpInput(filename);
+
+    if (!fpInput.is_open()) {
+        cout << filename << " : " << strerror(errno) << endl;
+        return false;
+    }
+
+    getline(fpInput, line);
+    cout << cin.gcount();
+    nodes = std::stoi(line);
+    getline(fpInput, line);
+    edges = std::stoi(line);
+
+    setSizeNodes(nodes);
+    setSizeEdges(edges);
+
+    for(int i=0; i<nodes; i++){
+        fpInput >> n1;
+        fpInput >> w;
+        setNode(n1, w);
+    }
+
+    for(int i=0; i<edges; i++){
+        fpInput >> n1;
+        fpInput >> n2;
+        fpInput >> w;
+        setEdge(n1, n2, w);
+        incrementDegree(n1);
+        incrementDegree(n2);
+    }
+    fpInput.close();
+
+    auto now_now = chrono::system_clock::now();
+    auto now_now_ms = chrono::time_point_cast<chrono::milliseconds>(now_now);
+    auto now_now_c = now_now_ms.time_since_epoch().count();
+
+    cout << "Graph read from file '" << filename << "'" << endl;
+    cout << now_now_c - now_c << " ms" << endl;
+    cout << (float)((float)(now_now_c - now_c)/1000) << setprecision(3) << " seconds" << endl;
+
+    return true;
+}
+
+void readBinNodes(ifstream fin, int n, Graph &g) {
+    int node,weight;
+    for (int i=0;i<n;i++) {
+        
+        fin >> node;
+        fin >> weight;
+        g.setNode(node,weight);
+    }
+}
+
+void readBinEdges(ifstream fin, int n, Graph &g) {
+    int n1,n2,weight;
+    std::unique_lock rlock{g.m, std::defer_lock};
+    for (int i=0;i<n;i++) {
+        fin >> n1;
+        fin >> n2;
+        fin >> weight;
+        rlock.lock();
+        g.setEdge(n1,n2,weight);
+        rlock.unlock();
+    }
+}
+
+bool Graph::readFileParallel(string filename, int numthreads){
+    vector<thread> threads;
+    int numedges, numnodes;
+    ifstream fpInput(filename, ios::binary);
+    if (!fpInput.is_open()) {
+        cout << filename << " : " << strerror(errno) << endl;
+        return false;
+    }
+
+    fpInput >> numnodes;
+    fpInput >> numedges;
+    setSizeNodes(numnodes);
+    setSizeEdges(numedges);
+
+    int numtnodes = numthreads/2;
+    int numtedges = numthreads - numtnodes;
+
+    int numnodesread = numnodes/numtnodes; 
+    int numnodesread_diff = numnodes - numnodesread;
+    int numedgesread = numedges/numtedges;
+    int numedgesread_diff = numedges - numedgesread;
+
+    int i, nprev, eprev;
+    for(i=0;i<numthreads/2;i++) {
+        nprev = (i*(numnodes/numtnodes))*4;
+        eprev = (numnodes + i*numedges/numtedges)*4;
+        if (numnodesread_diff > 0) { // i.e if numNodes or numThreadNodesis is odd, i.e. if numnodes/numtnodes is not integer 
+            nprev+=4;
+            numnodesread_diff--;
+        }
+        if (numedgesread_diff > 0) {
+            eprev+=4;
+            numedgesread_diff--;
+        }
+        threads.emplace_back(readBinNodes, std::ref(fpInput.seekg(nprev)), numnodes/numtnodes, this);
+        threads.emplace_back(readBinEdges, std::ref(fpInput.seekg(eprev)), numedges/numtedges, this);
+    }
+    if (numtedges > numtnodes) //i.e. numthreads is odd
+        threads.emplace_back(readBinEdges, fpInput.seekg((numnodes + i*numedges/numtedges)*4), numedges/numtedges);
+
+    for (auto& t: threads)
+        t.join();
+
+    return true;
+}
 
 void Graph::setNode(int n, int weight) {
     Node value;
@@ -128,7 +255,7 @@ int Graph::getTotalNodesWeight() {
 void Graph::normalize(){
     int min, max;
 
-    for(int i=0; i < this->Edges.size(); i++){
+    for(int i=0; i < (int)(this->Edges.size()); i++){
         if (i == 0){
             min = this->Edges[i].weight;
             max = this->Edges[i].weight;
@@ -142,7 +269,7 @@ void Graph::normalize(){
         }
     }
 
-    for(int i=0; i < this->Edges.size(); i++) {
+    for(int i=0; i < (int)(this->Edges.size()); i++) {
         this->Edges[i].weight = (this->Edges[i].weight - min)/(max-min);
     }
 

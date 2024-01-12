@@ -9,6 +9,8 @@
 #include <stack>
 #include <random>
 #include <unordered_set>
+#include <string>
+#include <mutex>
 
 typedef struct {
 
@@ -35,9 +37,10 @@ private:
     std::vector<std::vector<int>> MatDegree;
     int sizeN;
     int sizeE;
-
+    
 public:
-    Graph(int numNodes = 0, int numEdges = 0) : sizeN(numNodes), sizeE(numEdges) {}
+    // Graph(int numNodes = 0, int numEdges = 0) : sizeN(numNodes), sizeE(numEdges) {} // non dovrebbe più servire
+    mutex m;
     int num_of_nodes() { return sizeN; }
     int num_of_edges() { return sizeE; }
     void setSizeNodes(int value) { sizeN = value; }
@@ -52,6 +55,8 @@ public:
         }
         return sum / sizeN;
     }
+    bool readFileSequential(std::string filename);
+    bool readFileParallel(std::string filename, int numthreads);
 
     std::map<int, Node> getNodes() { return Nodes; }
     std::vector<Edge> getEdges() { return Edges; }
@@ -109,5 +114,8 @@ public:
     }
 
 };
+
+void readBinNodes(ifstream fin, int n, Graph g);
+void readBinEdges(ifstream fin, int n, Graph g);
 
 #endif

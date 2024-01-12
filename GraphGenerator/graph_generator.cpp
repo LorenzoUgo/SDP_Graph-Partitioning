@@ -9,12 +9,15 @@
 #include <random>
 #include <chrono>
 #include <ctime>
+#include <tuple>
 #include <iomanip>
 #include <sstream>
 #include <errno.h>
 #include <string.h>
+#include <algorithm>
 
 //#define DEBUG
+#define MAX_NODE_WEIGHT 10
 #define MAX_EDGE_WEIGHT 10
 
 using namespace std;
@@ -32,8 +35,8 @@ int main(int argc, char** argv) {
     #endif
     // DEBUG
     #ifdef DEBUG
-    int num_nodes = 5;
-    int num_edges = 6;
+    const int num_nodes = 10;
+    const int num_edges = 15;
     #endif
 
     auto now = chrono::system_clock::now();
@@ -41,23 +44,24 @@ int main(int argc, char** argv) {
     auto now_c = now_ms.time_since_epoch().count();
 
     // Generate nodes with random weights
-    vector<pair<int, int>> nodes(num_nodes);
+    vector<pair<int, int>> nodes;
     for (int i = 0; i < num_nodes; i++) {
-        nodes[i] = { i, rand() % 10 + 1 };
+        nodes.push_back({ i, rand() % MAX_NODE_WEIGHT + 1 });
     }
 
     // Generate edges with random weights
-    int madj[num_nodes][num_nodes] = {};
+    vector<tuple<int, int, int>> edges;
     for (int i = 0; i < num_edges; i++) {
         int u = rand() % num_nodes;
         int v = rand() % num_nodes;
-        while (u == v || madj[u][v] != 0) {
+        #ifdef DEBUG
+        cout << "Edge n." << i << " generated" << endl;
+        #endif
+        while (u == v || std::find_if(edges.begin(), edges.end(), [&](auto e) { return get<0>(e) == u && get<1>(e) == v; }) != edges.end()) {
             u = rand() % num_nodes;
             v = rand() % num_nodes;
         }
-        int w = rand() % MAX_EDGE_WEIGHT + 1;
-        madj[u][v] = w;
-        madj[v][u] = w;
+        edges.push_back({ u, v, rand() % MAX_EDGE_WEIGHT + 1 });
     }
 
     // Write num nodes and edges to files
@@ -101,31 +105,26 @@ int main(int argc, char** argv) {
     outfile_metis << num_nodes << " " << num_edges << " 011" << endl;
 
 
-    // default nodes format
+    vector<stringstream> metis_nodes(num_nodes);
     for (auto node : nodes) {
         outfile << node.first << " " << node.second << endl;
         outfile_bin.write((char*)(&node.first), sizeof(int));
         outfile_bin.write((char*)(&node.second), sizeof(int));
+        metis_nodes.at(node.first) << node.second;
     }
-    // default edges format + metis format (nodes go from 1 to num_nodes, instead of 0 to num_nodes-1)
-    for(int i=0; i<num_nodes;i++) {
-        outfile_metis << nodes.at(i).second;
-        for (int j=0; j<num_nodes; j++) {
-            if (j<=i) {// full line, prints same edge twice (undirected graph, matrix in simmetric), needed for metis format
-                if (madj[i][j] != 0)
-                    outfile_metis << " " << j+1 << " " << madj[i][j];
-            }
-            else// j > i, upper diagonal only, prints edges only once
-                if (madj[i][j] != 0) {
-                    outfile_metis << " " << j+1 << " " << madj[i][j];
-                    outfile << i << " " << j << " " << madj[i][j] << endl;
-                    outfile_bin.write((char*)(&i), sizeof(int));
-                    outfile_bin.write((char*)(&j), sizeof(int));
-                    outfile_bin.write((char*)(&madj[i][j]), sizeof(int));
-                }
-        }
-        outfile_metis << endl;
+    // NOTE in metis format nodes go from 1 to num_nodes, instead of 0 to num_nodes-1
+    for (auto edge: edges) {
+        int u = std::get<0>(edge), v = std::get<1>(edge), w = std::get<0>(edge);
+        outfile << u << " " << v << " " << w << endl;
+        outfile_bin.write((char*)(&u), sizeof(int));
+        outfile_bin.write((char*)(&v), sizeof(int));
+        outfile_bin.write((char*)(&w), sizeof(int));
+        metis_nodes.at(u) << " " << (v+1) << " " << w;
+        metis_nodes.at(v) << " " << (u+1) << " " << w;        
     }
+    for (int i=0;i<num_nodes;i++)
+        outfile_metis << metis_nodes.at(i).str() << endl;
+
     outfile.close();
     outfile_bin.close();
     outfile_metis.close();
@@ -136,7 +135,7 @@ int main(int argc, char** argv) {
 
     cout << "Graph files generated and saved to path: " << path << endl;
     cout << now_now_c - now_c << " ms" << endl;
-    cout << (now_now_c - now_c)/1000 << setprecision(5) << " seconds" << endl;
+    cout << (float)((float)(now_now_c - now_c)/1000) << setprecision(3) << " seconds" << endl;
 
     return 0;
 }
