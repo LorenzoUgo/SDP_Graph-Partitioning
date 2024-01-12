@@ -11,6 +11,8 @@
 #include <ctime>
 #include <iomanip>
 #include <sstream>
+#include <errno.h>
+#include <string.h>
 
 #define DEBUG
 #define MAX_EDGE_WEIGHT 10
@@ -60,24 +62,42 @@ int main(int argc, char** argv) {
 
     // Write num nodes and edges to files
     ostringstream filename, filename_bin, filename_metis;
-    string path = "../data/graph_" + to_string(num_nodes) + "_" + to_string(num_edges) + "/";
+    string path = "../data/graph_" + to_string(num_nodes) + '_' + to_string(num_edges) + '/';
+    std::filesystem::create_directory(path, std::filesystem::current_path());
     filename << path;
     filename_bin << path;
     filename_metis << path;
-    ofstream outfile, outfile_bin, outfile_metis;
 
     filename << "standard_text.txt";
-    outfile.open(filename.str());
+    ofstream outfile(filename.str());
+    if (outfile.is_open()) 
+        cout << filename.str() << " is open" << endl;
+    else {
+        cout << filename.str() << " : " << strerror(errno) << endl;
+        return 1;
+    }
     outfile << num_nodes << endl;
     outfile << num_edges << endl;
 
     filename_bin << "standard_binary.bin";
-    outfile_bin.open(filename.str(), ios::binary);
+    ofstream outfile_bin(filename_bin.str(), ios::binary);
+    if (outfile_bin.is_open()) 
+        cout << filename_bin.str() << " is open" << endl;
+    else {
+        cout << filename_bin.str() << " : " << strerror(errno) << endl;
+        return 1;
+    }
     outfile_bin.write((char*)(&num_nodes),sizeof(int));
     outfile_bin.write((char*)(&num_edges),sizeof(int));
 
     filename_metis << "metis_text.txt";
-    outfile_metis.open(filename_metis.str());
+    ofstream outfile_metis(filename_metis.str());
+    if (outfile_metis.is_open()) 
+        cout << filename_metis.str() << " is open" << endl;
+    else {
+        cout << filename_metis.str() << " : " << strerror(errno) << endl;
+        return 1;
+    }
     outfile_metis << num_nodes << " " << num_edges << " 011" << endl;
 
 
