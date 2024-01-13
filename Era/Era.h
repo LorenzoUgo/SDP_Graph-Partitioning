@@ -15,7 +15,7 @@
 #include <algorithm>
 #include <thread>
 #include <barrier>
-#include <pthreads.h>
+#include <pthread.h>
 
 using namespace std;
 
@@ -31,7 +31,7 @@ Individual Galapagos(map<int, vector<Individual>>& populations, const Graph& G, 
 
 Individual Galapagos_parallel(map<int, vector<Individual>>& populations, const Graph& G, int num_eras, int num_generations, int num_offspring, int population_size, int num_partitions, int num_migrants);
 
-void Eras_parallel(vector<Individual>& population, const Graph& G, pthread_barrier_t _t b1, pthread_barrier_t b2, int num_eras, int num_generations, int num_offspring, int population_size, int num_partitions);
+void Eras_parallel(vector<Individual>& population, const Graph& G, barrier<>& b1, barrier<>& b2, int num_eras, int num_generations, int num_offspring, int population_size, int num_partitions);
 
 void Migration_bestOnes(map<int, vector<Individual>>& galapagosPopulation, int migrants);
 
