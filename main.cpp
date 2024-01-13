@@ -1,10 +1,7 @@
-#include <iostream>
 #include <vector>
-#include <filesystem>
-#include <fstream>
 #include <string>
-#include <chrono>
 #include "Graph/Graph.h"
+#include <chrono>
 #include "Crossover/Crossover.h"
 #include "Individual/Individual.h"
 #include "fitness/Fitness.h"
@@ -85,69 +82,12 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-
-    /** Apriamo il file in modalità di lettura  */
-    int nodes, edges, n1, n2, w;
-    string line;
-    string nomeFile = argv[1];
-    ifstream fpInput("../data/" + nomeFile);
-
-    if (!fpInput.is_open()) {
-        cout << "File '" << nomeFile << "' has not been open correctly" << endl;
+    // get graph read file return value bool
+    Graph G;
+    if (G.readFileSequential("./data/graph_20_20/standard_text.txt"))
+        cout << "Graph read from file successfully" << endl;
+    else 
         return 1;
-    }
-
-
-
-    getline(fpInput, line);
-    cout << cin.gcount();
-    nodes = std::stoi(line);
-    getline(fpInput, line);
-    edges = std::stoi(line);
-
-
-    /** Generazione del Grafo  */
-    Graph G = Graph(nodes, edges);
-
-    std::cout << "Graph dimension: " << nodes << " - " << edges << std::endl;
-
-    auto now = chrono::system_clock::now();
-    auto now_ms = chrono::time_point_cast<chrono::milliseconds>(now);
-    auto now_c = now_ms.time_since_epoch().count();
-
-
-    /** LETTURA DEL FILE graph_nodes_edges.TXT */
-    cout<< "Lettura di " << nodes << " dal file di testo. Tempo impiegato --> ";
-    for(int i=0; i<nodes; i++){
-        fpInput >> n1;
-        fpInput >> w;
-        G.setNode(n1, w);
-    }
-
-    auto now_now = chrono::system_clock::now();
-    auto now_now_ms = chrono::time_point_cast<chrono::milliseconds>(now_now);
-    auto now_now_c = now_now_ms.time_since_epoch().count();
-
-    time_conversion(now_now_c - now_c);
-    now_c = now_now_c;
-
-    cout<< "Lettura di " << edges << " dal file di testo. Tempo impiegato --> ";
-    for(int i=0; i<edges; i++){
-        fpInput >> n1;
-        fpInput >> n2;
-        fpInput >> w;
-        G.setEdge(n1, n2, w);
-        G.incrementDegree(n1);
-        G.incrementDegree(n2);
-    }
-    fpInput.close();
-
-    now_now = chrono::system_clock::now();
-    now_now_ms = chrono::time_point_cast<chrono::milliseconds>(now_now);
-    now_now_c = now_now_ms.time_since_epoch().count();
-
-    time_conversion(now_now_c - now_c);
-    now_c = now_now_c;
 
     /*cout<< "Generazione delle strutture interne del grafo: Matrice di Adiacenza + Grado dei nodi. Tempo impiegato -->";
 
@@ -189,14 +129,6 @@ int main(int argc, char** argv) {
     for (int i = 0; i < POPULATION_SIZE; i++) {
         startingPopulation.emplace_back(Individual(NUM_PARTITIONS, G.num_of_nodes(), G));
     }
-
-    now_now = chrono::system_clock::now();
-    now_now_ms = chrono::time_point_cast<chrono::milliseconds>(now_now);
-    now_now_c = now_now_ms.time_since_epoch().count();
-
-    time_conversion(now_now_c - now_c);
-    now_c = now_now_c;
-
     /**     STARTING GALAPAGOS    */
 
     cout<< "Inizio computazione della partizione dl grafo... \n GA con parametri:\n-> " << NUM_OFFSPRING << " nuovi individui ad ogni generazione.\n->" << NUM_GENERATIONS <<" generazioni per ogni era.\n->"<< NUM_MIGRANTS <<" individui da un scambiare tra le isole alla fine di ogni era.\n->"<< NUM_ERAS <<" ere definite prima di terminare.\n\n" << endl;
