@@ -40,6 +40,6 @@ Individual BestOfGalapagos(map<int, vector<Individual>>& galapagosPopulation);
 
 vector<Individual> BestOfIslands(map<int, vector<Individual>>& galapagosPopulation);
 
-bool check_early_end(vector<Individual>& islandsChamp, map<int, vector<Individual>>& populations, float learning_rate, int& eras_no_upgrade);
+bool check_early_end(const Individual& champ, map<int, vector<Individual>>& populations, float& learning_rate, int& eras_no_upgrade);
 
 #endif //SDP_GRAPH_PARTITIONING_GENERATION_H

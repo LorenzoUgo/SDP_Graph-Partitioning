@@ -23,7 +23,7 @@ void Eras(vector<Individual>& population, const Graph& G, int num_generations, i
     default_random_engine dre(rd());
 
     for (int g = 0; g < num_generations; g++) {
-        cout << "Starting Generation n_" << g << endl;
+        //cout << "Starting Generation n_" << g << endl;
 
         for (int i = 0; i < num_offspring; i++) {
 
@@ -80,18 +80,28 @@ Individual Galapagos_fixed(map<int, vector<Individual>>& populations, const Grap
 /** Gestione Isole */
 Individual Galapagos(map<int, vector<Individual>>& populations, const Graph& G, int eras_no_upgrade, int num_generations, int num_offspring, int population_size, int num_partitions, int num_migrants){
 
-    vector<Individual> bestOfIslands = BestOfIslands(populations);
+   Individual bestOfGalapagos = BestOfGalapagos(populations);
+    float lerning_rate = 0.03;
     int e = 1;
-    while(check_early_end(bestOfIslands, populations, 0.05, eras_no_upgrade)){
-        cout << "Starting Era n_" << e << endl;
+    const int era_waited_for_improvement = eras_no_upgrade;
+    while(eras_no_upgrade){
+        cout << "Starting Era n_" << e << " - - - - - ";
+        cout << "Current Champ: " << bestOfGalapagos.getFitnessValue() << endl;
+
         for(int i = 0; i<populations.size(); i++) {
-            cout << "Starting Isola n_" << i << endl;
+            //cout << "Starting Isola n_" << i << endl;
             Eras(populations.at(i), G, num_generations, num_offspring, population_size, num_partitions);
         }
         cout << "Migration phase now !! " << endl;
 
-        Migration_bestOnes(populations, num_migrants);
+        Migration_randomOnes(populations, num_migrants);
         e++;
+        if(check_early_end(bestOfGalapagos, populations, lerning_rate, eras_no_upgrade)){
+            eras_no_upgrade --;
+        }else{
+            bestOfGalapagos = BestOfGalapagos(populations);
+            eras_no_upgrade = era_waited_for_improvement;
+        }
     }
 
     return BestOfGalapagos(populations);
@@ -120,7 +130,7 @@ void Migration_bestOnes(map<int, vector<Individual>>& galapagosPopulation, int m
     for(auto & i : galapagosPopulation){
         for(int j = 0; j<migrants; j++){
 
-            index = rand() % (bestOf.size() - 1);
+            (bestOf.size()-1) ? index = rand() % (bestOf.size() - 1) : index = 0;
             i.second.emplace_back(bestOf[index]);
             bestOf.erase(bestOf.begin() + index);
 
@@ -141,8 +151,8 @@ void Migration_randomOnes(map<int, vector<Individual>>& galapagosPopulation, int
 
     for(auto & i : galapagosPopulation){
         for(int j = 0; j<migrants; j++){
-            index = rand() % (bestOf.size() - 1);
 
+            index = rand() % (i.second.size() - 1);
             bestOf.emplace_back(i.second[index]);
             i.second.erase(i.second.begin()+index);
 
@@ -151,8 +161,8 @@ void Migration_randomOnes(map<int, vector<Individual>>& galapagosPopulation, int
 
     for(auto & i : galapagosPopulation){
         for(int j = 0; j<migrants; j++){
-            index = rand() % (bestOf.size() - 1);
 
+            (bestOf.size()-1) ? index = rand() % (bestOf.size() - 1) : index = 0;
             i.second.emplace_back(bestOf[index]);
             bestOf.erase(bestOf.begin() + index);
 
@@ -182,13 +192,21 @@ vector<Individual> BestOfIslands(map<int, vector<Individual>>& galapagosPopulati
 }
 
 
-bool check_early_end(vector<Individual>& islandsChamp, map<int, vector<Individual>>& populations, float learning_rate, int& eras_no_upgrade){
+bool check_early_end(const Individual& champ, map<int, vector<Individual>>& populations, float& learning_rate, int& eras_no_upgrade){
+    bool no_upgrade = true;
 
-
-    for(int i = 0; i < islandsChamp.size(); i++){
-        if(islandsChamp[i] == populations.at(i)[0]){}
+    for(auto & population : populations){
+        float percentage_gap = (champ.getFitnessValue() - population.second.front().getFitnessValue())  / champ.getFitnessValue();
+        if ( percentage_gap > learning_rate ){
+            no_upgrade = false;
+            break;
+        }
     }
 
+    if(no_upgrade){
+        return true;
+    }else{
+        return false;
+    }
 
-    return true;
 }
