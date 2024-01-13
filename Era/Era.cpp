@@ -3,6 +3,7 @@
 //
 
 #include "Era.h"
+#include "../main.cpp"
 
 bool descending_order(const Individual& I1, const Individual& I2){
     return I1.getFitnessValue() > I2.getFitnessValue();
@@ -59,19 +60,19 @@ void Eras(vector<Individual>& population, const Graph& G, int num_generations, i
 
 
 /** Gestione Isole */
-Individual Galapagos_fixed(map<int, vector<Individual>>& populations, const Graph& G, int num_eras, int num_generations, int num_offspring, int population_size, int num_partitions, int num_migrants){
+Individual Galapagos_fixed(map<int, vector<Individual>>& populations, const Graph& G, int num_eras, int num_generations, int num_offspring, int population_size, int num_partitions, int num_migrants, struct GA_parameters params){
 
-    for(int e = 0; e<num_eras; e++){
+    for(int e = 0; e<params.NUM_ERAS; e++){
         cout << "Starting Era n_" << e << endl;
 
-        for(int i = 0; i<populations.size(); i++) {
+        for(int i = 0; i<params.NUM_ISLANDS; i++) {
             cout << "Starting Isola n_" << i << endl;
 
-            Eras(populations.at(i), G, num_generations, num_offspring, population_size, num_partitions);
+            Eras(populations.at(i), G, params.NUM_GENERATIONS, params.NUM_OFFSPRING, params.POPULATION_SIZE, params.NUM_PARTITIONS);
         }
         cout << "Migration phase now !! " << endl;
 
-        Migration_bestOnes(populations, num_migrants);
+        Migration_bestOnes(populations, params.NUM_MIGRANTS);
     }
 
     return BestOfGalapagos(populations);
