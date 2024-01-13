@@ -64,27 +64,34 @@ bool Graph::readFileSequential(string filename) {
     return true;
 }
 
-void readBinNodes(ifstream fin, int n, Graph &g) {
+void Graph::readBinNodes(string filename, int start, int n) {
     int node,weight;
+    ifstream fin(filename, ios::binary);
+    fin.seekg(start);
+    
     for (int i=0;i<n;i++) {
-        
-        fin >> node;
-        fin >> weight;
-        g.setNode(node,weight);
+        fin.read((char*)(&node), 4);
+        fin.read((char*)(&weight), 4);
+        setNode(node,weight);
     }
+    fin.close();
 }
 
-void readBinEdges(ifstream fin, int n, Graph &g) {
+void Graph::readBinEdges(string filename, const int start, const int n) {
     int n1,n2,weight;
-    std::unique_lock rlock{g.m, std::defer_lock};
+    ifstream fin(filename, ios::binary);
+    fin.seekg(start);
+
+    std::unique_lock rlock{m, std::defer_lock};
     for (int i=0;i<n;i++) {
-        fin >> n1;
-        fin >> n2;
-        fin >> weight;
+        fin.read((char*)(&n1), 4);
+        fin.read((char*)(&n2), 4);
+        fin.read((char*)(&weight), 4);
         rlock.lock();
-        g.setEdge(n1,n2,weight);
+        setEdge(n1,n2,weight);
         rlock.unlock();
     }
+    fin.close();
 }
 
 bool Graph::readFileParallel(string filename, int numthreads){
@@ -96,8 +103,8 @@ bool Graph::readFileParallel(string filename, int numthreads){
         return false;
     }
 
-    fpInput >> numnodes;
-    fpInput >> numedges;
+    fpInput.read((char*)(&numnodes), 4);
+    fpInput.read((char*)(&numedges), 4);
     setSizeNodes(numnodes);
     setSizeEdges(numedges);
 
@@ -121,11 +128,11 @@ bool Graph::readFileParallel(string filename, int numthreads){
             eprev+=4;
             numedgesread_diff--;
         }
-        threads.emplace_back(readBinNodes, std::ref(fpInput.seekg(nprev)), numnodes/numtnodes, this);
-        threads.emplace_back(readBinEdges, std::ref(fpInput.seekg(eprev)), numedges/numtedges, this);
+        threads.emplace_back(&Graph::readBinNodes, this, filename, nprev, numnodes/numtnodes);
+        threads.emplace_back(&Graph::readBinEdges, this, filename, eprev, numedges/numtedges);
     }
     if (numtedges > numtnodes) //i.e. numthreads is odd
-        threads.emplace_back(readBinEdges, fpInput.seekg((numnodes + i*numedges/numtedges)*4), numedges/numtedges);
+        threads.emplace_back(&Graph::readBinEdges, this, filename, (numnodes + i*numedges/numtedges)*4, numedges/numtedges);
 
     for (auto& t: threads)
         t.join();

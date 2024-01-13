@@ -113,9 +113,10 @@ public:
         return *this;
     }
 
+    void readBinNodes(string filename, int start, int n);
+    void readBinEdges(string filename, int start, int n);
 };
 
-void readBinNodes(ifstream fin, int n, Graph g);
-void readBinEdges(ifstream fin, int n, Graph g);
+
 
 #endif
