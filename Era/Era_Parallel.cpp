@@ -6,7 +6,6 @@
 
 pthread_barrier_t barrier_1, barrier_2;
 
-
 Individual Galapagos_parallel(map<int, vector<Individual>>& populations, const Graph& G, int num_eras, int num_generations, int num_offspring, int population_size, int num_partitions, int num_migrants){
 
     vector<thread> Islands;
@@ -41,7 +40,7 @@ Individual Galapagos_parallel(map<int, vector<Individual>>& populations, const G
     return BestOfGalapagos(populations);
 }
 
-void Eras_parallel(vector<Individual>& population, const Graph& G, int num_eras, int num_generations, int num_offspring, int population_size, int num_partitions) {
+void Eras_parallel(vector<Individual>& population, const Graph& G, pthread_barrier_t b1, pthread_barrier_t b2, int num_eras, int num_generations, int num_offspring, int population_size, int num_partitions) {
     float mutation_rate = .25;
     Individual parent1, parent2, offspring;
     srand(std::time(0));
@@ -86,9 +85,9 @@ void Eras_parallel(vector<Individual>& population, const Graph& G, int num_eras,
             /*population.resize(population_size)*/
         }
 
-        pthread_barrier_wait(&barrier_1);
+        pthread_barrier_wait(&b1);
         // WAIT ...
-        pthread_barrier_wait(&barrier_2);
+        pthread_barrier_wait(&b2);
 
     }
 }

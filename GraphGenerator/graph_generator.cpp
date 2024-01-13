@@ -7,6 +7,7 @@
 #include <fstream>
 #include <vector>
 #include <random>
+#include <algorithm>
 #include <chrono>
 #include <ctime>
 #include <tuple>
@@ -23,7 +24,7 @@
 using namespace std;
 
 int main(int argc, char** argv) {
-    srand(time(NULL));
+    srand(time(nullptr));
 
     #ifndef DEBUG
     if (argc != 3) {
@@ -74,7 +75,7 @@ int main(int argc, char** argv) {
 
     filename << "standard_text.txt";
     ofstream outfile(filename.str());
-    if (outfile.is_open()) 
+    if (outfile.is_open())
         cout << filename.str() << " is open" << endl;
     else {
         cout << filename.str() << " : " << strerror(errno) << endl;
@@ -85,7 +86,7 @@ int main(int argc, char** argv) {
 
     filename_bin << "standard_binary.bin";
     ofstream outfile_bin(filename_bin.str(), ios::binary);
-    if (outfile_bin.is_open()) 
+    if (outfile_bin.is_open())
         cout << filename_bin.str() << " is open" << endl;
     else {
         cout << filename_bin.str() << " : " << strerror(errno) << endl;
@@ -96,7 +97,7 @@ int main(int argc, char** argv) {
 
     filename_metis << "metis_text.txt";
     ofstream outfile_metis(filename_metis.str());
-    if (outfile_metis.is_open()) 
+    if (outfile_metis.is_open())
         cout << filename_metis.str() << " is open" << endl;
     else {
         cout << filename_metis.str() << " : " << strerror(errno) << endl;
@@ -120,7 +121,7 @@ int main(int argc, char** argv) {
         outfile_bin.write((char*)(&v), sizeof(int));
         outfile_bin.write((char*)(&w), sizeof(int));
         metis_nodes.at(u) << " " << (v+1) << " " << w;
-        metis_nodes.at(v) << " " << (u+1) << " " << w;        
+        metis_nodes.at(v) << " " << (u+1) << " " << w;
     }
     for (int i=0;i<num_nodes;i++)
         outfile_metis << metis_nodes.at(i).str() << endl;

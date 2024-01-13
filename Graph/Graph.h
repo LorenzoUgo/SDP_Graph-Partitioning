@@ -12,6 +12,8 @@
 #include <string>
 #include <mutex>
 
+using namespace std;
+
 typedef struct {
 
     float weight;
@@ -37,6 +39,9 @@ private:
     std::vector<std::vector<int>> MatDegree;
     int sizeN;
     int sizeE;
+
+    void readBinNodes(string filename, int start, int n);
+    void readBinEdges(string filename, int start, int n);
     
 public:
     // Graph(int numNodes = 0, int numEdges = 0) : sizeN(numNodes), sizeE(numEdges) {} // non dovrebbe più servire
@@ -113,8 +118,7 @@ public:
         return *this;
     }
 
-    void readBinNodes(string filename, int start, int n);
-    void readBinEdges(string filename, int start, int n);
+
 };
 
 
