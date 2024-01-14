@@ -57,7 +57,7 @@ bool Graph::readFileSequential(string filename) {
     auto now_now_ms = chrono::time_point_cast<chrono::milliseconds>(now_now);
     auto now_now_c = now_now_ms.time_since_epoch().count();
 
-    cout << "Graph read from file '" << filename << "'" << endl;
+    cout << "Graph read sequential from file '" << filename << "'" << endl;
     cout << now_now_c - now_c << " ms" << endl;
     cout << (float)((float)(now_now_c - now_c)/1000) << setprecision(3) << " seconds" << endl;
 
@@ -67,12 +67,15 @@ bool Graph::readFileSequential(string filename) {
 void Graph::readBinNodes(string filename, int start, int n) {
     int node,weight;
     ifstream fin(filename, ios::binary);
-    fin.seekg(start);
+    fin.seekg(start+2*4);
     
+    std::unique_lock nlock{mnodes, std::defer_lock};
     for (int i=0;i<n;i++) {
         fin.read((char*)(&node), 4);
-        fin.read((char*)(&weight), 4);
+        fin.read((char*)(&weight), 4);;
+        nlock.lock();
         setNode(node,weight);
+        nlock.unlock();
     }
     fin.close();
 }
@@ -80,21 +83,25 @@ void Graph::readBinNodes(string filename, int start, int n) {
 void Graph::readBinEdges(string filename, const int start, const int n) {
     int n1,n2,weight;
     ifstream fin(filename, ios::binary);
-    fin.seekg(start);
+    fin.seekg(start+2*4); // 2 initial ints num nodes and num edges 
 
-    std::unique_lock rlock{m, std::defer_lock};
+    std::unique_lock elock{medges, std::defer_lock};
     for (int i=0;i<n;i++) {
         fin.read((char*)(&n1), 4);
         fin.read((char*)(&n2), 4);
         fin.read((char*)(&weight), 4);
-        rlock.lock();
+        elock.lock();
         setEdge(n1,n2,weight);
-        rlock.unlock();
+        elock.unlock();
     }
     fin.close();
 }
 
 bool Graph::readFileParallel(string filename, int numthreads){
+    auto now = chrono::system_clock::now();
+    auto now_ms = chrono::time_point_cast<chrono::milliseconds>(now);
+    auto now_c = now_ms.time_since_epoch().count();
+
     vector<thread> threads;
     int numedges, numnodes;
     ifstream fpInput(filename, ios::binary);
@@ -112,30 +119,41 @@ bool Graph::readFileParallel(string filename, int numthreads){
     int numtedges = numthreads - numtnodes;
 
     int numnodesread = numnodes/numtnodes; 
-    int numnodesread_diff = numnodes - numnodesread;
+    int numnodesread_diff = numnodes%numtnodes;
     int numedgesread = numedges/numtedges;
-    int numedgesread_diff = numedges - numedgesread;
+    int numedgesread_diff = numedges%numtedges;
 
-    int i, nprev, eprev;
+    int i, nprev=0, eprev = numnodes*2*4, ntoread, etoread;
     for(i=0;i<numthreads/2;i++) {
-        nprev = (i*(numnodes/numtnodes))*4;
-        eprev = (numnodes + i*numedges/numtedges)*4;
-        if (numnodesread_diff > 0) { // i.e if numNodes or numThreadNodesis is odd, i.e. if numnodes/numtnodes is not integer 
-            nprev+=4;
+        ntoread = numnodesread;
+        etoread = numedgesread;
+        if (numnodesread_diff > 0) { // i.e if numNodes or numThreadNodes is is odd, i.e. if numnodes/numtnodes is not integer 
+            ntoread++;
             numnodesread_diff--;
         }
         if (numedgesread_diff > 0) {
-            eprev+=4;
+            etoread++;
             numedgesread_diff--;
         }
-        threads.emplace_back(&Graph::readBinNodes, this, filename, nprev, numnodes/numtnodes);
-        threads.emplace_back(&Graph::readBinEdges, this, filename, eprev, numedges/numtedges);
+        threads.emplace_back(&Graph::readBinNodes, this, filename, nprev, ntoread);
+        threads.emplace_back(&Graph::readBinEdges, this, filename, eprev, etoread);
+        nprev += ntoread*2*4;
+        eprev += etoread*3*4;
     }
-    if (numtedges > numtnodes) //i.e. numthreads is odd
-        threads.emplace_back(&Graph::readBinEdges, this, filename, (numnodes + i*numedges/numtedges)*4, numedges/numtedges);
-
+    if (numtedges > numtnodes) { //i.e. numthreads is odd
+        etoread = numedges - (eprev-(numnodes*2*4))/(3*4);
+        threads.emplace_back(&Graph::readBinEdges, this, filename, eprev, etoread);
+    }
     for (auto& t: threads)
         t.join();
+
+    auto now_now = chrono::system_clock::now();
+    auto now_now_ms = chrono::time_point_cast<chrono::milliseconds>(now_now);
+    auto now_now_c = now_now_ms.time_since_epoch().count();
+
+    cout << "Graph read parallel from file '" << filename << "'" << endl;
+    cout << now_now_c - now_c << " ms" << endl;
+    cout << (float)((float)(now_now_c - now_c)/1000) << setprecision(3) << " seconds" << endl;
 
     return true;
 }

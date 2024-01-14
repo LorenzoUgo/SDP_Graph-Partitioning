@@ -137,6 +137,7 @@ int main(int argc, char** argv) {
     cout << "Graph files generated and saved to path: " << path << endl;
     cout << now_now_c - now_c << " ms" << endl;
     cout << (float)((float)(now_now_c - now_c)/1000) << setprecision(3) << " seconds" << endl;
+    cout << (float)((float)(now_now_c - now_c)/(1000*60)) << setprecision(3) << " minutes" << endl;
 
     return 0;
 }

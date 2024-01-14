@@ -44,8 +44,8 @@ private:
     void readBinEdges(string filename, int start, int n);
     
 public:
+    mutex mnodes, medges;
     // Graph(int numNodes = 0, int numEdges = 0) : sizeN(numNodes), sizeE(numEdges) {} // non dovrebbe più servire
-    mutex m;
     int num_of_nodes() { return sizeN; }
     int num_of_edges() { return sizeE; }
     void setSizeNodes(int value) { sizeN = value; }
@@ -117,7 +117,6 @@ public:
 
         return *this;
     }
-
 
 };
 
