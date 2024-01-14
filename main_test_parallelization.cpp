@@ -23,25 +23,30 @@ struct GA_parameters{
 mutex printMutex;
 
 
-void Eras_parallel(int thread_id, barrier<>& b1, barrier<>& b2) {
+void Eras_parallel(int thread_id, barrier<>& b1, barrier<>& b2, vector<int>& test) {
     printMutex.lock();
     cout << " THREAD " << thread_id  << endl;
     printMutex.unlock();
     for(int e = 0; e<GA_parameters.NUM_ERAS; e++){
 
         for (int g = 0; g < GA_parameters.NUM_GENERATIONS; g++) {
-            //cout << " THREAD " << thread_id  << " Starting Generation n_" << g << endl;
-
+            //printMutex.lock();
+            test[thread_id] = e;
+            //printMutex.unlock();
         }
 
         b1.arrive_and_wait();
-        printMutex.lock();
-        cout << " THREAD " << thread_id  << " arrivato a barrier b2 in era " << e << endl;
-        printMutex.unlock();
+
+        //cout << " THREAD " << thread_id  << " arrivato a barrier b2 in era " << e << endl;
+
         // WAIT ...
 
         b2.arrive_and_wait();
     }
+
+    printMutex.lock();
+    cout << "FINE THREAD " << thread_id << " !!" << endl;
+    printMutex.unlock();
 }
 
 
@@ -50,20 +55,43 @@ void Galapagos_parallel(){
 
     vector<std::thread> Islands;
 
+    vector<int> test (GA_parameters.NUM_ISLANDS);
+
+    for(int i=0; i<GA_parameters.NUM_ISLANDS; i++)
+        test[i] = 0;
+
+    for(int i=0; i<GA_parameters.NUM_ISLANDS; i++)
+        cout << test[i] << endl;
+
+
+
     barrier<> barrier_1_cpp(GA_parameters.NUM_ISLANDS + 1 );
     barrier<> barrier_2_cpp(GA_parameters.NUM_ISLANDS + 1 );
 
 
     for(int i = 0; i<GA_parameters.NUM_ISLANDS; ++i) {
         //cout << "Starting Isola n_" << i << endl;
-        Islands.emplace_back( [=, &barrier_1_cpp, &barrier_2_cpp] {Eras_parallel(i, barrier_1_cpp, barrier_2_cpp);});
+        Islands.emplace_back( [=, &barrier_1_cpp, &barrier_2_cpp, &test] {Eras_parallel(i, barrier_1_cpp, barrier_2_cpp, test);});
     }
 
     for(int e = 0; e<GA_parameters.NUM_ERAS; e++){
 
         barrier_1_cpp.arrive_and_wait();
         printMutex.lock();
+
         cout << "Sono il master!! GIRO: " << e << endl;
+
+        for(int i=0; i<GA_parameters.NUM_ISLANDS; i++)
+            cout << "MAIN " << test[i] << endl;
+
+
+        for(int i=0; i<GA_parameters.NUM_ISLANDS; i++)
+            test[i] = 0;
+
+        for(int i=0; i<GA_parameters.NUM_ISLANDS; i++)
+            cout << "MAIN " << test[i] << endl;
+
+
         printMutex.unlock();
         barrier_2_cpp.arrive_and_wait();
 
@@ -73,6 +101,9 @@ void Galapagos_parallel(){
         t.join();
     }
 
+    printMutex.lock();
+    cout << "FINE MAIN!!" << endl;
+    printMutex.unlock();
 
     return;
 }
