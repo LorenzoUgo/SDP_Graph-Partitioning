@@ -2,8 +2,8 @@
 // Created by Lorenzo Ugoccioni on 06/01/2024.
 //
 
-#ifndef SDP_GRAPH_PARTITIONING_GENERATION_H
-#define SDP_GRAPH_PARTITIONING_GENERATION_H
+#ifndef ERA_H
+#define ERA_H
 
 #include "../Crossover/Crossover.h"
 #include "../Individual/Individual.h"
@@ -15,7 +15,18 @@
 #include <algorithm>
 #include <thread>
 #include <barrier>
-#include <pthread.h>
+#include <mutex>
+
+struct ga_parameters{
+    int NUM_PARTITIONS = 3;
+    int NUM_OFFSPRING = 15;
+    int NUM_GENERATIONS = 30;
+    int POPULATION_SIZE = 20;
+    int NUM_ISLANDS = 3;
+    int NUM_ERAS = 5;
+    int NUM_MIGRANTS = 2;
+    float MUTATION_RATE = 0.25;
+} GA_parameters;
 
 using namespace std;
 
@@ -29,9 +40,9 @@ Individual Galapagos_fixed(map<int, vector<Individual>>& populations, const Grap
 
 Individual Galapagos(map<int, vector<Individual>>& populations, const Graph& G, int eras_no_upgrade, int num_generations, int num_offspring, int population_size, int num_partitions, int num_migrants);
 
-Individual Galapagos_parallel(map<int, vector<Individual>>& populations, const Graph& G, int num_eras, int num_generations, int num_offspring, int population_size, int num_partitions, int num_migrants);
+Individual Galapagos_parallel(map<int, vector<Individual>>& populations, const Graph& G);
 
-void Eras_parallel(vector<Individual>& population, const Graph& G, barrier<>& b1, barrier<>& b2, int num_eras, int num_generations, int num_offspring, int population_size, int num_partitions);
+void Eras_parallel(int island_id, vector<Individual>& population, const Graph& G, barrier<>& b1, barrier<>& b2);
 
 void Migration_bestOnes(map<int, vector<Individual>>& galapagosPopulation, int migrants);
 
@@ -43,4 +54,4 @@ vector<Individual> BestOfIslands(map<int, vector<Individual>>& galapagosPopulati
 
 bool check_early_end(const Individual& champ, map<int, vector<Individual>>& populations, float& learning_rate, int& eras_no_upgrade);
 
-#endif //SDP_GRAPH_PARTITIONING_GENERATION_H
+#endif //ERA_H

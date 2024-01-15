@@ -60,19 +60,19 @@ void Eras(vector<Individual>& population, const Graph& G, int num_generations, i
 
 
 /** Gestione Isole */
-Individual Galapagos_fixed(map<int, vector<Individual>>& populations, const Graph& G, int num_eras, int num_generations, int num_offspring, int population_size, int num_partitions, int num_migrants, struct GA_parameters params){
+Individual Galapagos_fixed(map<int, vector<Individual>>& populations, const Graph& G, int num_eras, int num_generations, int num_offspring, int population_size, int num_partitions, int num_migrants){
 
-    for(int e = 0; e<params.NUM_ERAS; e++){
+    for(int e = 0; e<GA_parameters.NUM_ERAS; e++){
         cout << "Starting Era n_" << e << endl;
 
-        for(int i = 0; i<params.NUM_ISLANDS; i++) {
+        for(int i = 0; i<GA_parameters.NUM_ISLANDS; i++) {
             cout << "Starting Isola n_" << i << endl;
 
-            Eras(populations.at(i), G, params.NUM_GENERATIONS, params.NUM_OFFSPRING, params.POPULATION_SIZE, params.NUM_PARTITIONS);
+            Eras(populations.at(i), G, GA_parameters.NUM_GENERATIONS, GA_parameters.NUM_OFFSPRING, GA_parameters.POPULATION_SIZE, GA_parameters.NUM_PARTITIONS);
         }
         cout << "Migration phase now !! " << endl;
 
-        Migration_bestOnes(populations, params.NUM_MIGRANTS);
+        Migration_bestOnes(populations, GA_parameters.NUM_MIGRANTS);
     }
 
     return BestOfGalapagos(populations);

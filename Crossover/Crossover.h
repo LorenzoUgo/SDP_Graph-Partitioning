@@ -2,8 +2,8 @@
 // Created by Lorenzo Ugoccioni on 06/01/2024.
 //
 
-#ifndef SDP_GRAPH_PARTITIONING_CROSSOVER_H
-#define SDP_GRAPH_PARTITIONING_CROSSOVER_H
+#ifndef CROSSOVER_H
+#define CROSSOVER_H
 
 #include <vector>
 #include <cstdlib>
@@ -34,4 +34,4 @@ Individual random_parent_selection(const vector<Individual>& population);
 
 
 
-#endif //SDP_GRAPH_PARTITIONING_CROSSOVER_H
+#endif //CROSSOVER_H

@@ -2,27 +2,16 @@
 #include <filesystem>
 #include <fstream>
 #include <string>
-#include <chrono>
 #include "Graph/Graph.h"
-#include <chrono>
 #include "Crossover/Crossover.h"
 #include "Individual/Individual.h"
-#include "fitness/Fitness.h"
 #include "Era/Era.h"
-#include <thread>
 
 using namespace std;
 
-struct GA_parameters{
-    int NUM_PARTITIONS = 0;
-    int NUM_OFFSPRING = 15;
-    int NUM_GENERATIONS = 30;
-    int POPULATION_SIZE = 20;
-    int NUM_ISLANDS = 3;
-    int NUM_ERAS = 5;
-    int NUM_MIGRANTS = 2;
-} GA_parameters;
+extern struct ga_parameters params;
 
+/*
 void printVett(const vector<int>& vett){
     cout << "Partition --> ";
     for (int i : vett) {
@@ -44,7 +33,7 @@ void printPopulation(const vector<Individual>& population){
     }
     cout<<endl;
 }
-
+*/
 void time_conversion(auto delta_t){
     int millisec, sec, min, h, day, year;
     string string_to_print;
@@ -84,7 +73,6 @@ void time_conversion(auto delta_t){
 
     cout << string_to_print <<endl;
 }
-
 
 int main(int argc, char** argv) {
 
@@ -150,9 +138,9 @@ int main(int argc, char** argv) {
     cout<< "Creazione delle Isole ("<< NUM_ISLANDS <<" isole) e della loro popolazione("<< POPULATION_SIZE << individui"). Tempo impiegato -->";
     Eras(startingPopulation, G, GA_parameters.NUM_GENERATIONS, GA_parameters.NUM_OFFSPRING, GA_parameters.POPULATION_SIZE, GA_parameters.NUM_PARTITIONS);
     */
-    Individual bestOfGalapagos = Galapagos_fixed(GalapagosPopulation, G, GA_parameters.NUM_ERAS, GA_parameters.NUM_GENERATIONS, GA_parameters.NUM_OFFSPRING, GA_parameters.POPULATION_SIZE, GA_parameters.NUM_PARTITIONS, GA_parameters.NUM_MIGRANTS);
+    Individual bestOfGalapagos = Galapagos_parallel(GalapagosPopulation, G);
 
-    cout << fitness(GA_parameters.NUM_PARTITIONS, {2,1,2,0,2,0,0,1,2,0,0,2,1,1,0,2,1,2,1,1}, G);
+    //cout << fitness(GA_parameters.NUM_PARTITIONS, {2,1,2,0,2,0,0,1,2,0,0,2,1,1,0,2,1,2,1,1}, G);
 
     /*now_now = chrono::system_clock::now();
     now_now_ms = chrono::time_point_cast<chrono::milliseconds>(now_now);
@@ -163,7 +151,7 @@ int main(int argc, char** argv) {
     /*Individual bestOf = startingPopulation[0];
     printIndividual(bestOf);*/
 
-    printIndividual(bestOfGalapagos);
+    //printIndividual(bestOfGalapagos);
 
     return 0;
 }

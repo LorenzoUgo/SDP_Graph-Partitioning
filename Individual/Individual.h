@@ -2,8 +2,8 @@
 // Created by Lorenzo Ugoccioni on 08/01/2024.
 //
 
-#ifndef SDP_GRAPH_PARTITIONING_INDIVIDUAL_H
-#define SDP_GRAPH_PARTITIONING_INDIVIDUAL_H
+#ifndef INDIVIDUAL_H
+#define INDIVIDUAL_H
 
 #include <vector>
 #include <random>
@@ -78,4 +78,4 @@ public:
     }
 };
 
-#endif //SDP_GRAPH_PARTITIONING_INDIVIDUAL_H
+#endif //INDIVIDUAL_H

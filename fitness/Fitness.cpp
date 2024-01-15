@@ -5,7 +5,7 @@
 #include "Fitness.h"
 
 // calcola la dimensione del taglio sommando i pesi degli archi che vanno da una partizione ad un'altra
-float cut_size(vector<int> genotype, Graph G){
+float cut_size(vector<int> genotype, const Graph& G){
     float cut_size = 0;
     for (auto edge : G.getEdges()){
         if(genotype[edge.n1] != genotype[edge.n2])

@@ -64,7 +64,7 @@ public:
     bool readFileParallel(std::string filename, int numthreads);
 
     std::map<int, Node> getNodes() { return Nodes; }
-    std::vector<Edge> getEdges() { return Edges; }
+    std::vector<Edge> getEdges() const { return Edges; }
     std::vector<std::vector<std::vector<int>>> getMatAdj() { return MatAdj; }
     std::vector<std::vector<int>> getMatDegree() { return MatDegree; }
 
@@ -122,4 +122,4 @@ public:
 
 
 
-#endif
+#endif //GRAPH_H

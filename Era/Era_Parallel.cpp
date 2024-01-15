@@ -4,36 +4,33 @@
 
 #include "Era.h"
 
-//pthread_barrier_t barrier_1, barrier_2;
+mutex printMutex;
 
-Individual Galapagos_parallel(map<int, vector<Individual>>& populations, const Graph& G, int num_eras, int num_generations, int num_offspring, int population_size, int num_partitions, int num_migrants){
+Individual Galapagos_parallel(map<int, vector<Individual>>& populations, const Graph& G){
 
     vector<thread> Islands;
 
-    /*pthread_barrier_init(&barrier_1, nullptr, populations.size() + 1);
-    pthread_barrier_init(&barrier_2, nullptr, populations.size() + 1);*/
-
-    barrier barrier_1_cpp(populations.size() + 1);
-    barrier barrier_2_cpp(populations.size() + 1);
+    barrier<> barrier_1_cpp(GA_parameters.NUM_ISLANDS + 1);
+    barrier<> barrier_2_cpp(GA_parameters.NUM_ISLANDS + 1);
 
 
-    for(int i = 0; i<populations.size(); i++) {
+    for(int i = 0; i<GA_parameters.NUM_ISLANDS; i++) {
         cout << "Starting Isola n_" << i << endl;
-        Islands.emplace_back( Eras_parallel, populations.at(i), G, barrier_1_cpp, barrier_2_cpp, num_eras, num_generations, num_offspring, population_size, num_partitions );
+        Islands.emplace_back( [=, &populations, &G, &barrier_1_cpp, &barrier_2_cpp] {Eras_parallel(i, populations.at(i), G, barrier_1_cpp, barrier_2_cpp);});
 
     }
 
-    for(int e = 1; e<num_eras; e++){
-        cout << "Starting Era n_" << e << endl;
+    for(int e = 1; e<GA_parameters.NUM_ERAS; e++){
 
-        //pthread_barrier_wait(&barrier_1);
+
         barrier_1_cpp.arrive_and_wait();
-
+        printMutex.lock();
         cout << "Migration phase now !! " << endl;
-        Migration_bestOnes(populations, num_migrants);
+        printMutex.unlock();
+        Migration_bestOnes(populations, GA_parameters.NUM_MIGRANTS);
 
         barrier_2_cpp.arrive_and_wait();
-        //pthread_barrier_wait(&barrier_2);
+
 
     }
 
@@ -41,14 +38,11 @@ Individual Galapagos_parallel(map<int, vector<Individual>>& populations, const G
         t.join();
     }
 
-    /*pthread_barrier_destroy(&barrier_1);
-    pthread_barrier_destroy(&barrier_2);*/
 
     return BestOfGalapagos(populations);
 }
 
-void Eras_parallel(vector<Individual>& population, const Graph& G, barrier<>& b1, barrier<>& b2, int num_eras, int num_generations, int num_offspring, int population_size, int num_partitions) {
-    float mutation_rate = .25;
+void Eras_parallel(int island_id, vector<Individual>& population, const Graph& G, barrier<>& b1, barrier<>& b2) {
     Individual parent1, parent2, offspring;
     srand(std::time(0));
 
@@ -56,25 +50,27 @@ void Eras_parallel(vector<Individual>& population, const Graph& G, barrier<>& b1
     uniform_int_distribution uid(0, 1);
     default_random_engine dre(rd());
 
-    for(int e = 0; e<num_eras; e++){
+    printMutex.lock();
+    cout << "ISLAND " << island_id << " STARTING" << endl;
 
-        for (int g = 0; g < num_generations; g++) {
-            cout << "Starting Generation n_" << g << endl;
+    for(int e = 0; e<GA_parameters.NUM_ERAS; e++){
 
-            for (int i = 0; i < num_offspring; i++) {
+        for (int g = 0; g < GA_parameters.NUM_GENERATIONS; g++) {
 
-                if ((float) uid(dre) < mutation_rate) {
+            for (int i = 0; i < GA_parameters.NUM_OFFSPRING; i++) {
+
+                if ((float) uid(dre) < GA_parameters.MUTATION_RATE) {
 
                     offspring = random_parent_selection(population);
                     offspring.mutation();
-                    offspring.setFitnessValue(fitness(num_partitions, offspring.getGenotype(), G));
+                    offspring.setFitnessValue(fitness(GA_parameters.NUM_PARTITIONS, offspring.getGenotype(), G));
 
                 } else {
 
-                    parent1 = parent_selection_tournament(rand() % (population.size() / 5 - 1) + 1, population);
-                    parent2 = parent_selection_tournament(rand() % (population.size() / 5 - 1) + 1, population);
+                    parent1 = parent_selection_tournament(rand() % (GA_parameters.POPULATION_SIZE / 5 - 1) + 1, population);
+                    parent2 = parent_selection_tournament(rand() % (GA_parameters.POPULATION_SIZE / 5 - 1) + 1, population);
                     offspring = uniform_random_crossover(parent1, parent2);
-                    offspring.setFitnessValue(fitness(num_partitions, offspring.getGenotype(), G));
+                    offspring.setFitnessValue(fitness(GA_parameters.NUM_PARTITIONS, offspring.getGenotype(), G));
 
                 }
 
@@ -84,21 +80,22 @@ void Eras_parallel(vector<Individual>& population, const Graph& G, barrier<>& b1
 
             sort(population.begin(), population.end(), ascending_order);
 
-            for (int i = 0; i < num_offspring; i++) {
-                auto it = population.begin() + population_size;
+            for (int i = 0; i < GA_parameters.NUM_OFFSPRING; i++) {
+                auto it = population.begin() + GA_parameters.POPULATION_SIZE;
                 population.erase(it);
             }
 
-            /*population.resize(population_size)*/
         }
 
-        /*pthread_barrier_wait(&b1);
-        // WAIT ...
-        pthread_barrier_wait(&b2);*/
 
-        b2.arrive_and_wait();
-        // WAIT ...
         b1.arrive_and_wait();
+        printMutex.lock();
+        cout << "ISLAND " << island_id << " WAITING FOR MIGRATION" << endl;
+        printMutex.unlock();
+        // WAIT ...
+        b2.arrive_and_wait();
+
+
 
     }
 }
