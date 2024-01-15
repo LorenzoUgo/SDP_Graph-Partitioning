@@ -3,7 +3,6 @@
 //
 
 #include "Era.h"
-#include "../main.cpp"
 
 bool descending_order(const Individual& I1, const Individual& I2){
     return I1.getFitnessValue() > I2.getFitnessValue();
@@ -82,7 +81,7 @@ Individual Galapagos_fixed(map<int, vector<Individual>>& populations, const Grap
 Individual Galapagos(map<int, vector<Individual>>& populations, const Graph& G, int eras_no_upgrade, int num_generations, int num_offspring, int population_size, int num_partitions, int num_migrants){
 
    Individual bestOfGalapagos = BestOfGalapagos(populations);
-    float lerning_rate = 0.03;
+    float learning_rate = 0.03;
     int e = 1;
     const int era_waited_for_improvement = eras_no_upgrade;
     while(eras_no_upgrade){
@@ -97,12 +96,13 @@ Individual Galapagos(map<int, vector<Individual>>& populations, const Graph& G, 
 
         Migration_randomOnes(populations, num_migrants);
         e++;
-        if(check_early_end(bestOfGalapagos, populations, lerning_rate, eras_no_upgrade)){
+        if(check_early_end(bestOfGalapagos, populations, learning_rate, eras_no_upgrade)){
             eras_no_upgrade --;
         }else{
             bestOfGalapagos = BestOfGalapagos(populations);
             eras_no_upgrade = era_waited_for_improvement;
         }
+
     }
 
     return BestOfGalapagos(populations);

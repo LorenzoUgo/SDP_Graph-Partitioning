@@ -15,22 +15,19 @@ Individual Galapagos_parallel(map<int, vector<Individual>>& populations, const G
 
 
     for(int i = 0; i<GA_parameters.NUM_ISLANDS; i++) {
-        cout << "Starting Isola n_" << i << endl;
+
         Islands.emplace_back( [=, &populations, &G, &barrier_1_cpp, &barrier_2_cpp] {Eras_parallel(i, populations.at(i), G, barrier_1_cpp, barrier_2_cpp);});
 
     }
 
-    for(int e = 1; e<GA_parameters.NUM_ERAS; e++){
-
+    for(int e = 0; e<GA_parameters.NUM_ERAS; e++){
 
         barrier_1_cpp.arrive_and_wait();
         printMutex.lock();
         cout << "Migration phase now !! " << endl;
         printMutex.unlock();
         Migration_bestOnes(populations, GA_parameters.NUM_MIGRANTS);
-
         barrier_2_cpp.arrive_and_wait();
-
 
     }
 
@@ -52,6 +49,7 @@ void Eras_parallel(int island_id, vector<Individual>& population, const Graph& G
 
     printMutex.lock();
     cout << "ISLAND " << island_id << " STARTING" << endl;
+    printMutex.unlock();
 
     for(int e = 0; e<GA_parameters.NUM_ERAS; e++){
 

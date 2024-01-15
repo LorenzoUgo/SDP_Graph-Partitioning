@@ -9,9 +9,9 @@
 
 using namespace std;
 
-extern struct ga_parameters params;
+struct ga_parameters GA_parameters;
 
-/*
+
 void printVett(const vector<int>& vett){
     cout << "Partition --> ";
     for (int i : vett) {
@@ -33,7 +33,7 @@ void printPopulation(const vector<Individual>& population){
     }
     cout<<endl;
 }
-*/
+
 void time_conversion(auto delta_t){
     int millisec, sec, min, h, day, year;
     string string_to_print;
@@ -138,6 +138,13 @@ int main(int argc, char** argv) {
     cout<< "Creazione delle Isole ("<< NUM_ISLANDS <<" isole) e della loro popolazione("<< POPULATION_SIZE << individui"). Tempo impiegato -->";
     Eras(startingPopulation, G, GA_parameters.NUM_GENERATIONS, GA_parameters.NUM_OFFSPRING, GA_parameters.POPULATION_SIZE, GA_parameters.NUM_PARTITIONS);
     */
+
+    cout << "*****************************************" << endl;
+    cout << "MIGLIOR INDIVIDUO INIZIALE" << endl;
+    cout << "*****************************************" << endl;
+
+    printIndividual(BestOfGalapagos(GalapagosPopulation));
+
     Individual bestOfGalapagos = Galapagos_parallel(GalapagosPopulation, G);
 
     //cout << fitness(GA_parameters.NUM_PARTITIONS, {2,1,2,0,2,0,0,1,2,0,0,2,1,1,0,2,1,2,1,1}, G);
@@ -151,7 +158,11 @@ int main(int argc, char** argv) {
     /*Individual bestOf = startingPopulation[0];
     printIndividual(bestOf);*/
 
-    //printIndividual(bestOfGalapagos);
+    cout << "*****************************************" << endl;
+    cout << "MIGLIOR INDIVIDUO FINALE" << endl;
+    cout << "*****************************************" << endl;
+
+    printIndividual(bestOfGalapagos);
 
     return 0;
 }

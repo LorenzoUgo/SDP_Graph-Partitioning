@@ -17,7 +17,7 @@
 #include <barrier>
 #include <mutex>
 
-struct ga_parameters{
+extern struct ga_parameters{
     int NUM_PARTITIONS = 3;
     int NUM_OFFSPRING = 15;
     int NUM_GENERATIONS = 30;
