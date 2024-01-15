@@ -19,13 +19,13 @@
 
 extern struct ga_parameters{
     int NUM_PARTITIONS = 3;
-    int NUM_OFFSPRING = 15;
-    int NUM_GENERATIONS = 30;
-    int POPULATION_SIZE = 20;
-    int NUM_ISLANDS = 3;
-    int NUM_ERAS = 5;
-    int NUM_MIGRANTS = 2;
-    float MUTATION_RATE = 0.25;
+    int NUM_OFFSPRING = 25;
+    int NUM_GENERATIONS = 50;
+    int POPULATION_SIZE = 100;
+    int NUM_ISLANDS = 6;
+    int NUM_ERAS = 100;
+    int NUM_MIGRANTS = 20;
+    float MUTATION_RATE = 0.4;
 } GA_parameters;
 
 using namespace std;

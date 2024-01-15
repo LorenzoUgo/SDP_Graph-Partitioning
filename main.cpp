@@ -91,20 +91,18 @@ int main(int argc, char** argv) {
     auto now_c = now_ms.time_since_epoch().count();
     // get graph read file return value bool
     Graph G;
-    if (G.readFileSequential(path)) //"./data/graph_20_20/standard_text.txt"
+    if (G.readFileSequentialTxt(path)) //"./data/graph_20_20/standard_text.txt"
         cout << "Graph read from file successfully" << endl;
     else
         return 1;
 
     /*cout<< "Generazione delle strutture interne del grafo: Matrice di Adiacenza + Grado dei nodi. Tempo impiegato -->";
 
-    G.computeAdjacencyMatrix();
-    G.computeMatrixDegree();
-
     Graph G_normalize = G;
     G_normalize.normalize();
     G.printAdjacencyMatrix();
-    G.printDegreeMatrix();*/
+    G.printDegreeMatrix();
+     */
 
     auto now_now = chrono::system_clock::now();
     auto now_now_ms = chrono::time_point_cast<chrono::milliseconds>(now_now);
@@ -147,7 +145,7 @@ int main(int argc, char** argv) {
 
     Individual bestOfGalapagos = Galapagos_parallel(GalapagosPopulation, G);
 
-    //cout << fitness(GA_parameters.NUM_PARTITIONS, {2,1,2,0,2,0,0,1,2,0,0,2,1,1,0,2,1,2,1,1}, G);
+
 
     /*now_now = chrono::system_clock::now();
     now_now_ms = chrono::time_point_cast<chrono::milliseconds>(now_now);
@@ -163,6 +161,8 @@ int main(int argc, char** argv) {
     cout << "*****************************************" << endl;
 
     printIndividual(bestOfGalapagos);
+
+    cout << fitness(GA_parameters.NUM_PARTITIONS, {1,0,2,1,2,0,2,0,0,0,1,0,2,1,0,2,1,1,2,0,0,2,1,2,0,2,1,2,1,1,2,1,2,1,1,0,1,2,1,0,1,2,2,1,2,2,1,2,2,0,1,1,1,0,1,1,2,0,1,2,1,2,2,2,1,1,1,1,2,2,0,1,1,0,1,2,0,0,1,0,0,1,0,0,2,1,2,0,1,0,2,0,0,0,0,1,0,1,2,2}, G);
 
     return 0;
 }

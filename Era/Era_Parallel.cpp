@@ -26,7 +26,7 @@ Individual Galapagos_parallel(map<int, vector<Individual>>& populations, const G
         printMutex.lock();
         cout << "Migration phase now !! " << endl;
         printMutex.unlock();
-        Migration_bestOnes(populations, GA_parameters.NUM_MIGRANTS);
+        Migration_randomOnes(populations, GA_parameters.NUM_MIGRANTS);
         barrier_2_cpp.arrive_and_wait();
 
     }
@@ -85,11 +85,11 @@ void Eras_parallel(int island_id, vector<Individual>& population, const Graph& G
 
         }
 
-
-        b1.arrive_and_wait();
         printMutex.lock();
         cout << "ISLAND " << island_id << " WAITING FOR MIGRATION" << endl;
         printMutex.unlock();
+        b1.arrive_and_wait();
+
         // WAIT ...
         b2.arrive_and_wait();
 

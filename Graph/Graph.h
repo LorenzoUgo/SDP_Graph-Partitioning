@@ -116,6 +116,11 @@ public:
         // Copy MatDegree
         MatDegree = other.MatDegree;
 
+        /*
+        mnodes = other.mnodes;
+        medges = other.medges;
+        */
+
         return *this;
     }
 
