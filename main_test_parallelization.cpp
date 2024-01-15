@@ -1,7 +1,6 @@
 //
 // Created by Gregorio Nicora on 13/01/24.
 //
-
 // TEST
 
 #include <vector>
