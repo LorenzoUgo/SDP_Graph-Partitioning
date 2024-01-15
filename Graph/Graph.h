@@ -60,7 +60,8 @@ public:
         }
         return sum / sizeN;
     }
-    bool readFileSequential(std::string filename);
+    bool readFileSequentialBin(string filename);
+    bool readFileSequentialTxt(std::string filename);
     bool readFileParallel(std::string filename, int numthreads);
 
     std::map<int, Node> getNodes() { return Nodes; }

@@ -15,7 +15,50 @@
 
 using namespace std;
 
-bool Graph::readFileSequential(string filename) {
+bool Graph::readFileSequentialBin(string filename) {
+    auto now = chrono::system_clock::now();
+    auto now_ms = chrono::time_point_cast<chrono::milliseconds>(now);
+    auto now_c = now_ms.time_since_epoch().count();
+    int nodes, edges;
+    string line;
+    ifstream fpInput(filename);
+
+    if (!fpInput.is_open()) {
+        cout << filename << " : SEQUENTIAL BIN " << strerror(errno) << endl;
+        return false;
+    }
+
+    fpInput.read((char*)(&nodes), 4);
+    fpInput.read((char*)(&edges), 4);
+    setSizeNodes(nodes);
+    setSizeEdges(edges);
+
+    int n1, n2, weight, node;
+    for (int i=0;i<nodes;i++) {
+        fpInput.read((char*)(&node), 4);
+        fpInput.read((char*)(&weight), 4);;
+        setNode(node,weight);
+    }
+    for (int i=0;i<edges;i++) {
+        fpInput.read((char*)(&n1), 4);
+        fpInput.read((char*)(&n2), 4);
+        fpInput.read((char*)(&weight), 4);
+        setEdge(n1,n2,weight);
+    }
+
+
+    auto now_now = chrono::system_clock::now();
+    auto now_now_ms = chrono::time_point_cast<chrono::milliseconds>(now_now);
+    auto now_now_c = now_now_ms.time_since_epoch().count();
+
+    cout << "Graph read sequential from file '" << filename << "'" << endl;
+    cout << now_now_c - now_c << " ms" << endl;
+    cout << (float)((float)(now_now_c - now_c)/1000) << setprecision(3) << " seconds" << endl;
+
+    return true;
+}
+
+bool Graph::readFileSequentialTxt(string filename) {
     auto now = chrono::system_clock::now();
     auto now_ms = chrono::time_point_cast<chrono::milliseconds>(now);
     auto now_c = now_ms.time_since_epoch().count();
@@ -24,16 +67,12 @@ bool Graph::readFileSequential(string filename) {
     ifstream fpInput(filename);
 
     if (!fpInput.is_open()) {
-        cout << filename << " : " << strerror(errno) << endl;
+        cout << filename << " : SEQUENTIAL TXT " << strerror(errno) << endl;
         return false;
     }
 
-    getline(fpInput, line);
-    cout << cin.gcount();
-    nodes = std::stoi(line);
-    getline(fpInput, line);
-    edges = std::stoi(line);
-
+    fpInput >> nodes;
+    fpInput >> edges;
     setSizeNodes(nodes);
     setSizeEdges(edges);
 
@@ -52,6 +91,7 @@ bool Graph::readFileSequential(string filename) {
         incrementDegree(n2);
     }
     fpInput.close();
+    
 
     auto now_now = chrono::system_clock::now();
     auto now_now_ms = chrono::time_point_cast<chrono::milliseconds>(now_now);
@@ -106,7 +146,7 @@ bool Graph::readFileParallel(string filename, int numthreads){
     int numedges, numnodes;
     ifstream fpInput(filename, ios::binary);
     if (!fpInput.is_open()) {
-        cout << filename << " : " << strerror(errno) << endl;
+        cout << filename << " PARALLEL: " << strerror(errno) << endl;
         return false;
     }
 

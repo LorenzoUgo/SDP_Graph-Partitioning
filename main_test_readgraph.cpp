@@ -34,12 +34,19 @@ bool areEqual(Graph &G1, Graph &G2) {
 }
 
 int main() {
-	Graph Gseq, Gpar;
-    string graph = "./data/graph_100000_200000/";
-    int numthreads = 7;
+	Graph Gseq1, Gseq2, Gpar;
+    string graph = "./data/graph_10000000_30000000/";
+    int numthreads = 3;
 
     /**     X FRANCSCO per trovare i file dove stanno i grafi da CLions   */
-    if (Gseq.readFileSequential(graph + "standard_text.txt")) {
+    /*
+    if (Gseq1.readFileSequentialTxt(graph + "standard_text.txt")) {
+        cout << "Graph sequential read from file successfully" << endl;
+    } else {
+        return 1;
+    }
+    */
+    if (Gseq2.readFileSequentialBin(graph + "standard_binary.bin")) {
         cout << "Graph sequential read from file successfully" << endl;
     } else {
         return 1;
@@ -64,13 +71,14 @@ int main() {
     }
      */
 
-    if (!areEqual(Gseq,Gpar)) {
+
+    if (!areEqual(Gseq2,Gpar)) {
         cout << "Gseq edges" << endl;
-        Gseq.printEdges();
+        Gseq1.printEdges();
         cout << "Gpar edges" << endl;
         Gpar.printEdges();
         cout << "Gseq nodes" << endl;
-        Gseq.printNodes();
+        Gseq1.printNodes();
         cout << "Gpar nodes" << endl;
         Gpar.printNodes();
         cout << "Graphs are NOT EQUAL !!" << endl;

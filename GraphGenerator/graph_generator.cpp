@@ -16,6 +16,7 @@
 #include <errno.h>
 #include <string.h>
 #include <algorithm>
+#include <map>
 
 //#define DEBUG
 #define MAX_NODE_WEIGHT 10
@@ -32,12 +33,12 @@ int main(int argc, char** argv) {
         return 1;
     }
     int num_nodes = std::stoi(argv[1]);
-    int num_edges = std::stoi(argv[2]);
+    unsigned int num_edges = std::stoi(argv[2]);
     #endif
     // DEBUG
     #ifdef DEBUG
-    const int num_nodes = 10;
-    const int num_edges = 15;
+    const int num_nodes = 1000;
+    const int num_edges = 2000;
     #endif
 
     auto now = chrono::system_clock::now();
@@ -50,19 +51,13 @@ int main(int argc, char** argv) {
         nodes.push_back({ i, rand() % MAX_NODE_WEIGHT + 1 });
     }
 
-    // Generate edges with random weights
-    vector<tuple<int, int, int>> edges;
-    for (int i = 0; i < num_edges; i++) {
+    map<pair<int, int>, int> edges;
+    while(edges.size() < num_edges) {
         int u = rand() % num_nodes;
         int v = rand() % num_nodes;
-        #ifdef DEBUG
-        cout << "Edge n." << i << " generated" << endl;
-        #endif
-        while (u == v || std::find_if(edges.begin(), edges.end(), [&](auto e) { return get<0>(e) == u && get<1>(e) == v; }) != edges.end()) {
-            u = rand() % num_nodes;
-            v = rand() % num_nodes;
-        }
-        edges.push_back({ u, v, rand() % MAX_EDGE_WEIGHT + 1 });
+        if (edges.find({u, v}) == edges.end())
+            edges[{u, v}] = (rand() % MAX_EDGE_WEIGHT) + 1 ;
+        cout <<"Edge n." << edges.size() << " generated" << endl;
     }
 
     // Write num nodes and edges to files
@@ -115,7 +110,7 @@ int main(int argc, char** argv) {
     }
     // NOTE in metis format nodes go from 1 to num_nodes, instead of 0 to num_nodes-1
     for (auto edge: edges) {
-        int u = std::get<0>(edge), v = std::get<1>(edge), w = std::get<0>(edge);
+        int u = edge.first.first, v = edge.first.second, w = edge.second;
         outfile << u << " " << v << " " << w << endl;
         outfile_bin.write((char*)(&u), sizeof(int));
         outfile_bin.write((char*)(&v), sizeof(int));
@@ -129,7 +124,7 @@ int main(int argc, char** argv) {
     outfile.close();
     outfile_bin.close();
     outfile_metis.close();
-
+ 
     auto now_now = chrono::system_clock::now();
     auto now_now_ms = chrono::time_point_cast<chrono::milliseconds>(now_now);
     auto now_now_c = now_now_ms.time_since_epoch().count();
@@ -138,6 +133,7 @@ int main(int argc, char** argv) {
     cout << now_now_c - now_c << " ms" << endl;
     cout << (float)((float)(now_now_c - now_c)/1000) << setprecision(3) << " seconds" << endl;
     cout << (float)((float)(now_now_c - now_c)/(1000*60)) << setprecision(3) << " minutes" << endl;
+    cout << (float)((float)(now_now_c - now_c)/(1000*60*60)) << setprecision(3) << " hours" << endl;
 
     return 0;
 }
