@@ -46,7 +46,7 @@ private:
 public:
     mutex mnodes, medges;
     // Graph(int numNodes = 0, int numEdges = 0) : sizeN(numNodes), sizeE(numEdges) {} // non dovrebbe più servire
-    int num_of_nodes() { return sizeN; }
+    int num_of_nodes() const { return sizeN; }
     int num_of_edges() { return sizeE; }
     void setSizeNodes(int value) { sizeN = value; }
     void setSizeEdges(int value) { sizeE = value; }

@@ -5,11 +5,12 @@
 #ifndef INDIVIDUAL_H
 #define INDIVIDUAL_H
 
+#include <iostream>
 #include <vector>
 #include <random>
 #include <functional>
 #include <chrono>
-#include "../fitness/Fitness.h"
+#include <algorithm>
 #include "../Graph/Graph.h"
 
 using namespace std;
@@ -35,14 +36,14 @@ public:
         for (int i=0; i<genotypeSize; i++)
             genotype.emplace_back(value());
 
-        fitness_value = fitness(num_alleles, genotype, G);
+        fitness_value = fitness(G);
     }
 
     // NOTA perchè usare setgenotype in crossover se esiste il constructor?
     void setGenotype(vector<int> &gtype) { genotype = gtype; }
-    void setFitnessValue(float fitness_val) {
+    void setFitnessValue(const Graph& G) {
         // NOTA avrebbe senso che fosse la fitness a chiamare dopo aver calcolato il valore. Fitness prende l'individuo e il grafo, fa i calcoli e poi setta il valore
-        fitness_value = fitness_val;
+        fitness_value = fitness(G);
     }
 
     const vector<int> &getGenotype() const { return genotype; }
@@ -51,6 +52,10 @@ public:
 
     int getGenotypeSize() const { return genotype.size(); }
     void mutation();
+
+    float fitness( const Graph& G, float cut_size_weight=0.5 , float balance_index_weight=0.5);
+
+    void printIndividual();
 
     //Copy Constructor
     Individual(const Individual& altro) {
@@ -77,5 +82,9 @@ public:
         return fitness_value < other.fitness_value;
     }
 };
+
+float cut_size(vector<int> genotype, const Graph& G);
+
+float balance_index(int num_partitions, const vector<int>& genotype, const Graph& G);
 
 #endif //INDIVIDUAL_H

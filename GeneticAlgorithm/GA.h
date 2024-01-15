@@ -11,13 +11,15 @@
 #include <algorithm>
 #include <thread>
 #include <barrier>
-#include <pthread.h>
+#include <mutex>
+#include <getopt.h>
+
 #include "../Individual/Individual.h"
-#include "../Utility/utility.h"
 
 using namespace std;
 
-class GeneticAlgorithm{
+class GeneticAlgorithm {
+
 private:
     int NUM_PARTITIONS;
     int POPULATION_SIZE;
@@ -33,7 +35,7 @@ private:
     bool dynamic;
     //... even more parameters
     map<int, vector<Individual>> Population;
-    Individual bestPartition;
+    Individual bestOf;
 public:
 
     /**     SETTERS     */
@@ -44,10 +46,9 @@ public:
     void setNumIslands(int numIslands) {NUM_ISLANDS = numIslands;}
     void setNumEras(int numEras) {NUM_ERAS = numEras;}
     void setNumMigrants(int numMigrants) {NUM_MIGRANTS = numMigrants;}
-    void setParallel(bool parallel) {parallel = parallel;}
+    void setParallel(bool Parallel) {parallel = Parallel;}
     void setDynamic(bool Dynamic) {dynamic = Dynamic;}
     void setPopulation(const map<int, vector<Individual>> &population) {Population = population;}
-    void setBestPartition(const Individual &bestPartition) {GeneticAlgorithm::bestPartition = bestPartition;}
 
     void setErasNoUpgrade(int erasNoUpgrade) {ERAS_NO_UPGRADE = erasNoUpgrade;}
     void setLearningRate(float learningRate) {LEARNING_RATE = learningRate;}
@@ -68,7 +69,6 @@ public:
     bool isDynamic() const {return dynamic;}
 
     const map<int, vector<Individual>> &getPopulation() const {return Population;}
-    Individual getBestPartition() {return bestPartition;}
 
     /**     Constructor with default parameters     */
 
@@ -79,26 +79,27 @@ public:
               ERAS_NO_UPGRADE(erasNoUpgrade), LEARNING_RATE(learningRate), parallel(parallel), dynamic(Dynamic) {}
 
     /** Start Algorithm */
-
-
-
     void run(const Graph& G);
 
+
     /** funzioni varie */
-    bool check_early_end(const Individual& champ, map<int, vector<Individual>>& populations);
-    Individual BestOfGalapagos(map<int, vector<Individual>>& galapagosPopulation);
-    vector<Individual> BestOfIslands(map<int, vector<Individual>>& galapagosPopulation);
+    bool check_early_end(const Individual& champ);
+    Individual BestOfGalapagos();
+    vector<Individual> IslandsBests();
+    void set__param(int num_param, char* params[]);
+
 
     /** Sequential implementation */
-
     void Eras(vector<Individual>& population, const Graph& G);
-    Individual Galapagos_fixed(map<int, vector<Individual>>& populations, const Graph& G);
-    Individual Galapagos(map<int, vector<Individual>>& populations, const Graph& G);
+    Individual Galapagos_fixed( const Graph& G );
+    Individual Galapagos( const Graph& G );
+
 
     /** Parallel implementation */
-    Individual Galapagos_parallel_fixed(map<int, vector<Individual>>& populations, const Graph& G);
-    Individual Galapagos_parallel(map<int, vector<Individual>>& populations, const Graph& G);
-    void Eras_parallel(vector<Individual>& population, const Graph& G, barrier<>& b1, barrier<>& b2);
+    Individual Galapagos_parallel_fixed(  const Graph& G );
+    Individual Galapagos_parallel( const Graph& G );
+    void Eras_parallel(int island_id, vector<Individual>& population, const Graph& G, barrier<>& b1, barrier<>& b2);
+
 
     /** Crossover function */
     Individual one_cut_crossover(Individual I1, Individual I2);
@@ -107,14 +108,15 @@ public:
     Individual uniform_crossover(Individual I1, Individual I2);
     Individual uniform_random_crossover(Individual I1, Individual I2);
 
-    /** Parent selection function */
 
+    /** Parent selection function */
     Individual parent_selection_tournament(int num_partecipants, const vector<Individual>& population);
     Individual random_parent_selection(const vector<Individual>& population);
 
+
     /** Migration function */
-    void Migration_randomOnes(map<int, vector<Individual>>& galapagosPopulation);
-    void Migration_bestOnes(map<int, vector<Individual>>& galapagosPopulation);
+    void Migration_randomOnes();
+    void Migration_bestOnes();
 
 };
 
