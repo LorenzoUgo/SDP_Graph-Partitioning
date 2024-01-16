@@ -10,22 +10,37 @@
 #include <iostream>
 #include <unistd.h>
 #include <vector>
+#include <fstream>
+#include <sys/resource>
 
 using namespace std;
 
-bool descending_order(const Individual& I1, const Individual& I2);
+struct PartitionData {
+    //vector<std::vector<bool>> partitions;
+    vector<bool> partitions;
+    vector<double> executionTimes;
+    vector<double> partitionsWeights;
+    int cutSize;
+    int totalEdgesWeight;
+    int totalNodesWeight;
+    struct rusage usage;
+    string fileName;
+    double cpu_percentage;
+};
 
-bool ascending_order(const Individual& I1, const Individual& I2);
 
 void printPopulation(const vector<Individual>& population);
-
-void time_conversion(int delta_t);
-
-int readGraph(const string& file, Graph& G);
-
+string time_conversion(int delta_t);
 int time_now();
+void metis_comparison(const string& file_metis, const Graph& G);
 
-void metis_comparison(string file_metis, const Graph& G);
-
+double calculateBalanceFactor(Graph& graph, const std::vector<bool>& partitionA);
+double calculateBalanceFactorPartitions(Graph& G, const std::vector<std::vector<bool>>& partitions);
+double calculateAverageBalanceFactor(const std::vector<double>& balanceFactors);
+int calculateCutSize(Graph& graph, const std::vector<bool>& partitionA);
+int calculateCutSizePartitions(Graph& G, const std::vector<std::vector<bool>>& partitions);
+double calculateAverageCutSize(const std::vector<int>& cutSizes);
+void read_input(const std::string& filename, Graph* G);
+void savePartitionDataToFile(const PartitionData& partitionData);
 
 #endif //SDP_GRAPH_PARTITIONING_UTILITY_H

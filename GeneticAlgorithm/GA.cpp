@@ -512,8 +512,9 @@ vector<Individual> GeneticAlgorithm::IslandsBests(){
 
 void GeneticAlgorithm::set__param(int num_param, char* params[]) {
 
-    const char *const short_opts = "abc:d:e:f:g:h:i:j:";
+    const char *const short_opts = "abc:d:e:f:g:h:i:j:";    //"kabc:d:e:f:g:h:i:j:"
     const option long_opts[] = {
+            //{"bal",        required_argument, nullptr, 'k'},
             {"mod",        required_argument, nullptr, 'a'},
             {"parallel",   required_argument, nullptr, 'b'},
             {"part",       required_argument, nullptr, 'c'},
@@ -575,6 +576,10 @@ void GeneticAlgorithm::set__param(int num_param, char* params[]) {
                 if (dynamic) {
                     LEARNING_RATE = stof(params[11]);
                 }
+                break;
+            case 'k':
+                std::cout << "Opzione -bal settata " << optarg << std::endl;
+                balanced = true;
                 break;
             default:
                 std::cerr << "Opzione non valida." << std::endl;

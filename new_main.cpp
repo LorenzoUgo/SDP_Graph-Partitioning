@@ -2,10 +2,8 @@
 // Created by Lorenzo Ugoccioni on 15/01/2024.
 //
 
-#include <fstream>
 #include <string>
 #include <sstream>
-#include <getopt.h>
 
 #include "Graph/Graph.h"
 #include "GeneticAlgorithm/GA.h"
@@ -63,6 +61,22 @@ int main(int argc, char** argv) {
 
     //metis_comparison(argv[0], G);
 
+    /**     SAVE RESULTS TO FILE    */
+    //     TO BE FINISHED
+    // Vorrei salvare più partizioni nello stesso file fatte in momenti diversi. Possibile?
+
+    struct PartitionData partData;
+    size_t ultimoslash = path.find_last_of('/');
+    path.erase(ultimoslash);
+
+    string outputFile = path.substr(path.find_last_of('/')+1, path.length() - path.find_last_of('/')-1) + "_GA_"
+            + (GA.isBalanced() ?"Balanced_":"")
+            + (GA.isParallel() ?"Parallel_":"")
+            + to_string(GA.getNumPartitions()) + "_"
+            + (GA.isParallel() ? to_string(GA.getNumPartitions()) + "_":"");
+    savePartitionDataToFile(partData);
+
+    // ......
 
     return 0;
 }

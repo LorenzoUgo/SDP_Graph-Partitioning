@@ -33,6 +33,7 @@ private:
     float LEARNING_RATE;
     bool parallel;
     bool dynamic;
+    bool balanced;
     //... even more parameters
     map<int, vector<Individual>> Population;
     Individual bestOf;
@@ -52,6 +53,7 @@ public:
 
     void setErasNoUpgrade(int erasNoUpgrade) {ERAS_NO_UPGRADE = erasNoUpgrade;}
     void setLearningRate(float learningRate) {LEARNING_RATE = learningRate;}
+    void setBalanced(bool balanced) {balanced = balanced;}
 
     /** GETTERS*/
 
@@ -62,11 +64,12 @@ public:
     int getNumIslands() const {return NUM_ISLANDS;}
     int getNumEras() const {return NUM_ERAS;}
     int getNumMigrants() const {return NUM_MIGRANTS;}
-
     int getErasNoUpgrade() const {return ERAS_NO_UPGRADE;}
     float getLearningRate() const {return LEARNING_RATE;}
+
     bool isParallel() const {return parallel;}
     bool isDynamic() const {return dynamic;}
+    bool isBalanced() const {return balanced;}
 
     const map<int, vector<Individual>> &getPopulation() const {return Population;}
 
