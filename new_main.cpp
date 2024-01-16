@@ -42,19 +42,19 @@ int main(int argc, char** argv) {
 
     /** SETTING ALGORITHM PARAMETERS  */
 
-    GeneticAlgorithm geneticAlgorithm;
+    GeneticAlgorithm GA;
 
-    set_GA_parameters(geneticAlgorithm, argc, argv);
+    GA.set__param(argc, argv);
 
-    /**     STARTING GENETIC ALGORITHM      */
+    /**     STARTING GENETIC ALGORITHM  */
 
     t_start = time_now();
 
-    geneticAlgorithm.run(G);
+    GA.run(G);
 
     t_end = time_now();
 
-    printIndividual(geneticAlgorithm.getBestPartition());
+    GA.BestOfGalapagos().printIndividual();
 
     time_conversion(t_end - t_start);
 
