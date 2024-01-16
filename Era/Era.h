@@ -23,7 +23,7 @@ extern struct ga_parameters{
     int NUM_GENERATIONS = 50;
     int POPULATION_SIZE = 100;
     int NUM_ISLANDS = 6;
-    int NUM_ERAS = 100;
+    int NUM_ERAS = 200;
     int NUM_MIGRANTS = 20;
     float MUTATION_RATE = 0.4;
 } GA_parameters;
