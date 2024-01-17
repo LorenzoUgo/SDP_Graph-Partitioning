@@ -66,21 +66,21 @@ void metis_comparison(const string& file_metis, const Graph& G){
 }
 
 
-// balance factor of 1.0 is perfectly balanced, 0.0 or 2.0 is completely unbalanced
-double calculateBalanceFactor(Graph& graph, const std::vector<bool>& partitionA) {
-    double weightA = 0.0;
-    double weightB = 0.0;
-    for (int i = 0; i < graph.num_of_nodes(); i++) {
-        if (partitionA[i]) {
-            weightA += graph.getNodeWeight(i);
-        }
-        else {
-            weightB += graph.getNodeWeight(i);
-        }
+// balance factor of 1.0 is perfectly balanced, 0.0 or 2.0 is completely unbalanced -> max/min
+double balanceFactor(int num_partitions, const vector<int>& partition, const Graph& G) {
+    vector<float> partitions_weight(num_partitions);
+
+    for(auto it = partition.begin();  it < partition.end();  it++){
+        partitions_weight[*it] += G.getNodeWeight(distance(partition.begin(), it));
     }
-    return std::min(weightA, weightB) / std::max(weightA, weightB);
+
+    float max_partition_weight = *max_element(partitions_weight.begin(), partitions_weight.end());
+    float min_partition_weight = *min_element(partitions_weight.begin(), partitions_weight.end());
+
+    return max_partition_weight / min_partition_weight;
 }
 
+// Partitions weights
 int calculatePartitionsWeight(Graph& graph, const std::vector<bool>& partitionA) {
     int weight = 0;
     for (int i = 0; i < graph.num_of_nodes(); i++) {
@@ -91,64 +91,68 @@ int calculatePartitionsWeight(Graph& graph, const std::vector<bool>& partitionA)
     return weight;
 }
 
-double calculateBalanceFactorPartitions(Graph& G, const std::vector<std::vector<bool>>& partitions) {
-    int partitionSize = partitions.size();
-    std::vector<int> partitionsWeight(partitionSize);
-    int maxPartitionWeight = 0;
-    int minPartitionWeight = std::numeric_limits<int>::max();
+// balance factor of 1.0 is perfectly balanced, 0.0 or 2.0 is completely unbalanced -> each partitions against each other
+vector<vector<float>> balanceFactorBetweenPartitions(int num_partitions, const vector<int>& partition, const Graph& G) {
+    vector<vector<float>> balanceFactorPartitions(num_partitions);
+    vector<float> balanceFactors(num_partitions);
 
-    for (int i = 0; i < partitionSize; ++i) {
-        partitionsWeight[i] = calculatePartitionsWeight(G, partitions[i]);
-        maxPartitionWeight = std::max(maxPartitionWeight, partitionsWeight[i]);
-        minPartitionWeight = std::min(minPartitionWeight, partitionsWeight[i]);
+    for(auto it = partition.begin();  it < partition.end();  it++){
+        balanceFactors[*it] += G.getNodeWeight(distance(partition.begin(), it));
+    }
+    for (int i = 0; i < num_partitions; ++i) {
+        for (int j = i+1; i < num_partitions; ++i) {
+            balanceFactorPartitions[i][j] = balanceFactors[i] / balanceFactors[j];
+            balanceFactorPartitions[j][i] = balanceFactors[j] / balanceFactors[i];
+
+        }
     }
 
-    return (double)minPartitionWeight / (double)maxPartitionWeight;
+    return balanceFactorPartitions;
 }
 
-int calculateCutSize(Graph& graph, const std::vector<bool>& partitionA) {
-    int cutSize = 0;
+// Cut Size value -> Global
+float calculateCutSize(const Graph& G, const vector<int>& partition) {
+    float cutSize = 0;
 
-    for (const Edge& edge : graph.getEdges()) {
-        if (partitionA[edge.n1] != partitionA[edge.n2]) {
+    for (const Edge& edge : G.getEdges()) {
+        if (partition[edge.n1] != partition[edge.n2]) {
             cutSize += edge.weight;
-            // cutSize++;
         }
     }
 
     return cutSize;
 }
 
-int calculateCutSizeBetweenPartitions(Graph& G, const std::vector<bool>& partitionA, const std::vector<bool>& partitionB) {
-    int cutSize = 0;
+// Cut Size value -> Between each partitions
+vector<vector<float>> calculateCutSizeBetweenPartitions(const Graph& G, const vector<int>& partition) {
+    vector<vector<float>> cutSizeBetweenPartitions;
 
-    const std::vector<std::vector<std::vector<int>>>& matAdj = G.getMatAdj();
-
-    for (int i = 0; i < G.num_of_nodes(); ++i) {
-        for (int j = 0; j < G.num_of_nodes(); ++j) {
-            if (partitionA[i] && partitionB[j] && matAdj[i][j][0] != -1) {
-                cutSize += matAdj[i][j][1]; // Use the weight stored in the adjacency matrix
-            }
+    for (auto edge : G.getEdges()){
+        if(partition[edge.n1] != partition[edge.n2]) {
+            cutSizeBetweenPartitions[edge.n1][edge.n2] += edge.weight;
+            cutSizeBetweenPartitions[edge.n2][edge.n1] += edge.weight;
         }
     }
 
-    return cutSize;
+    return cutSizeBetweenPartitions;
 }
 
 int calculateCutSizePartitions(Graph& G, const std::vector<std::vector<bool>>& partitions) {
     int totalCutSize = 0;
     for (int i = 0; i < partitions.size(); ++i) {
         for (int j = i + 1; j < partitions.size(); ++j) {
-            totalCutSize += calculateCutSizeBetweenPartitions(G, partitions[i], partitions[j]);
+            totalCutSize += calculateCutSizeBetweenPartitions[i][j];
         }
     }
     return totalCutSize;
 }
 
+// Read input file and generate the graph
 void read_input(const string& file, Graph* G) {
 
 }
 
+// Save partition informations in output file
 void savePartitionDataToFile(const PartitionData& partitionData) {
     ofstream outputFile(partitionData.fileName);
     if (outputFile.is_open()) {
@@ -175,6 +179,7 @@ void savePartitionDataToFile(const PartitionData& partitionData) {
     }
 }
 
+// balance factor of 1.0 is perfectly balanced, 0.0 or 2.0 is completely unbalanced -> each partitions against each other
 double calculateAverageBalanceFactor(const std::vector<double>& balanceFactors) {
     double sum = 0.0;
     for (double balanceFactor : balanceFactors) {
@@ -183,6 +188,7 @@ double calculateAverageBalanceFactor(const std::vector<double>& balanceFactors) 
     return sum / balanceFactors.size();
 }
 
+// balance factor of 1.0 is perfectly balanced, 0.0 or 2.0 is completely unbalanced -> each partitions against each other
 double calculateAverageCutSize(const std::vector<int>& cutSizes) {
     double sum = 0.0;
     for (int cutSize : cutSizes) {

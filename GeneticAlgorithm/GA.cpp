@@ -123,7 +123,6 @@ Individual GeneticAlgorithm::Galapagos( const Graph& G){
 
 
 /** Parallel implementation */
-/*
 void GeneticAlgorithm::Eras_parallel(int island_id, vector<Individual>& population, const Graph& G, barrier<>& b1, barrier<>& b2) {
     float mutation_rate = .25;
     Individual parent1, parent2, offspring;
@@ -162,7 +161,7 @@ void GeneticAlgorithm::Eras_parallel(int island_id, vector<Individual>& populati
                 population.erase(it);
             }
 
-            /*population.resize(population_size)
+            //population.resize(population_size)
         }
 
         printMutex.lock();
@@ -252,7 +251,7 @@ Individual GeneticAlgorithm::Galapagos_parallel(const Graph& G){
 
     return BestOfGalapagos();
 }
-*/
+
 
 /** Crossover function */
 
@@ -512,9 +511,9 @@ vector<Individual> GeneticAlgorithm::IslandsBests(){
 
 void GeneticAlgorithm::set__param(int num_param, char* params[]) {
 
-    const char *const short_opts = "abc:d:e:f:g:h:i:j:";    //"kabc:d:e:f:g:h:i:j:"
+    const char *const short_opts = "kabc:d:e:f:g:h:i:j:";    //""abc:d:e:f:g:h:i:j:
     const option long_opts[] = {
-            //{"bal",        required_argument, nullptr, 'k'},
+            {"bal",        required_argument, nullptr, 'k'},
             {"mod",        required_argument, nullptr, 'a'},
             {"parallel",   required_argument, nullptr, 'b'},
             {"part",       required_argument, nullptr, 'c'},
@@ -574,7 +573,7 @@ void GeneticAlgorithm::set__param(int num_param, char* params[]) {
             case 'j':
                 std::cout << "Opzione -lr con argomento: " << optarg << std::endl;
                 if (dynamic) {
-                    LEARNING_RATE = stof(params[11]);
+                    LEARNING_RATE = stof(params[11])/100;
                 }
                 break;
             case 'k':
