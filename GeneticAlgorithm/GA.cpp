@@ -123,7 +123,6 @@ Individual GeneticAlgorithm::Galapagos( const Graph& G){
 
 
 /** Parallel implementation */
-/*
 void GeneticAlgorithm::Eras_parallel(int island_id, vector<Individual>& population, const Graph& G, barrier<>& b1, barrier<>& b2) {
     float mutation_rate = .25;
     Individual parent1, parent2, offspring;
@@ -162,7 +161,7 @@ void GeneticAlgorithm::Eras_parallel(int island_id, vector<Individual>& populati
                 population.erase(it);
             }
 
-            /*population.resize(population_size)
+            //population.resize(population_size)
         }
 
         printMutex.lock();
@@ -252,7 +251,7 @@ Individual GeneticAlgorithm::Galapagos_parallel(const Graph& G){
 
     return BestOfGalapagos();
 }
-*/
+
 
 /** Crossover function */
 

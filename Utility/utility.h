@@ -11,7 +11,7 @@
 #include <unistd.h>
 #include <vector>
 #include <fstream>
-#include <sys/resource>
+#include <sys/resource.h>
 
 using namespace std;
 

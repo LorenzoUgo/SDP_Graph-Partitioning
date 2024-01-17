@@ -1,7 +1,5 @@
 cmake-build-debug/
 
-# input graph files
-/data/*
 
 .idea/*
 # Prerequisites

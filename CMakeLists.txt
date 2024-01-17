@@ -1,13 +1,3 @@
-cmake_minimum_required(VERSION 3.14)
-project(SDP_Graph_Partitioning)
-
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -pthread")
-
-
-add_executable(SDP_Graph_Partitioning main_test_parallelization.cpp )
-
-# main_test_readgraph.cpp
-# main.cpp Graph/Graph.cpp Graph/Graph.h fitness/Fitness.cpp fitness/Fitness.h Individual/Individual.h Individual/Individual.cpp Crossover/Crossover.cpp Crossover/Crossover.h Era/Era.cpp Era/Era.h Randomizer/RandomGenerator.cpp Randomizer/RandomGenerator.h
-# Era/Era_Parallel.cpp
-# GraphGenerator/graph_generator.cpp
+version https://git-lfs.github.com/spec/v1
+oid sha256:c9a6eb036a58a3906e788ce84e96638881a62991c542480d200de9f87647628f
+size 575
