@@ -30,6 +30,7 @@ void GeneticAlgorithm::run(const Graph& G){
     }
 
     cout <<"\n *****   Our Algorithm ended correctly !!   *****\n"<< endl;
+    bestOf = BestOfGalapagos();
 
 }
 
@@ -540,40 +541,40 @@ void GeneticAlgorithm::set__param(int num_param, char* params[]) {
                 break;
             case 'c':
                 std::cout << "Opzione -part con argomento: " << optarg << std::endl;
-                NUM_PARTITIONS = stoi(params[4]);
+                NUM_PARTITIONS = stoi(params[5]);
                 break;
             case 'd':
                 std::cout << "Opzione -population con argomento: " << optarg << std::endl;
-                POPULATION_SIZE = stoi(params[5]);
+                POPULATION_SIZE = stoi(params[6]);
                 break;
             case 'e':
                 std::cout << "Opzione -gen con argomento: " << optarg << std::endl;
-                NUM_GENERATIONS = stoi(params[6]);
+                NUM_GENERATIONS = stoi(params[7]);
                 break;
             case 'f':
                 std::cout << "Opzione -era con argomento: " << optarg << std::endl;
                 if (dynamic) {
-                    ERAS_NO_UPGRADE = stoi(params[7]);
+                    ERAS_NO_UPGRADE = stoi(params[8]);
                 } else {
-                    NUM_ERAS = stoi(params[7]);
+                    NUM_ERAS = stoi(params[8]);
                 }
                 break;
             case 'g':
                 std::cout << "Opzione -new con argomento: " << optarg << std::endl;
-                NUM_OFFSPRING = stoi(params[8]);
+                NUM_OFFSPRING = stoi(params[9]);
                 break;
             case 'h':
                 std::cout << "Opzione -isl con argomento: " << optarg << std::endl;
-                NUM_ISLANDS = stoi(params[9]);
+                NUM_ISLANDS = stoi(params[10]);
                 break;
             case 'i':
                 std::cout << "Opzione -mig con argomento: " << optarg << std::endl;
-                NUM_MIGRANTS = stoi(params[10]);
+                NUM_MIGRANTS = stoi(params[11]);
                 break;
             case 'j':
                 std::cout << "Opzione -lr con argomento: " << optarg << std::endl;
                 if (dynamic) {
-                    LEARNING_RATE = stof(params[11])/100;
+                    LEARNING_RATE = stof(params[12])/100;
                 }
                 break;
             case 'k':

@@ -53,7 +53,7 @@ public:
     int getGenotypeSize() const { return genotype.size(); }
     void mutation();
 
-    float fitness( const Graph& G, float cut_size_weight=0.5 , float balance_index_weight=0.5);
+    float fitness(const Graph& G, float cut_size_weight=0.5 , float balance_index_weight=0.5);
 
     void printIndividual();
 

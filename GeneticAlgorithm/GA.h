@@ -55,7 +55,7 @@ public:
     void setLearningRate(float learningRate) {LEARNING_RATE = learningRate;}
     void setBalanced(bool balanced) {balanced = balanced;}
 
-    /** GETTERS*/
+    /**     GETTERS     */
 
     int getNumPartitions() const {return NUM_PARTITIONS;}
     int getNumOffspring() const {return NUM_OFFSPRING;}
@@ -73,6 +73,8 @@ public:
 
     const map<int, vector<Individual>> &getPopulation() const {return Population;}
 
+    Individual getBestOf() const {return bestOf;}
+
     /**     Constructor with default parameters     */
 
     GeneticAlgorithm(int numPartitions=2, int populationSize=100, int numGenerations=100, int numOffspring=30, int numIslands=8,
@@ -80,6 +82,10 @@ public:
             : NUM_PARTITIONS(numPartitions), POPULATION_SIZE(populationSize), NUM_GENERATIONS(numGenerations),
               NUM_OFFSPRING(numOffspring), NUM_ISLANDS(numIslands), NUM_ERAS(numEras), NUM_MIGRANTS(numMigrants),
               ERAS_NO_UPGRADE(erasNoUpgrade), LEARNING_RATE(learningRate), parallel(parallel), dynamic(Dynamic) {}
+
+
+    /**     Reset GA to the origin     */
+    void reset(){Population.clear();};
 
     /** Start Algorithm */
     void run(const Graph& G);

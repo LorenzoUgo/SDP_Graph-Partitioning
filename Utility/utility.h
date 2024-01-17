@@ -17,10 +17,15 @@ using namespace std;
 
 struct PartitionData {
     //vector<std::vector<bool>> partitions;
-    vector<bool> partitions;
-    vector<double> executionTimes;
-    vector<double> partitionsWeights;
-    int cutSize;
+    vector<int> partition;
+    vector<int> executionTimes;
+    vector<int> balanceIndexPartitions;
+    float balanceIndex;
+    float balanceFactor;
+    float balanceIndexAverage;
+    vector<vector<int>> cutSizeBetweenPartitions;
+    float cutSize;
+    float cutSizeAverage;
     int totalEdgesWeight;
     int totalNodesWeight;
     struct rusage usage;
@@ -28,19 +33,22 @@ struct PartitionData {
     double cpu_percentage;
 };
 
+float balanceFactor(int num_partitions, const vector<int>& partition, const Graph& G);
+vector<int> calculatePartitionsWeight(int num_partitions, const vector<int>& partition, const Graph& G);
+vector<vector<int>> calculateCutSizeBetweenPartitions(const Graph& G, const vector<int>& partition);
+float avgCutSize(const vector<vector<int>>& cutSizes);
+float avgBalanceFactor(const vector<int>& balanceFactors);
+
+
+void read_input(const std::string& filename, Graph* G);
+void savePartitionDataToFile(const PartitionData& partitionData);
+
 
 void printPopulation(const vector<Individual>& population);
 string time_conversion(int delta_t);
 int time_now();
 void metis_comparison(const string& file_metis, const Graph& G);
 
-double calculateBalanceFactor(Graph& graph, const std::vector<bool>& partitionA);
-double calculateBalanceFactorPartitions(Graph& G, const std::vector<std::vector<bool>>& partitions);
-double calculateAverageBalanceFactor(const std::vector<double>& balanceFactors);
-int calculateCutSize(Graph& graph, const std::vector<bool>& partitionA);
-int calculateCutSizePartitions(Graph& G, const std::vector<std::vector<bool>>& partitions);
-double calculateAverageCutSize(const std::vector<int>& cutSizes);
-void read_input(const std::string& filename, Graph* G);
-void savePartitionDataToFile(const PartitionData& partitionData);
+
 
 #endif //SDP_GRAPH_PARTITIONING_UTILITY_H
