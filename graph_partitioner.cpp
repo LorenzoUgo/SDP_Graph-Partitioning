@@ -78,7 +78,7 @@ void set__param(int num_param, char* params[], GeneticAlgorithm& GA, int& type_r
             case 'j':
                 cout << "Opzione -lr con argomento: " << optarg << endl;
                 if (GA.isDynamic()) {
-                    GA.setLearningRate(stoi(optarg)/100);
+                    GA.setLearningRate(stof(optarg)/100);
                 }
                 break;
             case 'k':
@@ -87,7 +87,7 @@ void set__param(int num_param, char* params[], GeneticAlgorithm& GA, int& type_r
                 break;
             case 'l':
                 cout << "Opzione -binary settata " << optarg << endl;
-                num_thread = stoi(stoi(optarg));
+                num_thread = stoi(optarg);
                 if(num_thread > 1)
                     type_reading = 2;
                 else
