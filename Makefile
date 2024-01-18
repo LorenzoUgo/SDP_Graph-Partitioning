@@ -1,7 +1,7 @@
 Compiler = g++
 Args = -std=c++20 -w
 Objs = GA.o Graph.o Utility.o Individual.o
-Srcs_dir = .
+Srcs_dir = ./src
 Objs_dir = ./build
 
 # Creare cartella sources
@@ -12,7 +12,6 @@ $(shell mkdir -p $(Objs_dir))
 graph_partitioner: $(Objs)
 	$(Compiler) $(Args) $(Objs_dir)/*.o $(Srcs_dir)/graph_partitioner.cpp -o ./graph_partitioner
 	$(Compiler) $(Args) $(Srcs_dir)/graph_generator.cpp -o ./graph_generator
-
 GA.o:
 	$(Compiler) $(Args) -c $(Srcs_dir)/GeneticAlgorithm/GA.cpp -o $(Objs_dir)/GA.o
 
@@ -27,3 +26,4 @@ Utility.o:
 
 clean:
 	rm -rf $(Objs_dir) ./graph_generator ./graph_partitioner
+

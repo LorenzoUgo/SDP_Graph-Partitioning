@@ -37,26 +37,28 @@ int main(int argc, char** argv) {
     auto now_ms = chrono::time_point_cast<chrono::milliseconds>(now);
     auto now_c = now_ms.time_since_epoch().count();
 
-    // Generate nodes with random weights
+    cout << "Generating nodes" << endl;
     vector<pair<int, int>> nodes;
     for (int i = 0; i < num_nodes; i++) {
         nodes.push_back({ i, rand() % MAX_NODE_WEIGHT + 1 });
-        cout <<"Node n." << i << " generated" << endl;
+        //cout <<"Node n." << i << " generated" << endl; // DEBUG
     }
 
+    cout << "Generating edes" << endl;
     map<pair<int, int>, int> edges;
     while(edges.size() < num_edges) {
         int u = rand() % num_nodes;
         int v = rand() % num_nodes;
         if (edges.find({u, v}) == edges.end())
             edges[{u, v}] = (rand() % MAX_EDGE_WEIGHT) + 1 ;
-        cout <<"Edge n." << edges.size() << " generated" << endl;
+        //cout <<"Edge n." << edges.size() << " generated" << endl; //DEBUG
     }
 
-    // Write num nodes and edges to files
+    cout << "Writing files, this may take a while" << endl;
     ostringstream filename, filename_bin, filename_metis;
-    string path = "../data/graph_" + to_string(num_nodes) + '_' + to_string(num_edges) + '/';
-    std::filesystem::create_directory(path, std::filesystem::current_path());
+    filesystem::create_directories("./data/");
+    string path = "./data/graph_" + to_string(num_nodes) + '_' + to_string(num_edges) + '/';
+    filesystem::create_directory(path, filesystem::current_path());
     filename << path;
     filename_bin << path;
     filename_metis << path;
