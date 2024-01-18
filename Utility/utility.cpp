@@ -137,64 +137,74 @@ float avgCutSize(const vector<vector<int>>& cutSizes) {
 
 
 // Read input file and generate the graph
-void read_input(const string& file, Graph* G) {
+bool read_input(const string& file, Graph& G, int type_reading, int num_t) {
     string text = "../data/" + file + "/standard_text.txt";
     string bin = "../data/" + file + "/standard_binary.bin";
 
-    /* get graph read file return value bool*/
-    if (G->readFileSequentialTxt(text)) //"./data/graph_20_20/standard_text.txt"
-        cout << "Graph read from file successfully" << endl;
-    else
-        return;
-
     // get graph read file return value bool
-    if (G->readFileSequentialBin(bin)) //"./data/graph_20_20/standard_text.txt"
-        cout << "Graph read from file successfully" << endl;
-    else
-        return;
 
+    switch(type_reading) {
+        case 0:
+            if (G.readFileSequentialTxt(text)) //"./data/graph_20_20/standard_text.txt"
+                cout << "Graph read from file successfully" << endl;
+            else
+                return false;
+        case 1:
+            if (G.readFileSequentialBin(bin)) //"./data/graph_20_20/standard_text.txt"
+                cout << "Graph read from binary file successfully" << endl;
+            else
+                return false;
+        case 2:
+            if (G.readFileParallel(bin, num_t)) //"./data/graph_20_20/standard_text.txt"
+                cout << "Graph read from binary file successfully" << endl;
+            else
+                return false;
+        default:
+            break;
+    }
+
+    return true;
     /*cout<< "Generazione delle strutture interne del grafo: Matrice di Adiacenza + Grado dei nodi. Tempo impiegato -->";
     Graph G_normalize = G;
     G_normalize.normalize();
     G.printAdjacencyMatrix();
     G.printDegreeMatrix();*/
 
-
 }
 
 // Save partition informations in output file
-void savePartitionDataToFile(const PartitionData& partitionData) {
-    ofstream outputFile(partitionData.fileName);
+void saveInfoToFile(const UsageInfo& usageInfo) {
+    ofstream outputFile(usageInfo.fileName);
     if (outputFile.is_open()) {
-        outputFile << "Graph reading. Execution time --> " << time_conversion(partitionData.executionTimes[0]) << endl;
-        outputFile << "Total nodes weight: " << partitionData.totalNodesWeight << "\t\t";
-        outputFile << "Total edges weight: " << partitionData.totalEdgesWeight << endl
+        outputFile << "Graph reading. Execution time --> " << time_conversion(usageInfo.executionTimes[0]) << endl;
+        outputFile << "Total nodes weight: " << usageInfo.totalNodesWeight << "\t\t";
+        outputFile << "Total edges weight: " << usageInfo.totalEdgesWeight << endl
         << endl;
 
-        outputFile << "Execution time partitioning --> " << time_conversion((int) partitionData.executionTimes[1]) << endl
+        outputFile << "Execution time partitioning --> " << time_conversion(usageInfo.executionTimes[1]) << endl
         << endl;
         outputFile << "Partition " << ": ";
-        for (auto j : partitionData.partition) {
+        for (auto j : usageInfo.partition) {
             outputFile << j << " ";
         }
-        for (int i =0 ;i < partitionData.balanceIndexPartitions.size(); i++) {
-            outputFile << "Partition "<< i << ". Internal weight: " << partitionData.balanceIndexPartitions[i] << " | ";
+        for (int i =0 ;i < usageInfo.balanceIndexPartitions.size(); i++) {
+            outputFile << "Partition "<< i << ". Internal weight: " << usageInfo.balanceIndexPartitions[i] << " | ";
         }
         outputFile << endl;
-        for (int i = 0 ; i < partitionData.balanceIndexPartitions.size(); i++) {
-            for (int j = i+1 ; j < partitionData.balanceIndexPartitions.size(); j++) {
-                outputFile << "Cut Size between " << i << " and " << i << ": " << partitionData.cutSizeBetweenPartitions[i][j]
+        for (int i = 0 ; i < usageInfo.balanceIndexPartitions.size(); i++) {
+            for (int j = i+1 ; j < usageInfo.balanceIndexPartitions.size(); j++) {
+                outputFile << "Cut Size between " << i << " and " << i << ": " << usageInfo.cutSizeBetweenPartitions[i][j]
                            << " | ";
             }
         }
 
-        outputFile << endl << endl << " Balance Index: " << partitionData.balanceIndex;
-        outputFile << " | | Global Cut Size: " << partitionData.cutSize << endl;
+        outputFile << endl << endl << " Balance Index: " << usageInfo.balanceIndex;
+        outputFile << " | | Global Cut Size: " << usageInfo.cutSize << endl;
         outputFile << endl;
 
-        outputFile << "CPU time used: " << partitionData.usage.ru_utime.tv_sec << " seconds " << partitionData.usage.ru_utime.tv_usec << " microseconds" << endl;
-        outputFile << "Memory usage: " << partitionData.usage.ru_maxrss << " KBs | " << partitionData.usage.ru_maxrss / 1024.0 << " MBs | " << partitionData.usage.ru_maxrss / (1024.0 * 1024.0) << " GBs" << endl;
-        outputFile << "CPU percentage: " << partitionData.cpu_percentage << "%" << endl;
+        outputFile << "CPU time used: " << usageInfo.usage.ru_utime.tv_sec << " seconds " << usageInfo.usage.ru_utime.tv_usec << " microseconds" << endl;
+        outputFile << "Memory usage: " << usageInfo.usage.ru_maxrss << " KBs | " << usageInfo.usage.ru_maxrss / 1024.0 << " MBs | " << usageInfo.usage.ru_maxrss / (1024.0 * 1024.0) << " GBs" << endl;
+        outputFile << "CPU percentage: " << usageInfo.cpu_percentage << "%" << endl;
         outputFile.close();
     }
 }

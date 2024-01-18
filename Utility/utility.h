@@ -15,8 +15,7 @@
 
 using namespace std;
 
-struct PartitionData {
-    //vector<std::vector<bool>> partitions;
+struct UsageInfo {
     vector<int> partition;
     vector<int> executionTimes;
     vector<int> balanceIndexPartitions;
@@ -40,8 +39,8 @@ float avgCutSize(const vector<vector<int>>& cutSizes);
 float avgBalanceFactor(const vector<int>& balanceFactors);
 
 
-void read_input(const std::string& filename, Graph* G);
-void savePartitionDataToFile(const PartitionData& partitionData);
+bool read_input(const std::string& filename, Graph& G, int type_reading, int num_t);
+void saveInfoToFile(const UsageInfo& usageInfo);
 
 
 void printPopulation(const vector<Individual>& population);
