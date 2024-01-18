@@ -13,7 +13,7 @@
 #include <random>
 
 #include "../Individual/Individual.h"
-#include "../fitness/Fitness.h"
+#include "../Fitness/Fitness.h"
 #include "../Era/Era.h"
 
 using namespace std;

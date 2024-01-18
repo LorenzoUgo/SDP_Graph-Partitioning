@@ -7,8 +7,7 @@
 
 #include "../Crossover/Crossover.h"
 #include "../Individual/Individual.h"
-#include "../fitness/Fitness.h"
-#include "../Randomizer/RandomGenerator.h"
+#include "../Fitness/Fitness.h"
 #include <iostream>
 #include <set>
 #include <random>

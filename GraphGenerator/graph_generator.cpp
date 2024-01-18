@@ -18,7 +18,6 @@
 #include <algorithm>
 #include <map>
 
-//#define DEBUG
 #define MAX_NODE_WEIGHT 10
 #define MAX_EDGE_WEIGHT 10
 
@@ -27,19 +26,12 @@ using namespace std;
 int main(int argc, char** argv) {
     srand(time(nullptr));
 
-    #ifndef DEBUG
     if (argc != 3) {
         cout << "Usage: ./graph_generator <num_nodes> <num_edges>" << endl;
         return 1;
     }
     int num_nodes = std::stoi(argv[1]);
     unsigned int num_edges = std::stoi(argv[2]);
-    #endif
-    // DEBUG
-    #ifdef DEBUG
-    const int num_nodes = 1000;
-    const int num_edges = 2000;
-    #endif
 
     auto now = chrono::system_clock::now();
     auto now_ms = chrono::time_point_cast<chrono::milliseconds>(now);
@@ -49,6 +41,7 @@ int main(int argc, char** argv) {
     vector<pair<int, int>> nodes;
     for (int i = 0; i < num_nodes; i++) {
         nodes.push_back({ i, rand() % MAX_NODE_WEIGHT + 1 });
+        cout <<"Node n." << i << " generated" << endl;
     }
 
     map<pair<int, int>, int> edges;
@@ -102,13 +95,17 @@ int main(int argc, char** argv) {
 
 
     vector<stringstream> metis_nodes(num_nodes);
+    int i=0;
     for (auto node : nodes) {
         outfile << node.first << " " << node.second << endl;
         outfile_bin.write((char*)(&node.first), sizeof(int));
         outfile_bin.write((char*)(&node.second), sizeof(int));
         metis_nodes.at(node.first) << node.second;
+        cout <<"Node n." << i << " written" << endl;
+        i++;
     }
     // NOTE in metis format nodes go from 1 to num_nodes, instead of 0 to num_nodes-1
+    i=0;
     for (auto edge: edges) {
         int u = edge.first.first, v = edge.first.second, w = edge.second;
         outfile << u << " " << v << " " << w << endl;
@@ -117,6 +114,8 @@ int main(int argc, char** argv) {
         outfile_bin.write((char*)(&w), sizeof(int));
         metis_nodes.at(u) << " " << (v+1) << " " << w;
         metis_nodes.at(v) << " " << (u+1) << " " << w;
+        i++;
+        cout <<"Edge n." << i << " written" << endl;
     }
     for (int i=0;i<num_nodes;i++)
         outfile_metis << metis_nodes.at(i).str() << endl;
