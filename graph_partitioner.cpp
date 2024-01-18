@@ -17,9 +17,6 @@ void set__param(int num_param, char* params[], GeneticAlgorithm& GA, int& type_r
 
     const char *const short_opts = "l:kabc:d:e:f:g:h:i:j:";    //""abc:d:e:f:g:h:i:j:
     const option long_opts[] = {
-            {"binary",        required_argument, nullptr, 'l'},
-            //{"metis",        required_argument, nullptr, 'm'},
-            {"bal",        required_argument, nullptr, 'k'},
             {"mod",        required_argument, nullptr, 'a'},
             {"parallel",   required_argument, nullptr, 'b'},
             {"part",       required_argument, nullptr, 'c'},
@@ -30,6 +27,8 @@ void set__param(int num_param, char* params[], GeneticAlgorithm& GA, int& type_r
             {"isl",        required_argument, nullptr, 'h'},
             {"mig",        required_argument, nullptr, 'i'},
             {"lr",         required_argument, nullptr, 'j'},
+            {"bal",        required_argument, nullptr, 'k'},
+            {"binary",        required_argument, nullptr, 'l'},
             {nullptr,      0,                 nullptr, 0}
     };
 
@@ -37,58 +36,58 @@ void set__param(int num_param, char* params[], GeneticAlgorithm& GA, int& type_r
     while ((opt = getopt_long(num_param, params, short_opts, long_opts, nullptr)) != -1) {
         switch (opt) {
             case 'a':
-                std::cout << "Opzione -mod settata " << optarg << std::endl;
+                cout << "Opzione -mod settata " << endl;
                 GA.setDynamic(true);
                 break;
             case 'b':
-                std::cout << "Opzione -parallel settata " << optarg << std::endl;
+                cout << "Opzione -parallel settata " << endl;
                 GA.setParallel(true);
                 break;
             case 'c':
-                std::cout << "Opzione -part con argomento: " << optarg << std::endl;
-                GA.setNumPartitions(stoi(params[6]));
+                cout << "Opzione -part con argomento: " << optarg << endl;
+                GA.setNumPartitions(stoi(optarg));
                 break;
             case 'd':
-                std::cout << "Opzione -population con argomento: " << optarg << std::endl;
-                GA.setPopulationSize(stoi(params[7]));
+                cout << "Opzione -population con argomento: " << optarg << endl;
+                GA.setPopulationSize(stoi(optarg));
                 break;
             case 'e':
-                std::cout << "Opzione -gen con argomento: " << optarg << std::endl;
-                GA.setNumGenerations(stoi(params[8]));
+                cout << "Opzione -gen con argomento: " << optarg << endl;
+                GA.setNumGenerations(stoi(optarg));
                 break;
             case 'f':
-                std::cout << "Opzione -era con argomento: " << optarg << std::endl;
+                std::cout << "Opzione -era con argomento: " << optarg << endl;
                 if (GA.isDynamic()) {
-                    GA.setErasNoUpgrade(stoi(params[9]));
+                    GA.setErasNoUpgrade(stoi(optarg));
                 } else {
-                    GA.setNumEras(stoi(params[9]));
+                    GA.setNumEras(stoi(optarg));
                 }
                 break;
             case 'g':
-                std::cout << "Opzione -new con argomento: " << optarg << std::endl;
-                GA.setNumOffspring(stoi(params[10]));
+                cout << "Opzione -new con argomento: " << optarg << endl;
+                GA.setNumOffspring(stoi(optarg));
                 break;
             case 'h':
-                std::cout << "Opzione -isl con argomento: " << optarg << std::endl;
-                GA.setNumIslands(stoi(params[11]));
+                cout << "Opzione -isl con argomento: " << optarg << endl;
+                GA.setNumIslands(stoi(optarg));
                 break;
             case 'i':
-                std::cout << "Opzione -mig con argomento: " << optarg << std::endl;
-                GA.setNumMigrants(stoi(params[12]));
+                cout << "Opzione -mig con argomento: " << optarg << endl;
+                GA.setNumMigrants(stoi(optarg));
                 break;
             case 'j':
-                std::cout << "Opzione -lr con argomento: " << optarg << std::endl;
+                cout << "Opzione -lr con argomento: " << optarg << endl;
                 if (GA.isDynamic()) {
-                    GA.setLearningRate(stof(params[13])/100);
+                    GA.setLearningRate(stoi(optarg)/100);
                 }
                 break;
             case 'k':
-                std::cout << "Opzione -bal settata " << optarg << std::endl;
+                cout << "Opzione -bal settata " << endl;
                 GA.setBalanced(true);
                 break;
             case 'l':
-                std::cout << "Opzione -binary settata " << optarg << std::endl;
-                num_thread = stoi(params[2]);
+                cout << "Opzione -binary settata " << optarg << endl;
+                num_thread = stoi(stoi(optarg));
                 if(num_thread > 1)
                     type_reading = 2;
                 else
@@ -119,7 +118,7 @@ int main(int argc, char** argv) {
 
     /** SETTING ALGORITHM PARAMETERS  */
     cout << "--> Setting graph parameters ..." << endl;
-    set__param(argc, argv);
+    set__param(argc, argv, GA, type_reading, num_threads);
 
 
     /** Apriamo il file in modalità di lettura  */
