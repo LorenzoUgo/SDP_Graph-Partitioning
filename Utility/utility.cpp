@@ -93,12 +93,13 @@ vector<int> calculatePartitionsWeight(int num_partitions, const vector<int>& par
 }
 // balance factor of 1.0 is perfectly balanced, 0.0 or 2.0 is completely unbalanced -> each partitions against each other
 vector<vector<int>> balanceFactorBetweenPartitions(int num_partitions, const vector<int>& partition, const Graph& G) {
-    vector<vector<float>> balanceFactorPartitions(num_partitions);
+    vector<vector<int>> balanceFactorPartitions(num_partitions);
     vector<float> balanceFactors(num_partitions);
 
     for(auto it = partition.begin();  it < partition.end();  it++){
         balanceFactors[*it] += G.getNodeWeight(distance(partition.begin(), it));
     }
+
     for (int i = 0; i < num_partitions; ++i) {
         for (int j = i+1; i < num_partitions; ++i) {
             balanceFactorPartitions[i][j] = balanceFactors[i] / balanceFactors[j];
@@ -182,7 +183,7 @@ void savePartitionDataToFile(const PartitionData& partitionData) {
         outputFile << endl;
         for (int i = 0 ; i < partitionData.balanceIndexPartitions.size(); i++) {
             for (int j = i+1 ; j < partitionData.balanceIndexPartitions.size(); j++) {
-                outputFile << "Cut Size between " << i << " and " << i << ": "<< partitionData.cutSizeBetweenPartitions[i]
+                outputFile << "Cut Size between " << i << " and " << i << ": " << partitionData.cutSizeBetweenPartitions[i][j]
                            << " | ";
             }
         }
