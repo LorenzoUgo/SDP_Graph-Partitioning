@@ -11,6 +11,7 @@
 #include <unistd.h>
 #include <vector>
 #include <fstream>
+#include <sstream>
 #include <sys/resource.h>
 
 using namespace std;
@@ -46,7 +47,7 @@ void saveInfoToFile(const UsageInfo& usageInfo);
 void printPopulation(const vector<Individual>& population);
 string time_conversion(int delta_t);
 int time_now();
-void metis_comparison(const string& file_metis, const Graph& G);
+void compute_metis(string filename);
 
 
 

@@ -7,44 +7,11 @@
 #include "Utility/utility.h"
 
 #include <string>
-#include <sstream>
 #include <chrono>
 #include <sys/resource.h>
 
 using namespace std;
 
-void compute_metis(string filename) {
-    /*  NOTE: utility function handled by compute_metis.sh script */
-    ifstream fin(filename);
-    istringstream name(filename);
-    vector<int> ints;
-
-    while(name >> std::ws) {
-        if (isdigit(name.peek()))
-            name >> ints.emplace_back();
-        else
-            name.ignore();
-    }
-
-    Graph G;
-    string file = "./data/graph_" + std::to_string(ints[0]) +'_'+ std::to_string(ints[1]) + "/standard_binary.bin";
-    G.readFileParallel(file, 5);
-
-    if (!fin.is_open()) {
-        cout << "Cannot open " << file << endl;
-        return;
-    }
-    vector<int> result;
-    int n;
-    for (int i=0;i<G.num_of_nodes();i++) {  
-        fin >> n;
-        result.emplace_back(n);     
-    }
-    Individual I(result, ints[2],-1);
-    I.setFitness(G, true);
-    cout << "Fitness value is " << I.getFitness() << endl;
-    return;
-};
 
 void set_param(int num_param, char* params[], GeneticAlgorithm& GA, int& type_reading, int& num_thread, string metisFile, bool& compare_metis) {
 
