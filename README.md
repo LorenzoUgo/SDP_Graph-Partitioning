@@ -75,7 +75,7 @@ The weights of nodes and edges are set as random numbers between 1 and 10.
 ## Usage
 
 In order to use our program correctly it's important to understand what to pass to run it. The only 
-**mandatory** argument is the : _Input graph name_
+**mandatory** argument is the : _Input graph folder name_
 
 All the following argument can be used by the user to change the default setting ( they're **Optional** ).
 

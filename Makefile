@@ -4,10 +4,11 @@ Objs = GA.o Graph.o Utility.o Individual.o
 Srcs_dir = ./src
 Objs_dir = ./build
 
-$(shell mkdir -p $(Objs_dir))
-
-all: graph_partitioner graph_generator extract_data
+all: mkdir_build graph_partitioner graph_generator extract_data
 	@echo "Done!"
+
+mkdir_build:
+	$(shell mkdir -p $(Objs_dir))
 
 graph_partitioner: $(Objs)
 	$(Compiler) $(Args) $(Objs_dir)/*.o $(Srcs_dir)/graph_partitioner.cpp -o ./graph_partitioner

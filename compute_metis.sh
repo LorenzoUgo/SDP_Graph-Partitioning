@@ -2,6 +2,8 @@
 
 echo "This script uses METIS to compute best k-way partition of a graph and calculates fitness value according to the function defined in our project" 
 echo "Make sure to have *gpmetis* installed if you want to use this script"
+echo "You should be able to install it using your package manager"
+echo ""
 
 if [ $# -eq 0 ]
 then
@@ -12,11 +14,13 @@ else
 	numpart=$2
 fi
 
-cmd=$(gpmetis ./"$filename" "$numpart")
-echo "$cmd"
+cmd="gpmetis ./$filename $numpart"
+$cmd
 
 # output filename becomes filename.part.numpart
 metisfile=$filename.part.$numpart
-cmd=$(./graph_partitioner $metisfile)
+cmd="./graph_partitioner --compare $metisfile"
+$cmd
 
-#echo $(rm $metisfile)
+cmd="rm $metisfile"
+$cmd

@@ -149,16 +149,19 @@ bool read_input(const string& file, Graph& G, int type_reading, int num_t) {
                 cout << "Graph read from file successfully" << endl;
             else
                 return false;
+            break;
         case 1:
             if (G.readFileSequentialBin(bin)) //"./data/graph_20_20/standard_text.txt"
                 cout << "Graph read from binary file successfully" << endl;
             else
                 return false;
+            break;
         case 2:
             if (G.readFileParallel(bin, num_t)) //"./data/graph_20_20/standard_text.txt"
                 cout << "Graph read from binary file successfully" << endl;
             else
                 return false;
+            break;
         default:
             break;
     }

@@ -24,7 +24,7 @@ private:
 
 public:
     // constructor used for crossover computation
-    Individual(vector<int> genotype = {}, int num_alleles = -1, float fitness = -1) : genotype(move(genotype)), fitness_value(fitness), num_alleles(num_alleles){}
+    Individual(vector<int> genotype = {}, int num_alleles = -1, float fitness = -1) : genotype(move(genotype)), num_alleles(num_alleles),fitness_value(fitness){}
 
     // constructor used for building population, randomizes genotype with given size and given max value for each gene
     Individual(int n_alleles, int genotypeSize, const Graph& G) : num_alleles(n_alleles) {

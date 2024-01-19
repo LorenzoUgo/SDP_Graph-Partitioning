@@ -14,9 +14,36 @@
 using namespace std;
 
 void compute_metis(string filename) {
-    /*  NOTE: utility function handled by compute_metis.sh script
-     *  output on command line is handled there 
-    */
+    /*  NOTE: utility function handled by compute_metis.sh script */
+    ifstream fin(filename);
+    istringstream name(filename);
+    vector<int> ints;
+
+    while(name >> std::ws) {
+        if (isdigit(name.peek()))
+            name >> ints.emplace_back();
+        else
+            name.ignore();
+    }
+
+    Graph G;
+    string file = "./data/graph_" + std::to_string(ints[0]) +'_'+ std::to_string(ints[1]) + "/standard_binary.bin";
+    G.readFileParallel(file, 5);
+
+    if (!fin.is_open()) {
+        cout << "Cannot open " << file << endl;
+        return;
+    }
+    vector<int> result;
+    int n;
+    for (int i=0;i<G.num_of_nodes();i++) {  
+        fin >> n;
+        result.emplace_back(n);     
+    }
+    Individual I(result, ints[2],-1);
+    I.setFitnessValue(G);
+    cout << "Fitness value is " << I.getFitnessValue() << endl;
+    return;
 };
 
 void set__param(int num_param, char* params[], GeneticAlgorithm& GA, int& type_reading, int& num_thread, string& metisFile, bool& compare_metis) {
@@ -103,7 +130,7 @@ void set__param(int num_param, char* params[], GeneticAlgorithm& GA, int& type_r
             case 'm':
                 cout << "Opzione -compare settata " << endl;
                 compare_metis = true;
-                metisfile = string(optarg);
+                metisFile = string(optarg);
                 break;
             default:
                 std::cerr << "Opzione non valida." << std::endl;
@@ -161,7 +188,7 @@ int main(int argc, char** argv) {
 
     t_end = time_now();
 
-    cout << "    Partition founded!" << endl;
+    cout << "    Partition found!" << endl;
     cout << "    Execution time -->" << time_conversion(t_end - t_start) << endl;
     infos.executionTimes.push_back(t_end - t_start);
     GA.getBestOf().printIndividual();
