@@ -19,9 +19,9 @@ void compute_metis(string filename) {
     */
 };
 
-void set__param(int num_param, char* params[], GeneticAlgorithm& GA, int& type_reading, int& num_thread) {
+void set__param(int num_param, char* params[], GeneticAlgorithm& GA, int& type_reading, int& num_thread, string& metisFile, bool& compare_metis) {
 
-    const char *const short_opts = "l:kabc:d:e:f:g:h:i:j:";    //""abc:d:e:f:g:h:i:j:
+    const char *const short_opts = "m:l:kabc:d:e:f:g:h:i:j:";    //""abc:d:e:f:g:h:i:j:
     const option long_opts[] = {
             {"mod",        required_argument, nullptr, 'a'},
             {"parallel",   required_argument, nullptr, 'b'},
@@ -35,6 +35,7 @@ void set__param(int num_param, char* params[], GeneticAlgorithm& GA, int& type_r
             {"lr",         required_argument, nullptr, 'j'},
             {"bal",        required_argument, nullptr, 'k'},
             {"binary",        required_argument, nullptr, 'l'},
+            {"compare",        required_argument, nullptr, 'm'},
             {nullptr,      0,                 nullptr, 0}
     };
 
@@ -99,6 +100,11 @@ void set__param(int num_param, char* params[], GeneticAlgorithm& GA, int& type_r
                 else
                     type_reading = 1;
                 break;
+            case 'm':
+                cout << "Opzione -compare settata " << endl;
+                compare_metis = true;
+                metisfile = string(optarg);
+                break;
             default:
                 std::cerr << "Opzione non valida." << std::endl;
         }
@@ -118,13 +124,19 @@ int main(int argc, char** argv) {
     struct rusage _use;
 
     int type_reading=0;
-    int num_threads;
+    int num_threads=0;
+    bool compare_metis = false;
+    string metisFile;
     Graph G;
     GeneticAlgorithm GA;
 
     /** SETTING ALGORITHM PARAMETERS  */
     cout << "--> Setting graph parameters ..." << endl;
-    set__param(argc, argv, GA, type_reading, num_threads);
+    set__param(argc, argv, GA, type_reading, num_threads, metisFile, compare_metis);
+    if(compare_metis){
+        compute_metis(metisFile);
+        return 0;
+    }
 
 
     /** Apriamo il file in modalità di lettura  */
