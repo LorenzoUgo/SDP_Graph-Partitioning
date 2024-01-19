@@ -11,20 +11,20 @@ mutex printMutex;
 
 void GeneticAlgorithm::run(const Graph& G){
     for (int is = 0; is<NUM_ISLANDS; is++) {    /** Si potrà parallelizzare anche la creazione delle popolazioni iniziali delle varie isole? */
-        cout << "Starting Population for Island n_" << is << endl;
+        cout << "Starting Population for Island n_" << is << endl;// -->DEBUG
         for (int in = 0; in < POPULATION_SIZE; in++) {
-            Population[is].emplace_back(Individual(NUM_PARTITIONS, G.num_of_nodes(), G));
+            Population[is].emplace_back(Individual(NUM_PARTITIONS, G.num_of_nodes(), G, balanced));
         }
     }
 
     if( parallel && dynamic ) {
-        bestOf = Galapagos_parallel(G);
-    }if( parallel && not dynamic ){
-        bestOf = Galapagos_parallel_fixed(G);
+        Galapagos_parallel_LR(G);
+    }else if( parallel && not dynamic ){
+        Galapagos_parallel(G);
     }else if( not parallel && dynamic ){
-        bestOf = Galapagos(G);
+        Galapagos_LR(G);
     }else if( not parallel && not dynamic ){
-        bestOf = Galapagos_fixed(G);
+        Galapagos(G);
     }else{
         cout <<"Our algorithm can't continue.\n Check if all the parameters are set correctly !!"<< endl;
     }
@@ -51,14 +51,14 @@ void GeneticAlgorithm::Eras(vector<Individual>& population, const Graph& G) {
 
                 offspring = random_parent_selection(population);
                 offspring.mutation();
-                offspring.setFitnessValue(G);
+                offspring.setFitnessValue(G, balanced);
 
             } else {
                 //DAI UN OCCHIO !!!!!
                 parent1 = parent_selection_tournament(rand() % (population.size() / 5 - 1) + 1, population);
                 parent2 = parent_selection_tournament(rand() % (population.size() / 5 - 1) + 1, population);
                 offspring = uniform_random_crossover(parent1, parent2);
-                offspring.setFitnessValue(G);
+                offspring.setFitnessValue(G, balanced);
 
             }
 
@@ -76,41 +76,40 @@ void GeneticAlgorithm::Eras(vector<Individual>& population, const Graph& G) {
     }
 }
 
-Individual GeneticAlgorithm::Galapagos_fixed( const Graph& G){
+void GeneticAlgorithm::Galapagos( const Graph& G){
 
     for(int e = 0; e<NUM_ERAS; e++){
-        cout << "Starting Era n_" << e << endl;
+        cout << "Starting Era n_" << e << endl;// -->DEBUG
 
         for(int i = 0; i<NUM_ISLANDS; i++) {
-            cout << "Starting Isola n_" << i << endl;
+            cout << "Starting Isola n_" << i << endl;// -->DEBUG
 
             Eras(Population.at(i), G);
+
         }
-        cout << "Migration phase now !! " << endl;
+        cout << "Migration phase now !! " << endl;// -->DEBUG
 
         Migration_bestOnes();
     }
 
-    return BestOfGalapagos();
 }
 
-Individual GeneticAlgorithm::Galapagos( const Graph& G){
+void GeneticAlgorithm::Galapagos_LR( const Graph& G){
     Individual bestOfGalapagos = BestOfGalapagos();
-    float lerning_rate = 0.03;
-    int e = 1;
+    int e = 1;// -->DEBUG
     const int era_waited_for_improvement = ERAS_NO_UPGRADE;
     while(ERAS_NO_UPGRADE){
-        cout << "Starting Era n_" << e << " - - - - - ";
-        cout << "Current Champ: " << bestOfGalapagos.getFitnessValue() << endl;
+        cout << "Starting Era n_" << e << " - - - - - ";// -->DEBUG
+        cout << "Current Champ: " << bestOfGalapagos.getFitnessValue() << endl;// -->DEBUG
 
         for(int i = 0; i<NUM_ISLANDS; i++) {
-            //cout << "Starting Isola n_" << i << endl;
+            cout << "Starting Isola n_" << i << endl;
             Eras(Population.at(i), G);
         }
-        cout << "Migration phase now !! " << endl;
+        cout << "Migration phase now !! " << endl;// -->DEBUG
 
         Migration_randomOnes();
-        e++;
+        e++;// -->DEBUG
         if(check_early_end(bestOfGalapagos)){
             ERAS_NO_UPGRADE --;
         }else{
@@ -119,7 +118,6 @@ Individual GeneticAlgorithm::Galapagos( const Graph& G){
         }
     }
 
-    return BestOfGalapagos();
 }
 
 
@@ -140,14 +138,14 @@ void GeneticAlgorithm::Eras_parallel(int island_id, vector<Individual>& populati
 
                     offspring = random_parent_selection(population);
                     offspring.mutation();
-                    offspring.setFitnessValue(G);
+                    offspring.setFitnessValue(G, balanced);
 
                 } else {
 
                     parent1 = parent_selection_tournament(rand() % (population.size() / 5 - 1) + 1, population);
                     parent2 = parent_selection_tournament(rand() % (population.size() / 5 - 1) + 1, population);
                     offspring = uniform_random_crossover(parent1, parent2);
-                    offspring.setFitnessValue(G);
+                    offspring.setFitnessValue(G, balanced);
 
                 }
 
@@ -176,7 +174,7 @@ void GeneticAlgorithm::Eras_parallel(int island_id, vector<Individual>& populati
     }
 }
 
-Individual GeneticAlgorithm::Galapagos_parallel_fixed(const Graph& G){
+void GeneticAlgorithm::Galapagos_parallel(const Graph& G){
 
     vector<thread> Islands;
 
@@ -190,11 +188,12 @@ Individual GeneticAlgorithm::Galapagos_parallel_fixed(const Graph& G){
     }
 
     for(int e = 1; e<NUM_ERAS; e++){
-        cout << "Starting Era n_" << e << endl;
+        cout << "Starting Era n_" << e << endl; // -->DEBUG
+
 
         barrier_1_cpp.arrive_and_wait();
 
-        cout << "Migration phase now !! " << endl;
+        cout << "Migration phase now !! " << endl;// -->DEBUG
         Migration_bestOnes();
 
         barrier_2_cpp.arrive_and_wait();
@@ -205,33 +204,30 @@ Individual GeneticAlgorithm::Galapagos_parallel_fixed(const Graph& G){
         t.join();
     }
 
-    return BestOfGalapagos();
 }
 
-Individual GeneticAlgorithm::Galapagos_parallel(const Graph& G){
+void GeneticAlgorithm::Galapagos_parallel_LR(const Graph& G){
 
     vector<thread> Islands;
     barrier<> barrier_1_cpp(NUM_ISLANDS + 1);
     barrier<> barrier_2_cpp(NUM_ISLANDS + 1);
 
     Individual bestOfGalapagos = BestOfGalapagos();
-    float lerning_rate = 0.03;
-    int e = 1;
+    int e = 1;// -->DEBUG
     int era_waited_for_improvement = ERAS_NO_UPGRADE;
-
 
     for(int i = 0; i<NUM_ISLANDS; i++) {
         Islands.emplace_back( [=, &G, &barrier_1_cpp, &barrier_2_cpp] {Eras_parallel(i, Population.at(i), G, barrier_1_cpp, barrier_2_cpp);});
 
     }
     while(era_waited_for_improvement){
-        cout << "Starting Era n_" << e << " - - - - - ";
-        cout << "Current Champ: " << bestOfGalapagos.getFitnessValue() << endl;
+        cout << "Starting Era n_" << e << " - - - - - ";// -->DEBUG
+        cout << "Current Champ: " << bestOfGalapagos.getFitnessValue() << endl;// -->DEBUG
 
         barrier_1_cpp.arrive_and_wait();
 
-        cout << "Migration phase now !! " << endl;
-        e++;
+        cout << "Migration phase now !! " << endl;// -->DEBUG
+        e++;// -->DEBUG
 
         Migration_bestOnes();
 
@@ -250,7 +246,6 @@ Individual GeneticAlgorithm::Galapagos_parallel(const Graph& G){
         t.join();
     }
 
-    return BestOfGalapagos();
 }
 
 
@@ -417,7 +412,7 @@ Individual GeneticAlgorithm::random_parent_selection(const vector<Individual>& p
 /** Migration function */
 
 void GeneticAlgorithm::Migration_bestOnes(){
-    vector<Individual> bestOf;
+    vector<Individual> vett_bestOf;
     srand(std::time(nullptr));
     Individual I;
     int index = 0;
@@ -425,7 +420,7 @@ void GeneticAlgorithm::Migration_bestOnes(){
     for(auto & i : Population){
         for(int j = 0; j<NUM_MIGRANTS; j++){
 
-            bestOf.emplace_back(i.second.front());
+            vett_bestOf.emplace_back(i.second.front());
             i.second.erase(i.second.begin());
 
         }
@@ -434,16 +429,16 @@ void GeneticAlgorithm::Migration_bestOnes(){
     for(auto & i : Population){
         for(int j = 0; j<NUM_MIGRANTS; j++){
 
-            (bestOf.size()-1) ? index = rand() % (bestOf.size() - 1) : index = 0;
-            i.second.emplace_back(bestOf[index]);
-            bestOf.erase(bestOf.begin() + index);
+            (vett_bestOf.size()-1) ? index = rand() % (vett_bestOf.size() - 1) : index = 0;
+            i.second.emplace_back(vett_bestOf[index]);
+            vett_bestOf.erase(vett_bestOf.begin() + index);
 
         }
     }
 }
 
 void GeneticAlgorithm::Migration_randomOnes(){
-    vector<Individual> bestOf;
+    vector<Individual> vett_randOnes;
     srand(std::time(nullptr));
     Individual I;
     int index = 0;
@@ -453,7 +448,7 @@ void GeneticAlgorithm::Migration_randomOnes(){
         for(int j = 0; j<NUM_MIGRANTS; j++){
 
             index = rand() % (i.second.size() - 1);
-            bestOf.emplace_back(i.second[index]);
+            vett_randOnes.emplace_back(i.second[index]);
             i.second.erase(i.second.begin()+index);
 
         }
@@ -462,9 +457,9 @@ void GeneticAlgorithm::Migration_randomOnes(){
     for(auto & i : Population){
         for(int j = 0; j<NUM_MIGRANTS; j++){
 
-            (bestOf.size()-1) ? index = rand() % (bestOf.size() - 1) : index = 0;
-            i.second.emplace_back(bestOf[index]);
-            bestOf.erase(bestOf.begin() + index);
+            (vett_randOnes.size()-1) ? index = rand() % (vett_randOnes.size() - 1) : index = 0;
+            i.second.emplace_back(vett_randOnes[index]);
+            vett_randOnes.erase(vett_randOnes.begin() + index);
 
         }
     }
@@ -508,82 +503,4 @@ vector<Individual> GeneticAlgorithm::IslandsBests(){
     }
 
     return v;
-}
-
-void GeneticAlgorithm::set__param(int num_param, char* params[]) {
-
-    const char *const short_opts = "kabc:d:e:f:g:h:i:j:";    //""abc:d:e:f:g:h:i:j:
-    const option long_opts[] = {
-            {"bal",        required_argument, nullptr, 'k'},
-            {"mod",        required_argument, nullptr, 'a'},
-            {"parallel",   required_argument, nullptr, 'b'},
-            {"part",       required_argument, nullptr, 'c'},
-            {"population", required_argument, nullptr, 'd'},
-            {"gen",        required_argument, nullptr, 'e'},
-            {"era",        required_argument, nullptr, 'f'},
-            {"new",        required_argument, nullptr, 'g'},
-            {"isl",        required_argument, nullptr, 'h'},
-            {"mig",        required_argument, nullptr, 'i'},
-            {"lr",         required_argument, nullptr, 'j'},
-            {nullptr,      0,                 nullptr, 0}
-    };
-
-    int opt;
-    while ((opt = getopt_long(num_param, params, short_opts, long_opts, nullptr)) != -1) {
-        switch (opt) {
-            case 'a':
-                std::cout << "Opzione -mod settata " << optarg << std::endl;
-                dynamic = true;
-                break;
-            case 'b':
-                std::cout << "Opzione -parallel settata " << optarg << std::endl;
-                parallel = true;
-                break;
-            case 'c':
-                std::cout << "Opzione -part con argomento: " << optarg << std::endl;
-                NUM_PARTITIONS = stoi(params[5]);
-                break;
-            case 'd':
-                std::cout << "Opzione -population con argomento: " << optarg << std::endl;
-                POPULATION_SIZE = stoi(params[6]);
-                break;
-            case 'e':
-                std::cout << "Opzione -gen con argomento: " << optarg << std::endl;
-                NUM_GENERATIONS = stoi(params[7]);
-                break;
-            case 'f':
-                std::cout << "Opzione -era con argomento: " << optarg << std::endl;
-                if (dynamic) {
-                    ERAS_NO_UPGRADE = stoi(params[8]);
-                } else {
-                    NUM_ERAS = stoi(params[8]);
-                }
-                break;
-            case 'g':
-                std::cout << "Opzione -new con argomento: " << optarg << std::endl;
-                NUM_OFFSPRING = stoi(params[9]);
-                break;
-            case 'h':
-                std::cout << "Opzione -isl con argomento: " << optarg << std::endl;
-                NUM_ISLANDS = stoi(params[10]);
-                break;
-            case 'i':
-                std::cout << "Opzione -mig con argomento: " << optarg << std::endl;
-                NUM_MIGRANTS = stoi(params[11]);
-                break;
-            case 'j':
-                std::cout << "Opzione -lr con argomento: " << optarg << std::endl;
-                if (dynamic) {
-                    LEARNING_RATE = stof(params[12])/100;
-                }
-                break;
-            case 'k':
-                std::cout << "Opzione -bal settata " << optarg << std::endl;
-                balanced = true;
-                break;
-            default:
-                std::cerr << "Opzione non valida." << std::endl;
-        }
-
-    }
 }

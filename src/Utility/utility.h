@@ -39,7 +39,7 @@ float avgCutSize(const vector<vector<int>>& cutSizes);
 float avgBalanceFactor(const vector<int>& balanceFactors);
 
 
-bool read_input(const std::string& filename, Graph& G, int type_reading, int num_t);
+bool read_input(const std::string& filename, Graph& G, int& type_reading, int& num_t);
 void saveInfoToFile(const UsageInfo& usageInfo);
 
 

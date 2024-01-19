@@ -1,49 +1,48 @@
-# SDP_Graph-Partitioning
-**Graph Partitioning** project for *System And Device Programming* @ PoliTO
+# Genetic Algorithm applied to Graph Partitioning
+Developed a GA for **Graph Partitioning**. 
+
+Project for *System And Device Programming* course @ PoliTO
 
 ## About The Project --> To be modified.
+
 In computer science, it is common to work with large graphs that need to be divided into non-overlapping sections, known as partitions. This process is called p-way partitioning. Our aim is to minimize the sum of the weights of edges that cross between partitions and balance the sum of weights of nodes in each partition.
 
 ## Getting Started
 
 The commands to run the entire project are in `Makefile` file.
 
-### Installation
+### _How to compile ?_
+These are fundamental commands to compile our program:
 
-There are three fundamental commands to use properly our program:
-
-1. Delete previous object files
+1. Delete previous object files and eventual data folder
 ```sh
 make clean
+make clean_data
 ```
-[*OPTIONAL*] Delete data folder
-
-    make clean_data
-
 2. Compile code and extract data
 
 ```sh
 make
 ```
 
-3. [*OPTIONAL*] Create graph file
+###_How to run ?_
+These are fundamental commands to run our program:
 
+1. `*OPTIONAL*` It creates a new graph to be partitioned
 ```sh
 ./graph_generator #nodes #edges
 ```
 
-This command will create a folder at path *data/* with name *graph_#nodes_#edges/*. 
-Inside of this folder, you'll find 3 files:
-
-- 2 versions (text and binary) in standard format, which is the one used in our algorithm;
-- 1 text version compatible with *METIS* program, in order to compute some reference values. 
-
-The weights of nodes and edges are set as random numbers between 1 and 10.
-
-4. Run program (details below)
+2.Run program to obtain a reference value using metis application
 
 ```sh
-./graph_partitioner data/graph_#nodes_#edges
+./graph_partitioner data/graph_#nodes_#edges --compare "name_file_Metis_result"
+```
+
+3. Run program (details below[^1]) with a set of command line arguments, using
+
+```sh
+./graph_partitioner data/graph_#nodes_#edges --binary [valore] --bal --mod --parallel --part [valore] --population [valore] --gen [valore] --era [valore] --new [valore] --isl [valore] --mig [valore] --lr [valore] 
 ```
 
 #### Benchmark Input directory
@@ -74,30 +73,32 @@ The weights of nodes and edges are set as random numbers between 1 and 10.
 
 ## Usage
 
-In order to use our program correctly it's important to understand what to pass to run it. The only 
+[^1]:In order to use our program correctly it's important to understand what to pass to run it. The only 
 **mandatory** argument is the : _Input graph folder name_
 
 All the following argument can be used by the user to change the default setting ( they're **Optional** ).
 
 | Argument | Usage |
 | ----------- | ------ |
-| -bal | if activated defines to make a balanced partition.  |
-| -mod | if activated defines that the algorithm stops if there has been no significant improvement for some era.  |
-| -parallel | if enabled defines parallel computation.  |
-| -part | if enabled defines how many partitions to partition the graph into.  |
-| -population | if activated, needs a value defining the population size.  |
-| -gen | if activated, needs a value defining the number of generations.  |
-| -era | `-mod NOT Active` if activated, needs a value to defines the number of eras.  |
-| -era | `-mod Active` if activated, needs a value defining the number of consecutive eras to wait without improvement.  |
-| -new | if activated, needs a value defining the number of offsprings.  |
-| -isl | if activated, needs a value defining the number of islands.  |
-| -mig | if activated, needs a value defining the number of migrants.  |
-| -lr | `-mod Active` if activated, needs a value defining the learning rate.  |
+| --metis | if activated use the file name passed to compute the partition using Metis. |
+| --binary | if activated defines how many threads used to read the file in input. |
+| --bal | if activated defines to make a balanced partition.  |
+| --mod | if activated defines that the algorithm stops if there has been no significant improvement for some era.  |
+| --parallel | if enabled defines parallel computation.  |
+| --part | if enabled defines how many partitions to partition the graph into.  |
+| --population | if activated, needs a value defining the population size.  |
+| --gen | if activated, needs a value defining the number of generations.  |
+| --era | `-mod NOT Active` if activated, needs a value to defines the number of eras.  |
+| --era | `-mod Active` if activated, needs a value defining the number of consecutive eras to wait without improvement.  |
+| --new | if activated, needs a value defining the number of offsprings.  |
+| --isl | if activated, needs a value defining the number of islands.  |
+| --mig | if activated, needs a value defining the number of migrants.  |
+| --lr | `-mod Active` if activated, needs a value defining the learning rate.  |
 
 ```sh
- ./graph_partitioner  ./data/graph_1000000_2500000 -bal -parallel -era 50 -isl 10 # Parallel execution to compute balanced partition, using 50 era and 10 island (other parameters stay  default)
+ ./graph_partitioner  graph_1000000_2500000 --bal --parallel --era 50 --isl 10 # Parallel execution to compute balanced partition, using 50 era and 10 island (other parameters stay  default)
 
-./graph_partitioner  ./data/graph_1000000_2500000 -mod -era 7 -new 15 -lr 20 # Sequential execution (default), generating 15 new offspring, that stop if there's not at least one improvement of 20% for 7 consecutive eras
+./graph_partitioner  graph_1000000_2500000 --mod --era 7 --new 15 --lr 20 # Sequential execution (default), generating 15 new offspring, that stop if there's not at least one improvement of 20% for 7 consecutive eras
 
 ./graph_partitioner  ./data/graph_1000000_2500000 # All parameters are kept by default (Sequential computation, not balanced partitions) 
 
@@ -139,6 +140,13 @@ It contains a ***Individual*** class and related functions to encode it:
 
 
 ## Files' Content   --> ???
+
+#### GA.cpp
+#### Individual.cpp
+#### utility.cpp
+#### Graph.cpp
+
+
 
 #### MLRSB.cpp
 

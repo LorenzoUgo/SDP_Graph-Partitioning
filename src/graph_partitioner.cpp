@@ -46,7 +46,7 @@ void compute_metis(string filename) {
     return;
 };
 
-void set__param(int num_param, char* params[], GeneticAlgorithm& GA, int& type_reading, int& num_thread, string& metisFile, bool& compare_metis) {
+void set_param(int num_param, char* params[], GeneticAlgorithm& GA, int& type_reading, int& num_thread, string metisFile, bool& compare_metis) {
 
     const char *const short_opts = "m:l:kabc:d:e:f:g:h:i:j:";    //""abc:d:e:f:g:h:i:j:
     const option long_opts[] = {
@@ -120,7 +120,7 @@ void set__param(int num_param, char* params[], GeneticAlgorithm& GA, int& type_r
                 GA.setBalanced(true);
                 break;
             case 'l':
-                cout << "Opzione -binary settata " << optarg << endl;
+                cout << "Opzione -binary settata: " << optarg << endl;
                 num_thread = stoi(optarg);
                 if(num_thread > 1)
                     type_reading = 2;
@@ -159,7 +159,7 @@ int main(int argc, char** argv) {
 
     /** SETTING ALGORITHM PARAMETERS  */
     cout << "--> Setting graph parameters ..." << endl;
-    set__param(argc, argv, GA, type_reading, num_threads, metisFile, compare_metis);
+    set_param(argc, argv, GA, type_reading, num_threads, metisFile, compare_metis);
     if(compare_metis){
         compute_metis(metisFile);
         return 0;

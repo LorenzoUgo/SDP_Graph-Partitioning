@@ -33,10 +33,11 @@ private:
     float LEARNING_RATE;
     bool parallel;
     bool dynamic;
-    bool balanced;
+    bool balanced{};
     //... even more parameters
     map<int, vector<Individual>> Population;
     Individual bestOf;
+
 public:
 
     /**     SETTERS     */
@@ -77,11 +78,13 @@ public:
 
     /**     Constructor with default parameters     */
 
-    GeneticAlgorithm(int numPartitions=2, int populationSize=100, int numGenerations=100, int numOffspring=30, int numIslands=8,
-                     int numEras=50, int numMigrants=10, int erasNoUpgrade=5, float learningRate=0.0, bool parallel=false, bool Dynamic=false)
-            : NUM_PARTITIONS(numPartitions), POPULATION_SIZE(populationSize), NUM_GENERATIONS(numGenerations),
-              NUM_OFFSPRING(numOffspring), NUM_ISLANDS(numIslands), NUM_ERAS(numEras), NUM_MIGRANTS(numMigrants),
-              ERAS_NO_UPGRADE(erasNoUpgrade), LEARNING_RATE(learningRate), parallel(parallel), dynamic(Dynamic) {}
+    explicit GeneticAlgorithm(int numPartitions=2, int populationSize=90, int numGenerations=250, int numOffspring=45, int numIslands=20,
+                     int numEras=100, int numMigrants=30, int erasNoUpgrade=5, float learningRate=0.03, bool parallel=false, bool Dynamic=false,
+                     bool balanced=false) : NUM_PARTITIONS(numPartitions), POPULATION_SIZE(populationSize),
+                                      NUM_GENERATIONS(numGenerations), NUM_OFFSPRING(numOffspring),
+                                      NUM_ISLANDS(numIslands), NUM_ERAS(numEras), NUM_MIGRANTS(numMigrants),
+                                      ERAS_NO_UPGRADE(erasNoUpgrade), LEARNING_RATE(learningRate), parallel(parallel),
+                                      dynamic(Dynamic), balanced(balanced) {}
 
 
     /**     Reset GA to the origin     */
@@ -95,18 +98,17 @@ public:
     bool check_early_end(const Individual& champ);
     Individual BestOfGalapagos();
     vector<Individual> IslandsBests();
-    void set__param(int num_param, char* params[]);
 
 
     /** Sequential implementation */
     void Eras(vector<Individual>& population, const Graph& G);
-    Individual Galapagos_fixed( const Graph& G );
-    Individual Galapagos( const Graph& G );
+    void Galapagos( const Graph& G );
+    void Galapagos_LR( const Graph& G );
 
 
     /** Parallel implementation */
-    Individual Galapagos_parallel_fixed(  const Graph& G );
-    Individual Galapagos_parallel( const Graph& G );
+    void Galapagos_parallel(  const Graph& G );
+    void Galapagos_parallel_LR( const Graph& G );
     void Eras_parallel(int island_id, vector<Individual>& population, const Graph& G, barrier<>& b1, barrier<>& b2);
 
 

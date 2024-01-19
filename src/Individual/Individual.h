@@ -27,7 +27,7 @@ public:
     Individual(vector<int> genotype = {}, int num_alleles = -1, float fitness = -1) : genotype(move(genotype)), num_alleles(num_alleles),fitness_value(fitness){}
 
     // constructor used for building population, randomizes genotype with given size and given max value for each gene
-    Individual(int n_alleles, int genotypeSize, const Graph& G) : num_alleles(n_alleles) {
+    Individual(int n_alleles, int genotypeSize, const Graph& G, const bool& balance) : num_alleles(n_alleles) {
         genotype = {};
         std::default_random_engine generator(std::chrono::system_clock::now().time_since_epoch().count());
         std::uniform_int_distribution<int> gene_value(0,num_alleles-1);
@@ -36,14 +36,14 @@ public:
         for (int i=0; i<genotypeSize; i++)
             genotype.emplace_back(value());
 
-        fitness_value = fitness(G);
+        fitness_value = fitness(G, balance);
     }
 
     // NOTA perchè usare setgenotype in crossover se esiste il constructor?
     void setGenotype(vector<int> &gtype) { genotype = gtype; }
-    void setFitnessValue(const Graph& G) {
+    void setFitnessValue(const Graph& G, const bool& balance) {
         // NOTA avrebbe senso che fosse la fitness a chiamare dopo aver calcolato il valore. Fitness prende l'individuo e il grafo, fa i calcoli e poi setta il valore
-        fitness_value = fitness(G);
+        fitness_value = fitness(G, balance);
     }
 
     const vector<int> &getGenotype() const { return genotype; }
@@ -53,7 +53,7 @@ public:
     int getGenotypeSize() const { return genotype.size(); }
     void mutation();
 
-    float fitness(const Graph& G, float cut_size_weight=0.5 , float balance_index_weight=0.5);
+    float fitness(const Graph& G, const bool& balance, float cut_size_weight=0.5 , float balance_index_weight=0.5);
 
     void printIndividual();
 
