@@ -41,8 +41,8 @@ void compute_metis(string filename) {
         result.emplace_back(n);     
     }
     Individual I(result, ints[2],-1);
-    I.setFitnessValue(G);
-    cout << "Fitness value is " << I.getFitnessValue() << endl;
+    I.setFitness(G, true);
+    cout << "Fitness value is " << I.getFitness() << endl;
     return;
 };
 

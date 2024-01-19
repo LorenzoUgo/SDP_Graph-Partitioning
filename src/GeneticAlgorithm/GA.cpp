@@ -51,14 +51,14 @@ void GeneticAlgorithm::Eras(vector<Individual>& population, const Graph& G) {
 
                 offspring = random_parent_selection(population);
                 offspring.mutation();
-                offspring.setFitnessValue(G, balanced);
+                offspring.setFitness(G, balanced);
 
             } else {
                 //DAI UN OCCHIO !!!!!
                 parent1 = parent_selection_tournament(rand() % (population.size() / 5 - 1) + 1, population);
                 parent2 = parent_selection_tournament(rand() % (population.size() / 5 - 1) + 1, population);
                 offspring = uniform_random_crossover(parent1, parent2);
-                offspring.setFitnessValue(G, balanced);
+                offspring.setFitness(G, balanced);
 
             }
 
@@ -66,7 +66,7 @@ void GeneticAlgorithm::Eras(vector<Individual>& population, const Graph& G) {
 
         }
 
-        sort(population.begin(), population.end(), [](const Individual& a, const Individual& b){return a.getFitnessValue() < b.getFitnessValue();});
+        sort(population.begin(), population.end(), [](const Individual& a, const Individual& b){return a.getFitness() < b.getFitness();});
 
         for (int i = 0; i < NUM_OFFSPRING; i++) {
             auto it = population.begin() + POPULATION_SIZE;
@@ -100,7 +100,7 @@ void GeneticAlgorithm::Galapagos_LR( const Graph& G){
     const int era_waited_for_improvement = ERAS_NO_UPGRADE;
     while(ERAS_NO_UPGRADE){
         cout << "Starting Era n_" << e << " - - - - - ";// -->DEBUG
-        cout << "Current Champ: " << bestOfGalapagos.getFitnessValue() << endl;// -->DEBUG
+        cout << "Current Champ: " << bestOfGalapagos.getFitness() << endl;// -->DEBUG
 
         for(int i = 0; i<NUM_ISLANDS; i++) {
             cout << "Starting Isola n_" << i << endl;
@@ -138,14 +138,14 @@ void GeneticAlgorithm::Eras_parallel(int island_id, vector<Individual>& populati
 
                     offspring = random_parent_selection(population);
                     offspring.mutation();
-                    offspring.setFitnessValue(G, balanced);
+                    offspring.setFitness(G, balanced);
 
                 } else {
 
                     parent1 = parent_selection_tournament(rand() % (population.size() / 5 - 1) + 1, population);
                     parent2 = parent_selection_tournament(rand() % (population.size() / 5 - 1) + 1, population);
                     offspring = uniform_random_crossover(parent1, parent2);
-                    offspring.setFitnessValue(G, balanced);
+                    offspring.setFitness(G, balanced);
 
                 }
 
@@ -153,7 +153,7 @@ void GeneticAlgorithm::Eras_parallel(int island_id, vector<Individual>& populati
 
             }
 
-            sort(population.begin(), population.end(), [](const Individual& a, const Individual& b){return a.getFitnessValue() < b.getFitnessValue();});
+            sort(population.begin(), population.end(), [](const Individual& a, const Individual& b){return a.getFitness() < b.getFitness();});
 
             for (int i = 0; i < NUM_OFFSPRING; i++) {
                 auto it = population.begin() + POPULATION_SIZE;
@@ -222,7 +222,7 @@ void GeneticAlgorithm::Galapagos_parallel_LR(const Graph& G){
     }
     while(era_waited_for_improvement){
         cout << "Starting Era n_" << e << " - - - - - ";// -->DEBUG
-        cout << "Current Champ: " << bestOfGalapagos.getFitnessValue() << endl;// -->DEBUG
+        cout << "Current Champ: " << bestOfGalapagos.getFitness() << endl;// -->DEBUG
 
         barrier_1_cpp.arrive_and_wait();
 
@@ -398,7 +398,7 @@ Individual GeneticAlgorithm::parent_selection_tournament(int num_partecipants, c
         }
     }
 
-    sort(partecipants.begin(), partecipants.end(), [](const Individual& a, const Individual& b){return a.getFitnessValue() < b.getFitnessValue();});
+    sort(partecipants.begin(), partecipants.end(), [](const Individual& a, const Individual& b){return a.getFitness() < b.getFitness();});
     return partecipants[0];
 }
 
@@ -472,7 +472,7 @@ bool GeneticAlgorithm::check_early_end(const Individual& champ){
     bool no_upgrade = true;
 
     for(auto & population : Population){
-        float percentage_gap = (champ.getFitnessValue() - population.second.front().getFitnessValue())  / champ.getFitnessValue();
+        float percentage_gap = (champ.getFitness() - population.second.front().getFitness())  / champ.getFitness();
         if ( percentage_gap > LEARNING_RATE ){
             no_upgrade = false;
             break;
@@ -490,7 +490,7 @@ bool GeneticAlgorithm::check_early_end(const Individual& champ){
 Individual GeneticAlgorithm::BestOfGalapagos(){
     vector<Individual> v = IslandsBests();
 
-    sort(v.begin(), v.end(), [](const Individual& a, const Individual& b){return a.getFitnessValue() < b.getFitnessValue();});
+    sort(v.begin(), v.end(), [](const Individual& a, const Individual& b){return a.getFitness() < b.getFitness();});
 
     return v[0];
 }

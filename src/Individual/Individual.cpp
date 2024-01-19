@@ -40,9 +40,9 @@ float balance_index(int num_partitions, const vector<int>& genotype, const Graph
 }
 
 // calcola il fitness value come combinazione lineare di dimensione taglio e bilanciamento peso partizioni
-float Individual::fitness(const Graph& G, const bool& balance, float cut_size_weight , float balance_index_weight){
+void Individual::setFitness(const Graph& G, const bool& balance, float cut_size_weight , float balance_index_weight){
 
-    return (
+    fitness_value= (
             balance ?
                 (cut_size_weight*cut_size(genotype, G)) + (balance_index_weight*balance_index(num_alleles, genotype, G))
             :

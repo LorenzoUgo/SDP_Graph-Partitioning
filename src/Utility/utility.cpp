@@ -59,12 +59,6 @@ string time_conversion(int delta_t){
     return string_to_print;
 }
 
-void metis_comparison(const string& file_metis, const Graph& G){
-    // apertura file metis, lettura risultato
-    Individual metisI({2,1,2,0,2,0,0,1,2,0,0,2,1,1,0,2,1,2,1,1});
-    cout << metisI.fitness(G);
-}
-
 /** - - - - - - - - - - - - - - - - - */
 
 

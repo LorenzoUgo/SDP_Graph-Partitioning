@@ -36,24 +36,19 @@ public:
         for (int i=0; i<genotypeSize; i++)
             genotype.emplace_back(value());
 
-        fitness_value = fitness(G, balance);
+        setFitness(G, balance);
     }
 
     // NOTA perchè usare setgenotype in crossover se esiste il constructor?
     void setGenotype(vector<int> &gtype) { genotype = gtype; }
-    void setFitnessValue(const Graph& G, const bool& balance) {
-        // NOTA avrebbe senso che fosse la fitness a chiamare dopo aver calcolato il valore. Fitness prende l'individuo e il grafo, fa i calcoli e poi setta il valore
-        fitness_value = fitness(G, balance);
-    }
+    void setFitness(const Graph& G, const bool& balance, float cut_size_weight=0.5 , float balance_index_weight=0.5);
 
     const vector<int> &getGenotype() const { return genotype; }
-    float getFitnessValue() const { return fitness_value; }
+    float getFitness() const { return fitness_value; }
     int getNumAlleles() { return num_alleles; }
 
     int getGenotypeSize() const { return genotype.size(); }
     void mutation();
-
-    float fitness(const Graph& G, const bool& balance, float cut_size_weight=0.5 , float balance_index_weight=0.5);
 
     void printIndividual();
 
