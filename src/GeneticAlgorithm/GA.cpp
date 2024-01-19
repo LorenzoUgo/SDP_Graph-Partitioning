@@ -479,11 +479,7 @@ bool GeneticAlgorithm::check_early_end(const Individual& champ){
         }
     }
 
-    if(no_upgrade){
-        return true;
-    }else{
-        return false;
-    }
+    return no_upgrade;
 
 }
 
