@@ -13,35 +13,37 @@ The commands to run the entire project are in `Makefile` file.
 There are three fundamental commands to use properly our program:
 
 1. Delete previous object files
+```sh
+make clean
+```
+[*OPTIONAL*] Delete data folder
+
+    make clean_data
+
+2. Compile code and extract data
 
 ```sh
-
+make
 ```
 
-2. Compile code (using g++ compiler)
+3. [*OPTIONAL*] Create graph file
 
 ```sh
-
+./graph_generator #nodes #edges
 ```
 
-3. Create graph file
+This command will create a folder at path *data/* with name *graph_#nodes_#edges/*. 
+Inside of this folder, you'll find 3 files:
 
-```sh
-./graph_generator nodes_number edges_number
-```
-
-In the data folder, this command will create a folder with the name graph_nodes_number_edges_number. 
-Inside of this last folder, you'll find 3 file:
-
-- 2 version of standard (text and binary) used for our algorithm;
-- 1 text file compatible with Metis program, in order to compute a reference value. 
+- 2 versions (text and binary) in standard format, which is the one used in our algorithm;
+- 1 text version compatible with *METIS* program, in order to compute some reference values. 
 
 The weights of nodes and edges are set as random numbers between 1 and 10.
 
-4. Launch program
+4. Run program (details below)
 
 ```sh
-
+./graph_partitioner data/graph_#nodes_#edges
 ```
 
 #### Benchmark Input directory
@@ -93,11 +95,11 @@ All the following argument can be used by the user to change the default setting
 | -lr | `-mod Active` if activated, needs a value defining the learning rate.  |
 
 ```sh
- ./graph_partitioner  graph_1000000_2500000 -bal -parallel -era 50 -isl 10 # Parallel execution to compute balanced partition, using 50 era and 10 island (other parameters stay  default)
+ ./graph_partitioner  ./data/graph_1000000_2500000 -bal -parallel -era 50 -isl 10 # Parallel execution to compute balanced partition, using 50 era and 10 island (other parameters stay  default)
 
-./graph_partitioner  graph_1000000_2500000 -mod -era 7 -new 15 -lr 20 # Sequential execution (default), generating 15 new offspring, that stop if there's not at least one improvement of 20% for 7 consecutive eras
+./graph_partitioner  ./data/graph_1000000_2500000 -mod -era 7 -new 15 -lr 20 # Sequential execution (default), generating 15 new offspring, that stop if there's not at least one improvement of 20% for 7 consecutive eras
 
-./graph_partitioner  graph_1000000_2500000 # All parameters are kept by default (Sequential computation, not balanced partitions) 
+./graph_partitioner  ./data/graph_1000000_2500000 # All parameters are kept by default (Sequential computation, not balanced partitions) 
 
 ./graph_generator 100000 250000 # Create a graph file with 100000 nodes and 250000 edges
 ```

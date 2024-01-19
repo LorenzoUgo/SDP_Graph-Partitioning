@@ -97,17 +97,17 @@ int main(int argc, char** argv) {
 
 
     vector<stringstream> metis_nodes(num_nodes);
-    int i=0;
+    //int i=0;
     for (auto node : nodes) {
         outfile << node.first << " " << node.second << endl;
         outfile_bin.write((char*)(&node.first), sizeof(int));
         outfile_bin.write((char*)(&node.second), sizeof(int));
         metis_nodes.at(node.first) << node.second;
-        cout <<"Node n." << i << " written" << endl;
-        i++;
+        //cout <<"Node n." << i << " written" << endl;
+        //i++;
     }
     // NOTE in metis format nodes go from 1 to num_nodes, instead of 0 to num_nodes-1
-    i=0;
+    //i=0;
     for (auto edge: edges) {
         int u = edge.first.first, v = edge.first.second, w = edge.second;
         outfile << u << " " << v << " " << w << endl;
@@ -116,8 +116,8 @@ int main(int argc, char** argv) {
         outfile_bin.write((char*)(&w), sizeof(int));
         metis_nodes.at(u) << " " << (v+1) << " " << w;
         metis_nodes.at(v) << " " << (u+1) << " " << w;
-        i++;
-        cout <<"Edge n." << i << " written" << endl;
+        //i++;
+        //cout <<"Edge n." << i << " written" << endl;
     }
     for (int i=0;i<num_nodes;i++)
         outfile_metis << metis_nodes.at(i).str() << endl;

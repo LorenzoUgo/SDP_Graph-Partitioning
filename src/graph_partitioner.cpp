@@ -13,6 +13,12 @@
 
 using namespace std;
 
+void compute_metis(string filename) {
+    /*  NOTE: utility function handled by compute_metis.sh script
+     *  output on command line is handled there 
+    */
+};
+
 void set__param(int num_param, char* params[], GeneticAlgorithm& GA, int& type_reading, int& num_thread) {
 
     const char *const short_opts = "l:kabc:d:e:f:g:h:i:j:";    //""abc:d:e:f:g:h:i:j:
