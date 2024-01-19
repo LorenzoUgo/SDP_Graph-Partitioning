@@ -33,7 +33,7 @@ private:
     float LEARNING_RATE;
     bool parallel;
     bool dynamic;
-    bool balanced{};
+    bool balanced;
     //... even more parameters
     map<int, vector<Individual>> Population;
     Individual bestOf;
@@ -54,7 +54,7 @@ public:
 
     void setErasNoUpgrade(int erasNoUpgrade) {ERAS_NO_UPGRADE = erasNoUpgrade;}
     void setLearningRate(float learningRate) {LEARNING_RATE = learningRate;}
-    void setBalanced(bool balanced) {balanced = balanced;}
+    void setBalanced(bool Balanced) {balanced = Balanced;}
 
     /**     GETTERS     */
 
@@ -79,12 +79,12 @@ public:
     /**     Constructor with default parameters     */
 
     explicit GeneticAlgorithm(int numPartitions=2, int populationSize=90, int numGenerations=250, int numOffspring=45, int numIslands=20,
-                     int numEras=100, int numMigrants=30, int erasNoUpgrade=5, float learningRate=0.03, bool parallel=false, bool Dynamic=false,
-                     bool balanced=false) : NUM_PARTITIONS(numPartitions), POPULATION_SIZE(populationSize),
+                     int numEras=100, int numMigrants=30, int erasNoUpgrade=5, float learningRate=0.03, bool Parallel=false, bool Dynamic=false,
+                     bool Balanced=false) : NUM_PARTITIONS(numPartitions), POPULATION_SIZE(populationSize),
                                       NUM_GENERATIONS(numGenerations), NUM_OFFSPRING(numOffspring),
                                       NUM_ISLANDS(numIslands), NUM_ERAS(numEras), NUM_MIGRANTS(numMigrants),
-                                      ERAS_NO_UPGRADE(erasNoUpgrade), LEARNING_RATE(learningRate), parallel(parallel),
-                                      dynamic(Dynamic), balanced(balanced) {}
+                                      ERAS_NO_UPGRADE(erasNoUpgrade), LEARNING_RATE(learningRate), parallel(Parallel),
+                                      dynamic(Dynamic), balanced(Balanced) {}
 
 
     /**     Reset GA to the origin     */
@@ -98,6 +98,7 @@ public:
     bool check_early_end(const Individual& champ);
     Individual BestOfGalapagos();
     vector<Individual> IslandsBests();
+    void printGASettings();
 
 
     /** Sequential implementation */

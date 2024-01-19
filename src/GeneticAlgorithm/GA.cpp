@@ -6,7 +6,6 @@
 
 mutex printMutex;
 
-
 /** Start Algorithm */
 
 void GeneticAlgorithm::run(const Graph& G){
@@ -499,4 +498,19 @@ vector<Individual> GeneticAlgorithm::IslandsBests(){
     }
 
     return v;
+}
+
+void GeneticAlgorithm::printGASettings(){
+    cout << "BALANCED: " << balanced << endl;
+    cout << "PARALLEL: " << parallel << endl;
+    cout << "DYNAMIC: " << dynamic << endl;
+    cout << "NUM_PARTITIONS: " << NUM_PARTITIONS << endl;
+    cout << "POPULATION_SIZE: " << POPULATION_SIZE << endl;
+    cout << "NUM_GENERATIONS: " << NUM_GENERATIONS << endl;
+    cout << "NUM_OFFSPRING: " << NUM_OFFSPRING << endl;
+    cout << "NUM_ISLANDS: " << NUM_ISLANDS << endl;
+    cout << "NUM_ERAS: " << NUM_ERAS << endl;
+    cout << "NUM_MIGRANTS: " << NUM_MIGRANTS << endl;
+    cout << "ERAS_NO_UPGRADE: " << ERAS_NO_UPGRADE << endl;
+    cout << "LEARNING_RATE: " << LEARNING_RATE << endl;
 }

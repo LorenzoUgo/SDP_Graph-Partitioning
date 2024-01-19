@@ -12,13 +12,12 @@
 
 using namespace std;
 
-
-void set_param(int num_param, char* params[], GeneticAlgorithm& GA, int& type_reading, int& num_thread, string metisFile, bool& compare_metis) {
+void set_param(int num_param, char* params[], GeneticAlgorithm& GA, int& type_reading, int& num_thread, string& metisFile, bool& compare_metis) {
 
     const char *const short_opts = "m:l:kabc:d:e:f:g:h:i:j:";    //""abc:d:e:f:g:h:i:j:
     const option long_opts[] = {
-            {"mod",        required_argument, nullptr, 'a'},
-            {"parallel",   required_argument, nullptr, 'b'},
+            {"mod",        no_argument, nullptr, 'a'},
+            {"parallel",   no_argument, nullptr, 'b'},
             {"part",       required_argument, nullptr, 'c'},
             {"population", required_argument, nullptr, 'd'},
             {"gen",        required_argument, nullptr, 'e'},
@@ -27,7 +26,7 @@ void set_param(int num_param, char* params[], GeneticAlgorithm& GA, int& type_re
             {"isl",        required_argument, nullptr, 'h'},
             {"mig",        required_argument, nullptr, 'i'},
             {"lr",         required_argument, nullptr, 'j'},
-            {"bal",        required_argument, nullptr, 'k'},
+            {"bal",        no_argument, nullptr, 'k'},
             {"binary",        required_argument, nullptr, 'l'},
             {"compare",        required_argument, nullptr, 'm'},
             {nullptr,      0,                 nullptr, 0}
