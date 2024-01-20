@@ -9,13 +9,12 @@ mutex printMutex;
 /** Start Algorithm */
 
 void GeneticAlgorithm::run(const Graph& G){
-    for (int is = 0; is<NUM_ISLANDS; is++) {    /** Si potrà parallelizzare anche la creazione delle popolazioni iniziali delle varie isole? */
-        cout << "Starting Population for Island n_" << is << endl;// -->DEBUG
+    for (int is = 0; is<NUM_ISLANDS; is++) {  
+        cout << "Starting Population for Island n_" << is << endl;
         for (int in = 0; in < POPULATION_SIZE; in++) {
             Population[is].emplace_back(Individual(NUM_PARTITIONS, G.num_of_nodes(), G, balanced));
         }
     }
-
     if( parallel && dynamic ) {
         Galapagos_parallel_LR(G);
     }else if( parallel && not dynamic ){
@@ -465,7 +464,7 @@ void GeneticAlgorithm::Migration_randomOnes(){
 }
 
 
-/** funzioni varie */
+/** Misc */
 
 bool GeneticAlgorithm::check_early_end(const Individual& champ){
     bool no_upgrade = true;

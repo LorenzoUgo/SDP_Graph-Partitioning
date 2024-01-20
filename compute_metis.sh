@@ -1,6 +1,6 @@
 #!/bin/sh
 
-echo "This script uses METIS to compute best k-way partition of a graph and calculates fitness value according to the function defined in our project" 
+echo "This script uses METIS to compute best k-way partition of a graph and calculate its fitness value according to the function defined in our project" 
 echo "Make sure to have *gpmetis* installed if you want to use this script"
 echo "You should be able to install it using your package manager"
 echo ""

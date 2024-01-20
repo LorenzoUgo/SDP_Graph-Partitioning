@@ -10,14 +10,14 @@ all: mkdir_build graph_partitioner graph_generator extract_data
 mkdir_build:
 	$(shell mkdir -p $(Objs_dir))
 
-graph_partitioner: $(Objs)
+graph_partitioner: mkdir_build $(Objs)
 	$(Compiler) $(Args) $(Objs_dir)/*.o $(Srcs_dir)/graph_partitioner.cpp -o ./graph_partitioner
 
 graph_generator:
 	$(Compiler) $(Args) $(Srcs_dir)/graph_generator.cpp -o ./graph_generator
 
 extract_data:
-	unzip ./data.zip -d ./data/
+	unzip ./data.zip -d ./
 	rm -rf ./data.zip
 
 GA.o:

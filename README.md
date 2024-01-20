@@ -96,9 +96,9 @@ All the following argument can be used by the user to change the default setting
 | --lr | `-mod Active` if activated, needs a value defining the learning rate.  |
 
 ```sh
- ./graph_partitioner  graph_1000000_2500000 --bal --parallel --era 50 --isl 10 # Parallel execution to compute balanced partition, using 50 era and 10 island (other parameters stay  default)
+ ./graph_partitioner  ./data/graph_1000000_2500000 --bal --parallel --era 50 --isl 10 # Parallel execution to compute balanced partition, using 50 era and 10 island (other parameters stay  default)
 
-./graph_partitioner  graph_1000000_2500000 --mod --era 7 --new 15 --lr 20 # Sequential execution (default), generating 15 new offspring, that stop if there's not at least one improvement of 20% for 7 consecutive eras
+./graph_partitioner  ./data/graph_1000000_2500000 --mod --era 7 --new 15 --lr 20 # Sequential execution (default), generating 15 new offspring, that stop if there's not at least one improvement of 20% for 7 consecutive eras
 
 ./graph_partitioner  ./data/graph_1000000_2500000 # All parameters are kept by default (Sequential computation, not balanced partitions) 
 

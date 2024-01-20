@@ -48,7 +48,7 @@ public:
     void setNumIslands(int numIslands) {NUM_ISLANDS = numIslands;}
     void setNumEras(int numEras) {NUM_ERAS = numEras;}
     void setNumMigrants(int numMigrants) {NUM_MIGRANTS = numMigrants;}
-    void setParallel(bool Parallel) {parallel = Parallel;}
+    void setParallel(bool Parallel) {parallel = Parallel; setNumIslands(5);}
     void setDynamic(bool Dynamic) {dynamic = Dynamic;}
     void setPopulation(const map<int, vector<Individual>> &population) {Population = population;}
 
@@ -78,8 +78,8 @@ public:
 
     /**     Constructor with default parameters     */
 
-    explicit GeneticAlgorithm(int numPartitions=2, int populationSize=90, int numGenerations=250, int numOffspring=45, int numIslands=20,
-                     int numEras=100, int numMigrants=30, int erasNoUpgrade=5, float learningRate=0.03, bool Parallel=false, bool Dynamic=false,
+    explicit GeneticAlgorithm(int numPartitions=2, int populationSize=50, int numGenerations=250, int numOffspring=45, int numIslands=1,
+                     int numEras=20, int numMigrants=30, int erasNoUpgrade=5, float learningRate=0.03, bool Parallel=false, bool Dynamic=false,
                      bool Balanced=false) : NUM_PARTITIONS(numPartitions), POPULATION_SIZE(populationSize),
                                       NUM_GENERATIONS(numGenerations), NUM_OFFSPRING(numOffspring),
                                       NUM_ISLANDS(numIslands), NUM_ERAS(numEras), NUM_MIGRANTS(numMigrants),
@@ -110,7 +110,7 @@ public:
     /** Parallel implementation */
     void Galapagos_parallel(  const Graph& G );
     void Galapagos_parallel_LR( const Graph& G );
-    void Eras_parallel(int island_id, vector<Individual>& population, const Graph& G, barrier<>& b1, barrier<>& b2);
+    void Eras_parallel(int island_id, vector<Individual>& population, const Graph& G, barrier<>& b1, barrier<> &b2);
 
 
     /** Crossover function */

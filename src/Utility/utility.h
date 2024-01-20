@@ -6,7 +6,7 @@
 #define SDP_GRAPH_PARTITIONING_UTILITY_H
 
 #include "../Individual/Individual.h"
-#include "../GeneticAlgorithm/GA.h"
+//#include "GeneticAlgorithm/GA.h"
 #include <iostream>
 #include <unistd.h>
 #include <vector>

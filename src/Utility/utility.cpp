@@ -173,21 +173,15 @@ bool read_input(const string& file, Graph& G, int& type_reading, int& num_t) {
 
     switch(type_reading) {
         case 0:
-            if (G.readFileSequentialTxt(text)) //"./data/graph_20_20/standard_text.txt"
-                cout << "    Graph read from file successfully" << endl;
-            else
+            if (!G.readFileSequentialTxt(text)) //"./data/graph_20_20/standard_text.txt"
                 return false;
             break;
         case 1:
-            if (G.readFileSequentialBin(bin)) //"./data/graph_20_20/standard_text.txt"
-                cout << "    Graph read from binary file successfully" << endl;
-            else
+            if (!G.readFileSequentialBin(bin)) //"./data/graph_20_20/standard_text.txt"
                 return false;
             break;
         case 2:
-            if (G.readFileParallel(bin, num_t)) //"./data/graph_20_20/standard_text.txt"
-                cout << "    Graph read from binary file successfully" << endl;
-            else
+            if (!G.readFileParallel(bin, num_t)) //"./data/graph_20_20/standard_text.txt"
                 return false;
             break;
         default:
@@ -224,8 +218,7 @@ void saveInfoToFile(const UsageInfo& usageInfo) {
         outputFile << endl;
         for (int i = 0 ; i < usageInfo.balanceIndexPartitions.size(); i++) {
             for (int j = i+1 ; j < usageInfo.balanceIndexPartitions.size(); j++) {
-                outputFile << "Cut Size between " << i << " and " << i << ": " << usageInfo.cutSizeBetweenPartitions[i][j]
-                           << " | ";
+                //outputFile << "Cut Size between " << i << " and " << i << ": " << usageInfo.cutSizeBetweenPartitions[i][j] << " | ";
             }
         }
 

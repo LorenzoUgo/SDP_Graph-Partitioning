@@ -9,6 +9,7 @@
 #include <string>
 #include <chrono>
 #include <sys/resource.h>
+#include <iostream>
 
 using namespace std;
 
@@ -131,8 +132,6 @@ int main(int argc, char** argv) {
         return 0;
     }
 
-
-    /** Apriamo il file in modalità di lettura  */
     int t_start = time_now();
 
     if(! read_input(string(argv[1]), G, type_reading, num_threads))
@@ -140,22 +139,19 @@ int main(int argc, char** argv) {
 
     int t_end = time_now();
 
-    cout << "    Execution time -->" << time_conversion(t_end - t_start) << endl;
+    cout << "Execution time -->" << time_conversion(t_end - t_start) << endl;
     infos.executionTimes.push_back(t_end - t_start);
     infos.totalEdgesWeight = G.getTotalEdgesWeight();
     infos.totalNodesWeight = G.getTotalNodesWeight();
 
     /**     STARTING GENETIC ALGORITHM  */
-    cout << "--> Starting the search for the partition ..." << endl;
+    cout << "--> Starting algorithm ..." << endl;
     getrusage(RUSAGE_SELF, &_use);
     t_start = time_now();
-
     GA.run(G);
-
     t_end = time_now();
 
-    cout << "    Partition found!" << endl;
-    cout << "    Execution time -->" << time_conversion(t_end - t_start) << endl;
+    cout << "Execution time -->" << time_conversion(t_end - t_start) << endl;
     infos.executionTimes.push_back(t_end - t_start);
     GA.getBestOf().printIndividual();
 
@@ -164,27 +160,24 @@ int main(int argc, char** argv) {
     infos.cutSize = cut_size(GA.getBestOf().getGenotype(), G);
     infos.balanceIndex = balance_index(GA.getNumPartitions(), GA.getBestOf().getGenotype(), G);
     infos.balanceIndexPartitions = calculatePartitionsWeight(GA.getNumPartitions(), GA.getBestOf().getGenotype(), G);
-    infos.cutSizeBetweenPartitions = calculateCutSizeBetweenPartitions(G, GA.getBestOf().getGenotype());
+    //infos.cutSizeBetweenPartitions = calculateCutSizeBetweenPartitions(G, GA.getBestOf().getGenotype());
 
     /**     SAVE RESULTS TO FILE    */
-    //     TO BE FINISHED......
-    // Vorrei salvare più partizioni nello stesso file fatte in momenti diversi. Possibile?
-    getrusage(RUSAGE_SELF, &infos.usage);
+
+    cout << "Test usage" << endl;
+    getrusage(RUSAGE_SELF, &(infos.usage));
     double duration = (t_start - t_end) / 1000.0;
     double cpu = (infos.usage.ru_utime.tv_sec - _use.ru_utime.tv_sec) + (infos.usage.ru_utime.tv_usec - _use.ru_utime.tv_usec) / 1000000.0;
-    infos.cpu_percentage = 100.0 * cpu / duration;
+    infos.cpu_percentage = 100 * cpu / duration;
     cout << "CPU percentage used: " << infos.cpu_percentage << "%" << endl;
     cout << "Memory usage: " << infos.usage.ru_maxrss / (1024.0 * 1024.0) << " GBs" << endl;
 
-
-
-    string outputFile = string(argv[1]) + "_GA_"
+    infos.fileName = string(argv[1]) + "_GA_"
             + (GA.isBalanced() ?"Balanced_":"")
             + (GA.isParallel() ?"Parallel_":"")
             + to_string(GA.getNumPartitions()) + "_"
             + (GA.isParallel() ? to_string(GA.getNumIslands()):"");
     saveInfoToFile(infos);
-
 
     return 0;
 }
