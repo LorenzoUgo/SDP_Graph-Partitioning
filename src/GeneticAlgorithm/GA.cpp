@@ -4,6 +4,8 @@
 
 #include "GA.h"
 
+#define MUTATION_RATE 0.25
+
 mutex printMutex;
 
 /** Start Algorithm */
@@ -24,10 +26,10 @@ void GeneticAlgorithm::run(const Graph& G){
     }else if( not parallel && not dynamic ){
         Galapagos(G);
     }else{
-        cout <<"Our algorithm can't continue.\n Check if all the parameters are set correctly !!"<< endl;
+        cout <<"The program can't continue.\n Check if all the parameters are set correctly !!"<< endl;
     }
 
-    cout <<"\n *****   Our Algorithm ended correctly !!   *****\n"<< endl;
+    //cout <<"\n *****   Our Algorithm ended correctly !!   *****\n"<< endl;
     bestOf = BestOfGalapagos();
 
 }
@@ -36,7 +38,6 @@ void GeneticAlgorithm::run(const Graph& G){
 /** Sequential implementation */
 
 void GeneticAlgorithm::Eras(vector<Individual>& population, const Graph& G) {
-    float mutation_rate = 0.25;
     Individual parent1, parent2, offspring;
     srand(std::time(nullptr));
 
@@ -45,7 +46,7 @@ void GeneticAlgorithm::Eras(vector<Individual>& population, const Graph& G) {
 
         for (int i = 0; i < NUM_OFFSPRING; i++) {
 
-            if ( ( ( (float) rand() ) / ( (float) RAND_MAX+1.0 ) ) < mutation_rate) {
+            if ( ( ( (float) rand() ) / ( (float) RAND_MAX+1.0 ) ) < MUTATION_RATE) {
 
                 offspring = random_parent_selection(population);
                 offspring.mutation();
@@ -85,7 +86,7 @@ void GeneticAlgorithm::Galapagos( const Graph& G){
             Eras(Population.at(i), G);
 
         }
-        cout << "Migration phase now !! " << endl;// -->DEBUG
+        //cout << "Migration phase now !! " << endl;// -->DEBUG
 
         Migration_bestOnes();
     }
@@ -121,18 +122,17 @@ void GeneticAlgorithm::Galapagos_LR( const Graph& G){
 
 /** Parallel implementation */
 void GeneticAlgorithm::Eras_parallel(int island_id, vector<Individual>& population, const Graph& G, barrier<>& b1, barrier<>& b2) {
-    float mutation_rate = .25;
     Individual parent1, parent2, offspring;
     srand(std::time(nullptr));
 
     for(int e = 0; e<NUM_ERAS; e++){
 
         for (int g = 0; g < NUM_GENERATIONS; g++) {
-            cout << "Starting Generation n_" << g << endl;
+            //cout << "Starting Generation n_" << g << endl;
 
             for (int i = 0; i < NUM_OFFSPRING; i++) {
 
-                if ( ( ( (float) rand() ) / ( (float) RAND_MAX+1.0 ) ) < mutation_rate) {
+                if ( ( ( (float) rand() ) / ( (float) RAND_MAX+1.0 ) ) < MUTATION_RATE) {
 
                     offspring = random_parent_selection(population);
                     offspring.mutation();

@@ -78,7 +78,7 @@ public:
 
     /**     Constructor with default parameters     */
 
-    explicit GeneticAlgorithm(int numPartitions=2, int populationSize=50, int numGenerations=250, int numOffspring=45, int numIslands=1,
+    explicit GeneticAlgorithm(int numPartitions=2, int populationSize=50, int numGenerations=25, int numOffspring=45, int numIslands=1,
                      int numEras=20, int numMigrants=30, int erasNoUpgrade=5, float learningRate=0.03, bool Parallel=false, bool Dynamic=false,
                      bool Balanced=false) : NUM_PARTITIONS(numPartitions), POPULATION_SIZE(populationSize),
                                       NUM_GENERATIONS(numGenerations), NUM_OFFSPRING(numOffspring),

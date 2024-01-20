@@ -166,8 +166,8 @@ float avgCutSize(const vector<vector<int>>& cutSizes) {
 
 // Read input file and generate the graph
 bool read_input(const string& file, Graph& G, int& type_reading, int& num_t) {
-    string text = file + "/standard_text.txt";
-    string bin = file + "/standard_binary.bin";
+    string text = file + "standard_text.txt";
+    string bin = file + "standard_binary.bin";
 
     // get graph read file return value bool
 

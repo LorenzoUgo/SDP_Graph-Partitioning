@@ -1,12 +1,13 @@
 Compiler = g++
+Debugger = gdb
 Args = -std=c++20 -w
 Objs = GA.o Graph.o Utility.o Individual.o
 Srcs_dir = ./src
 Objs_dir = ./build
 
-all: mkdir_build graph_partitioner graph_generator extract_data
+compile_all: mkdir_build graph_partitioner graph_generator extract_data
 	@echo "Done!"
-
+	
 mkdir_build:
 	$(shell mkdir -p $(Objs_dir))
 
@@ -20,6 +21,7 @@ extract_data:
 	unzip ./data.zip -d ./
 	rm -rf ./data.zip
 
+# compile object files
 GA.o:
 	$(Compiler) $(Args) -c $(Srcs_dir)/GeneticAlgorithm/GA.cpp -o $(Objs_dir)/GA.o
 
