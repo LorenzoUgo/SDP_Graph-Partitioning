@@ -76,6 +76,8 @@ void compute_metis(string filename) {
     string file = "./data/graph_" + std::to_string(ints[0]) +'_'+ std::to_string(ints[1]) + "/standard_binary.bin";
     G.readFileParallel(file, 5);
 
+    G.normalize();
+
     if (!fin.is_open()) {
         cout << "Cannot open " << file << endl;
         return;
@@ -165,7 +167,7 @@ float avgCutSize(const vector<vector<int>>& cutSizes) {
 
 
 // Read input file and generate the graph
-bool read_input(const string& file, Graph& G, int& type_reading, int& num_t) {
+bool read_input(const string& file, Graph& G, int type_reading, int num_t) {
     string text = file + "standard_text.txt";
     string bin = file + "standard_binary.bin";
 
@@ -222,8 +224,9 @@ void saveInfoToFile(const UsageInfo& usageInfo) {
             }
         }
 
-        outputFile << endl << endl << " Balance Index: " << usageInfo.balanceIndex;
+        outputFile << endl << endl << "Balance Index: " << usageInfo.balanceIndex;
         outputFile << " | | Global Cut Size: " << usageInfo.cutSize << endl;
+        outputFile << "Fitness = " << usageInfo.fitness << endl;
         outputFile << endl;
 
         outputFile << "CPU time used: " << usageInfo.usage.ru_utime.tv_sec << " seconds " << usageInfo.usage.ru_utime.tv_usec << " microseconds" << endl;

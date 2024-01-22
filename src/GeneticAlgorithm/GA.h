@@ -48,7 +48,7 @@ public:
     void setNumIslands(int numIslands) {NUM_ISLANDS = numIslands;}
     void setNumEras(int numEras) {NUM_ERAS = numEras;}
     void setNumMigrants(int numMigrants) {NUM_MIGRANTS = numMigrants;}
-    void setParallel(bool Parallel) {parallel = Parallel; setNumIslands(5);}
+    void setParallel(bool Parallel) {parallel = Parallel; setNumIslands(8);} //!!!!!!!!!!
     void setDynamic(bool Dynamic) {dynamic = Dynamic;}
     void setPopulation(const map<int, vector<Individual>> &population) {Population = population;}
 
@@ -78,13 +78,37 @@ public:
 
     /**     Constructor with default parameters     */
 
-    explicit GeneticAlgorithm(int numPartitions=2, int populationSize=50, int numGenerations=25, int numOffspring=45, int numIslands=1,
+    explicit GeneticAlgorithm(int numPartitions=2, int populationSize=50, int numGenerations=25, int numOffspring=20, int numIslands=1,
                      int numEras=20, int numMigrants=30, int erasNoUpgrade=5, float learningRate=0.03, bool Parallel=false, bool Dynamic=false,
-                     bool Balanced=false) : NUM_PARTITIONS(numPartitions), POPULATION_SIZE(populationSize),
-                                      NUM_GENERATIONS(numGenerations), NUM_OFFSPRING(numOffspring),
-                                      NUM_ISLANDS(numIslands), NUM_ERAS(numEras), NUM_MIGRANTS(numMigrants),
-                                      ERAS_NO_UPGRADE(erasNoUpgrade), LEARNING_RATE(learningRate), parallel(Parallel),
-                                      dynamic(Dynamic), balanced(Balanced) {}
+                     bool Balanced=false) {
+        if (Parallel) {
+            NUM_PARTITIONS = numPartitions / numIslands;
+            POPULATION_SIZE = populationSize / numIslands;
+            NUM_GENERATIONS = numGenerations / numIslands;
+            NUM_OFFSPRING = numOffspring / numIslands;
+            NUM_ISLANDS = numIslands;
+            NUM_ERAS = numEras / numIslands;
+            NUM_MIGRANTS = numMigrants;
+            ERAS_NO_UPGRADE = erasNoUpgrade;
+            LEARNING_RATE = learningRate;
+            parallel = Parallel;
+            dynamic = Dynamic;
+            balanced = Balanced;
+        } else {
+            NUM_PARTITIONS = numPartitions;
+            POPULATION_SIZE = populationSize;
+            NUM_GENERATIONS = numGenerations;
+            NUM_OFFSPRING = numOffspring;
+            NUM_ISLANDS = numIslands;
+            NUM_ERAS = numEras;
+            NUM_MIGRANTS = numMigrants;
+            ERAS_NO_UPGRADE = erasNoUpgrade;
+            LEARNING_RATE = learningRate;
+            parallel = Parallel;
+            dynamic = Dynamic;
+            balanced = Balanced;
+        }
+    }
 
 
     /**     Reset GA to the origin     */

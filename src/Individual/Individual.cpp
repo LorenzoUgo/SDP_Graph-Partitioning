@@ -1,18 +1,19 @@
 #include "Individual.h"
 
-#define MUTATION 0.1 // 10% probability
+//#define MUTATION 0.1 // 10% probability
+#define N 100
 
 void Individual::mutation() {
     std::default_random_engine generator(std::chrono::system_clock::now().time_since_epoch().count());
-    std::uniform_real_distribution<float> mutation_incidence(0,1);
+    std::uniform_real_distribution<float> mutation_incidence(0,genotype.size()/N);
     std::uniform_int_distribution<int> mutation_value(1,num_alleles-1);
 
     auto incidence = std::bind(mutation_incidence, generator);
     auto value = std::bind(mutation_value, generator);
 
-    for (auto& g: genotype)
-        if (incidence() < MUTATION)
-            g = (g+value())%num_alleles;
+    for(int i=0;i<incidence();i++){
+        genotype[rand()%genotype.size()] += (value())%num_alleles;
+    }
 }
 
 // calcola la dimensione del taglio sommando i pesi degli archi che vanno da una partizione ad un'altra
@@ -46,7 +47,7 @@ void Individual::setFitness(const Graph& G, const bool& balance, float cut_size_
             balance ?
                 (cut_size_weight*cut_size(genotype, G)) + (balance_index_weight*balance_index(num_alleles, genotype, G))
             :
-                (cut_size_weight*cut_size(genotype, G))
+                (cut_size(genotype, G))
     );
 }
 

@@ -42,9 +42,11 @@ void GeneticAlgorithm::Eras(vector<Individual>& population, const Graph& G) {
     srand(std::time(nullptr));
 
     for (int g = 0; g < NUM_GENERATIONS; g++) {
-        //cout << "Starting Generation n_" << g << endl;
+        cout << "Starting Generation n_" << g << endl;
 
         for (int i = 0; i < NUM_OFFSPRING; i++) {
+
+            cout << "Offspring " << i << endl;
 
             if ( ( ( (float) rand() ) / ( (float) RAND_MAX+1.0 ) ) < MUTATION_RATE) {
 
@@ -56,7 +58,7 @@ void GeneticAlgorithm::Eras(vector<Individual>& population, const Graph& G) {
                 //DAI UN OCCHIO !!!!!
                 parent1 = parent_selection_tournament(rand() % (population.size() / 5 - 1) + 1, population);
                 parent2 = parent_selection_tournament(rand() % (population.size() / 5 - 1) + 1, population);
-                offspring = uniform_random_crossover(parent1, parent2);
+                offspring = one_cut_crossover(parent1, parent2);
                 offspring.setFitness(G, balanced);
 
             }
@@ -87,8 +89,8 @@ void GeneticAlgorithm::Galapagos( const Graph& G){
 
         }
         //cout << "Migration phase now !! " << endl;// -->DEBUG
-
-        Migration_bestOnes();
+        if(NUM_ISLANDS > 1)
+            Migration_bestOnes();
     }
 
 }
@@ -128,7 +130,7 @@ void GeneticAlgorithm::Eras_parallel(int island_id, vector<Individual>& populati
     for(int e = 0; e<NUM_ERAS; e++){
 
         for (int g = 0; g < NUM_GENERATIONS; g++) {
-            //cout << "Starting Generation n_" << g << endl;
+            cout << "Starting Generation n_" << g << endl;
 
             for (int i = 0; i < NUM_OFFSPRING; i++) {
 
@@ -142,7 +144,7 @@ void GeneticAlgorithm::Eras_parallel(int island_id, vector<Individual>& populati
 
                     parent1 = parent_selection_tournament(rand() % (population.size() / 5 - 1) + 1, population);
                     parent2 = parent_selection_tournament(rand() % (population.size() / 5 - 1) + 1, population);
-                    offspring = uniform_random_crossover(parent1, parent2);
+                    offspring = one_cut_crossover(parent1, parent2);
                     offspring.setFitness(G, balanced);
 
                 }
@@ -185,7 +187,7 @@ void GeneticAlgorithm::Galapagos_parallel(const Graph& G){
 
     }
 
-    for(int e = 1; e<NUM_ERAS; e++){
+    for(int e = 0; e<NUM_ERAS; e++){
         cout << "Starting Era n_" << e << endl; // -->DEBUG
 
 
@@ -414,9 +416,13 @@ void GeneticAlgorithm::Migration_bestOnes(){
     srand(std::time(nullptr));
     Individual I;
     int index = 0;
+    cout << "migrazione  " <<endl;
 
     for(auto & i : Population){
+        cout << "isola sceglie  !!" <<endl;
+
         for(int j = 0; j<NUM_MIGRANTS; j++){
+            cout << "migrante  " << j <<endl;
 
             vett_bestOf.emplace_back(i.second.front());
             i.second.erase(i.second.begin());
@@ -426,6 +432,7 @@ void GeneticAlgorithm::Migration_bestOnes(){
 
     for(auto & i : Population){
         for(int j = 0; j<NUM_MIGRANTS; j++){
+            cout << "migrante  " << j <<endl;
 
             (vett_bestOf.size()-1) ? index = rand() % (vett_bestOf.size() - 1) : index = 0;
             i.second.emplace_back(vett_bestOf[index]);
@@ -443,8 +450,10 @@ void GeneticAlgorithm::Migration_randomOnes(){
 
 
     for(auto & i : Population){
-        for(int j = 0; j<NUM_MIGRANTS; j++){
+        cout << "isola sceglie  !!" <<endl;
 
+        for(int j = 0; j<NUM_MIGRANTS; j++){
+            cout << "migrante  " << j <<endl;
             index = rand() % (i.second.size() - 1);
             vett_randOnes.emplace_back(i.second[index]);
             i.second.erase(i.second.begin()+index);
@@ -454,6 +463,7 @@ void GeneticAlgorithm::Migration_randomOnes(){
 
     for(auto & i : Population){
         for(int j = 0; j<NUM_MIGRANTS; j++){
+            cout << "migrante  "<< j <<endl;
 
             (vett_randOnes.size()-1) ? index = rand() % (vett_randOnes.size() - 1) : index = 0;
             i.second.emplace_back(vett_randOnes[index]);

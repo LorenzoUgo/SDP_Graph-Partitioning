@@ -121,7 +121,7 @@ int main(int argc, char** argv) {
     int num_threads=0;
     bool compare_metis = false;
     string metisFile, filename = string(argv[1]);
-    Graph G;
+    Graph G, G_norm;
     GeneticAlgorithm GA;
 
     /** SETTING ALGORITHM PARAMETERS  */
@@ -138,6 +138,11 @@ int main(int argc, char** argv) {
         return 1;
     int t_end = time_now();
 
+
+    if(! read_input(filename, G_norm, 2, 8))
+        return 1;
+
+
     cout << "Execution time -->" << time_conversion(t_end - t_start) << endl;
     infos.executionTimes.push_back(t_end - t_start);
     infos.totalEdgesWeight = G.getTotalEdgesWeight();
@@ -147,12 +152,13 @@ int main(int argc, char** argv) {
     //cout << "--> Starting algorithm ..." << endl;
     getrusage(RUSAGE_SELF, &_use);
     t_start = time_now();
-    GA.run(G);
+    G_norm.normalize();
+    GA.run(G_norm);
     t_end = time_now();
 
     cout << "Execution time -->" << time_conversion(t_end - t_start) << endl;
     infos.executionTimes.push_back(t_end - t_start);
-    //GA.getBestOf().printIndividual();
+    cout << GA.getBestOf().getFitness() << endl;
 
     infos.partition = GA.getBestOf().getGenotype();
 
@@ -160,7 +166,7 @@ int main(int argc, char** argv) {
     infos.balanceIndex = balance_index(GA.getNumPartitions(), GA.getBestOf().getGenotype(), G);
     infos.balanceIndexPartitions = calculatePartitionsWeight(GA.getNumPartitions(), GA.getBestOf().getGenotype(), G);
     //infos.cutSizeBetweenPartitions = calculateCutSizeBetweenPartitions(G, GA.getBestOf().getGenotype());
-
+    infos.fitness = GA.getBestOf().getFitness();
     /**     SAVE RESULTS TO FILE    */
 
     cout << "Test usage" << endl;
@@ -172,11 +178,10 @@ int main(int argc, char** argv) {
     cout << "Memory usage: " << infos.usage.ru_maxrss / (1024.0 * 1024.0) << " GBs" << endl;
 
     infos.fileName = filename + "gapart"
-            + to_string(GA.getNumPartitions())
             + (GA.isBalanced() ?".balanced":"")
             + (GA.isParallel() ?".parallel":"")
             + "." + to_string(GA.getNumPartitions())
-            + "." + (GA.isParallel() ? to_string(GA.getNumIslands()):"")
+            + (GA.isParallel() ? "." + to_string(GA.getNumIslands()):"")
             + ".txt";
     saveInfoToFile(infos);
 
