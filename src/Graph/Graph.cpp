@@ -16,9 +16,6 @@
 using namespace std;
 
 bool Graph::readFileSequentialBin(string filename) {
-    auto now = chrono::system_clock::now();
-    auto now_ms = chrono::time_point_cast<chrono::milliseconds>(now);
-    auto now_c = now_ms.time_since_epoch().count();
     int nodes, edges;
     string line;
     ifstream fpInput(filename);
@@ -45,23 +42,10 @@ bool Graph::readFileSequentialBin(string filename) {
         fpInput.read((char*)(&weight), 4);
         setEdge(n1,n2,weight);
     }
-
-
-    auto now_now = chrono::system_clock::now();
-    auto now_now_ms = chrono::time_point_cast<chrono::milliseconds>(now_now);
-    auto now_now_c = now_now_ms.time_since_epoch().count();
-
-    cout << "Graph read sequential from file '" << filename << "'" << endl;
-    cout << now_now_c - now_c << " ms" << endl;
-    cout << (float)((float)(now_now_c - now_c)/1000) << setprecision(3) << " seconds" << endl;
-
     return true;
 }
 
 bool Graph::readFileSequentialTxt(string filename) {
-    auto now = chrono::system_clock::now();
-    auto now_ms = chrono::time_point_cast<chrono::milliseconds>(now);
-    auto now_c = now_ms.time_since_epoch().count();
     int nodes, edges, n1, n2, w;
     string line;
     ifstream fpInput(filename);
@@ -91,16 +75,6 @@ bool Graph::readFileSequentialTxt(string filename) {
         incrementDegree(n2);
     }
     fpInput.close();
-    
-
-    auto now_now = chrono::system_clock::now();
-    auto now_now_ms = chrono::time_point_cast<chrono::milliseconds>(now_now);
-    auto now_now_c = now_now_ms.time_since_epoch().count();
-
-    cout << "Graph read sequential from file '" << filename << "'" << endl;
-    cout << now_now_c - now_c << " ms" << endl;
-    cout << (float)((float)(now_now_c - now_c)/1000) << setprecision(3) << " seconds" << endl;
-
     return true;
 }
 
@@ -138,10 +112,6 @@ void Graph::readBinEdges(string filename, const int start, const int n) {
 }
 
 bool Graph::readFileParallel(string filename, int numthreads){
-    auto now = chrono::system_clock::now();
-    auto now_ms = chrono::time_point_cast<chrono::milliseconds>(now);
-    auto now_c = now_ms.time_since_epoch().count();
-
     vector<thread> threads;
     int numedges, numnodes;
     ifstream fpInput(filename, ios::binary);
@@ -186,15 +156,6 @@ bool Graph::readFileParallel(string filename, int numthreads){
     }
     for (auto& t: threads)
         t.join();
-
-    auto now_now = chrono::system_clock::now();
-    auto now_now_ms = chrono::time_point_cast<chrono::milliseconds>(now_now);
-    auto now_now_c = now_now_ms.time_since_epoch().count();
-
-    cout << "Graph read parallel from file '" << filename << "'" << endl;
-    cout << now_now_c - now_c << " ms" << endl;
-    cout << (float)((float)(now_now_c - now_c)/1000) << setprecision(3) << " seconds" << endl;
-
     return true;
 }
 

@@ -23,6 +23,47 @@
 
 using namespace std;
 
+string time_conversion(int delta_t){
+    int millisec, sec, min, h, day, year;
+    string string_to_print;
+
+    millisec = delta_t%1000;
+    delta_t /= 1000;
+
+    string_to_print.insert(0, to_string(millisec)+" ms ");
+    if(delta_t > 0){
+        sec = delta_t % 60;
+        delta_t /= 60;
+        string_to_print.insert(0, to_string(sec)+" s, ");
+
+        if(delta_t > 0){
+            min = delta_t%60;
+            delta_t /= 60;
+            string_to_print.insert(0, to_string(min)+" m, ");
+        }
+
+        if(delta_t > 0){
+            h = delta_t%24;
+            delta_t /= 24;
+            string_to_print.insert(0, to_string(h)+" h, ");
+        }
+
+        if(delta_t > 0){
+            day = delta_t%365;
+            delta_t /= 365;
+            string_to_print.insert(0, to_string(day)+" d, ");
+
+            if(delta_t > 0){
+                year = delta_t;
+                string_to_print.insert(0, to_string(year)+" y, ");
+            }
+        }
+    }
+
+
+    return string_to_print;
+}
+
 int main(int argc, char** argv) {
     srand(time(nullptr));
 
@@ -131,10 +172,12 @@ int main(int argc, char** argv) {
     auto now_now_c = now_now_ms.time_since_epoch().count();
 
     cout << "Graph files generated and saved to path: " << path << endl;
+    cout << time_conversion((int)now_now_c - (int)now_c) << endl;
+    /*
     cout << now_now_c - now_c << " ms" << endl;
     cout << (float)((float)(now_now_c - now_c)/1000) << setprecision(3) << " seconds" << endl;
     cout << (float)((float)(now_now_c - now_c)/(1000*60)) << setprecision(3) << " minutes" << endl;
     cout << (float)((float)(now_now_c - now_c)/(1000*60*60)) << setprecision(3) << " hours" << endl;
-
+    */
     return 0;
 }

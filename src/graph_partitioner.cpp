@@ -13,7 +13,7 @@
 
 using namespace std;
 
-void set_param(int num_param, char* params[], GeneticAlgorithm& GA, int& type_reading, int& num_thread, string& metisFile, bool& compare_metis) {
+bool set_param(int num_param, char* params[], GeneticAlgorithm& GA, int& type_reading, int& num_thread, string& metisFile, bool& compare_metis) {
 
     const char *const short_opts = "m:l:kabc:d:e:f:g:h:i:j:";    //""abc:d:e:f:g:h:i:j:
     const option long_opts[] = {
@@ -37,27 +37,27 @@ void set_param(int num_param, char* params[], GeneticAlgorithm& GA, int& type_re
     while ((opt = getopt_long(num_param, params, short_opts, long_opts, nullptr)) != -1) {
         switch (opt) {
             case 'a':
-                cout << "Opzione -mod settata " << endl;
+                cout << "-mod option set " << endl;
                 GA.setDynamic(true);
                 break;
             case 'b':
-                cout << "Opzione -parallel settata " << endl;
+                cout << "-parallel option set " << endl;
                 GA.setParallel(true);
                 break;
             case 'c':
-                cout << "Opzione -part con argomento: " << optarg << endl;
+                cout << "-part option with arg: " << optarg << endl;
                 GA.setNumPartitions(stoi(optarg));
                 break;
             case 'd':
-                cout << "Opzione -population con argomento: " << optarg << endl;
+                cout << "-population option with arg: " << optarg << endl;
                 GA.setPopulationSize(stoi(optarg));
                 break;
             case 'e':
-                cout << "Opzione -gen con argomento: " << optarg << endl;
+                cout << "-gen option with arg: " << optarg << endl;
                 GA.setNumGenerations(stoi(optarg));
                 break;
             case 'f':
-                std::cout << "Opzione -era con argomento: " << optarg << endl;
+                std::cout << "-era option with arg: " << optarg << endl;
                 if (GA.isDynamic()) {
                     GA.setErasNoUpgrade(stoi(optarg));
                 } else {
@@ -65,29 +65,33 @@ void set_param(int num_param, char* params[], GeneticAlgorithm& GA, int& type_re
                 }
                 break;
             case 'g':
-                cout << "Opzione -new con argomento: " << optarg << endl;
+                cout << "-new option with arg: " << optarg << endl;
                 GA.setNumOffspring(stoi(optarg));
                 break;
             case 'h':
-                cout << "Opzione -isl con argomento: " << optarg << endl;
+                cout << "-isl option with arg: " << optarg << endl;
                 GA.setNumIslands(stoi(optarg));
                 break;
             case 'i':
-                cout << "Opzione -mig con argomento: " << optarg << endl;
+                cout << "-mig option with arg: " << optarg << endl;
                 GA.setNumMigrants(stoi(optarg));
+                if (GA.getNumMigrants() > GA.getPopulationSize()) {
+                    cout << "Number of migrants (" << GA.getNumMigrants() << ") must be less or equal to population size (" << GA.getPopulationSize() << endl;
+                    return false;
+                }
                 break;
             case 'j':
-                cout << "Opzione -lr con argomento: " << optarg << endl;
+                cout << "-lr option with arg: " << optarg << endl;
                 if (GA.isDynamic()) {
                     GA.setLearningRate(stof(optarg)/100);
                 }
                 break;
             case 'k':
-                cout << "Opzione -bal settata " << endl;
+                cout << "-bal option set" << endl;
                 GA.setBalanced(true);
                 break;
             case 'l':
-                cout << "Opzione -binary settata: " << optarg << endl;
+                cout << "-binary option with arg: " << optarg << endl;
                 num_thread = stoi(optarg);
                 if(num_thread > 1)
                     type_reading = 2;
@@ -95,22 +99,25 @@ void set_param(int num_param, char* params[], GeneticAlgorithm& GA, int& type_re
                     type_reading = 1;
                 break;
             case 'm':
-                cout << "Opzione -compare settata " << endl;
+                cout << "-compare option set " << endl;
                 compare_metis = true;
                 metisFile = string(optarg);
                 break;
             default:
-                std::cerr << "Opzione non valida." << std::endl;
+                std::cerr << "Option not valid" << std::endl;
+                return false;
         }
 
     }
+    return true;
 }
 
 
 int main(int argc, char** argv) {
     //unsigned int numThreads = std::thread::hardware_concurrency();
     if (argc < 2) {
-        cout << "Too few arguments !!" << endl;
+        cout << "Missing parameters" << endl << "Usage: ./graph_partitioner <filename> [options]" << endl;
+        cout << "README.md for usage info" << endl;
         return 1;
     }
 
@@ -125,9 +132,10 @@ int main(int argc, char** argv) {
     GeneticAlgorithm GA;
 
     /** SETTING ALGORITHM PARAMETERS  */
-    cout << "--> Setting graph parameters ..." << endl;
+    //cout << "--> Setting graph parameters ..." << endl;
 
-    set_param(argc, argv, GA, type_reading, num_threads, metisFile, compare_metis);
+    if(!set_param(argc, argv, GA, type_reading, num_threads, metisFile, compare_metis))
+        return 1;
     if(compare_metis){
         compute_metis(metisFile);
         return 0;
@@ -138,12 +146,11 @@ int main(int argc, char** argv) {
         return 1;
     int t_end = time_now();
 
-
-    if(! read_input(filename, G_norm, 2, 8))
+    // TRY TO FIX
+    if(!read_input(filename, G_norm, 2, 8))
         return 1;
 
-
-    cout << "Execution time -->" << time_conversion(t_end - t_start) << endl;
+    cout << "Graph read from file" << endl << time_conversion(t_end - t_start) << endl;
     infos.executionTimes.push_back(t_end - t_start);
     infos.totalEdgesWeight = G.getTotalEdgesWeight();
     infos.totalNodesWeight = G.getTotalNodesWeight();
@@ -154,11 +161,13 @@ int main(int argc, char** argv) {
     t_start = time_now();
     G_norm.normalize();
     GA.run(G_norm);
+    cout << "Fitness value: " << GA.getBestOf().getFitness() << endl;
     t_end = time_now();
+    cout << endl;
+    GA.printParameters();
 
-    cout << "Execution time -->" << time_conversion(t_end - t_start) << endl;
+    cout << endl << "Execution time: " << time_conversion(t_end - t_start) << endl;
     infos.executionTimes.push_back(t_end - t_start);
-    cout << GA.getBestOf().getFitness() << endl;
 
     infos.partition = GA.getBestOf().getGenotype();
 
@@ -167,14 +176,13 @@ int main(int argc, char** argv) {
     infos.balanceIndexPartitions = calculatePartitionsWeight(GA.getNumPartitions(), GA.getBestOf().getGenotype(), G);
     //infos.cutSizeBetweenPartitions = calculateCutSizeBetweenPartitions(G, GA.getBestOf().getGenotype());
     infos.fitness = GA.getBestOf().getFitness();
-    /**     SAVE RESULTS TO FILE    */
 
-    cout << "Test usage" << endl;
+    /**     SAVE RESULTS TO FILE    */
     getrusage(RUSAGE_SELF, &(infos.usage));
     double duration = (t_start - t_end) / 1000.0;
     double cpu = (infos.usage.ru_utime.tv_sec - _use.ru_utime.tv_sec) + (infos.usage.ru_utime.tv_usec - _use.ru_utime.tv_usec) / 1000000.0;
     infos.cpu_percentage = 100 * cpu / duration;
-    cout << "CPU percentage used: " << infos.cpu_percentage << "%" << endl;
+    cout << "CPU usage: " << infos.cpu_percentage << "%" << endl;
     cout << "Memory usage: " << infos.usage.ru_maxrss / (1024.0 * 1024.0) << " GBs" << endl;
 
     infos.fileName = filename + "gapart"

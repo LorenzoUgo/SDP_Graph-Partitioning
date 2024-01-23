@@ -25,32 +25,32 @@ string time_conversion(int delta_t){
     millisec = delta_t%1000;
     delta_t /= 1000;
 
-    string_to_print.insert(0, to_string(millisec)+" Milliseconds. ");
+    string_to_print.insert(0, to_string(millisec)+" ms ");
     if(delta_t > 0){
         sec = delta_t % 60;
         delta_t /= 60;
-        string_to_print.insert(0, to_string(sec)+" Seconds, ");
+        string_to_print.insert(0, to_string(sec)+" s, ");
 
         if(delta_t > 0){
             min = delta_t%60;
             delta_t /= 60;
-            string_to_print.insert(0, to_string(min)+" Minutes, ");
+            string_to_print.insert(0, to_string(min)+" m, ");
         }
 
         if(delta_t > 0){
             h = delta_t%24;
             delta_t /= 24;
-            string_to_print.insert(0, to_string(h)+" Hours, ");
+            string_to_print.insert(0, to_string(h)+" h, ");
         }
 
         if(delta_t > 0){
             day = delta_t%365;
             delta_t /= 365;
-            string_to_print.insert(0, to_string(day)+" Day, ");
+            string_to_print.insert(0, to_string(day)+" d, ");
 
             if(delta_t > 0){
                 year = delta_t;
-                string_to_print.insert(0, to_string(year)+" Years, ");
+                string_to_print.insert(0, to_string(year)+" y, ");
             }
         }
     }
@@ -191,12 +191,6 @@ bool read_input(const string& file, Graph& G, int type_reading, int num_t) {
     }
 
     return true;
-    /*cout<< "Generazione delle strutture interne del grafo: Matrice di Adiacenza + Grado dei nodi. Tempo impiegato -->";
-    Graph G_normalize = G;
-    G_normalize.normalize();
-    G.printAdjacencyMatrix();
-    G.printDegreeMatrix();*/
-
 }
 
 // Save partition informations in output file
