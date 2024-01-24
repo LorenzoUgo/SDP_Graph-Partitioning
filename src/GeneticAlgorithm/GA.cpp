@@ -138,7 +138,7 @@ void GeneticAlgorithm::Eras_parallel(int island_id, vector<Individual>& populati
                 } else {
                     parent1 = parent_selection_tournament(rand() % (population.size() / 5 - 1) + 1, population);
                     parent2 = parent_selection_tournament(rand() % (population.size() / 5 - 1) + 1, population);
-                    offspring = two_cut_crossover(parent1, parent2);
+                    offspring = uniform_random_crossover(parent1, parent2);
                     offspring.setFitness(G, balanced);
                 }
                 population.push_back(offspring);
@@ -493,19 +493,4 @@ vector<Individual> GeneticAlgorithm::IslandsBests(){
     }
 
     return v;
-}
-
-void GeneticAlgorithm::printGASettings(){
-    cout << "BALANCED: " << balanced << endl;
-    cout << "PARALLEL: " << parallel << endl;
-    cout << "DYNAMIC: " << dynamic << endl;
-    cout << "NUM_PARTITIONS: " << NUM_PARTITIONS << endl;
-    cout << "POPULATION_SIZE: " << POPULATION_SIZE << endl;
-    cout << "NUM_GENERATIONS: " << NUM_GENERATIONS << endl;
-    cout << "NUM_OFFSPRING: " << NUM_OFFSPRING << endl;
-    cout << "NUM_ISLANDS: " << NUM_ISLANDS << endl;
-    cout << "NUM_ERAS: " << NUM_ERAS << endl;
-    cout << "NUM_MIGRANTS: " << NUM_MIGRANTS << endl;
-    cout << "ERAS_NO_UPGRADE: " << ERAS_NO_UPGRADE << endl;
-    cout << "LEARNING_RATE: " << LEARNING_RATE << endl;
 }

@@ -134,8 +134,6 @@ public:
     bool check_early_end(const Individual& champ);
     Individual BestOfGalapagos();
     vector<Individual> IslandsBests();
-    void printGASettings();
-
 
     /** Sequential implementation */
     void Eras(vector<Individual>& population, const Graph& G);
