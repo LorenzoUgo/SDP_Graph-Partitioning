@@ -128,49 +128,34 @@ void GeneticAlgorithm::Eras_parallel(int island_id, vector<Individual>& populati
     srand(std::time(nullptr));
 
     for(int e = 0; e<NUM_ERAS; e++){
-
         for (int g = 0; g < NUM_GENERATIONS; g++) {
-            cout << "Starting Generation n_" << g << endl;
-
+            //cout << "Starting Generation n_" << g << endl;
             for (int i = 0; i < NUM_OFFSPRING; i++) {
-
                 if ( ( ( (float) rand() ) / ( (float) RAND_MAX+1.0 ) ) < MUTATION_RATE) {
-
                     offspring = random_parent_selection(population);
                     offspring.mutation();
                     offspring.setFitness(G, balanced);
-
                 } else {
-
                     parent1 = parent_selection_tournament(rand() % (population.size() / 5 - 1) + 1, population);
                     parent2 = parent_selection_tournament(rand() % (population.size() / 5 - 1) + 1, population);
-                    offspring = one_cut_crossover(parent1, parent2);
+                    offspring = two_cut_crossover(parent1, parent2);
                     offspring.setFitness(G, balanced);
-
                 }
-
                 population.push_back(offspring);
-
             }
-
             sort(population.begin(), population.end(), [](const Individual& a, const Individual& b){return a.getFitness() < b.getFitness();});
-
             for (int i = 0; i < NUM_OFFSPRING; i++) {
                 auto it = population.begin() + POPULATION_SIZE;
                 population.erase(it);
             }
-
-            //population.resize(population_size)
         }
-
         printMutex.lock();
-        cout << "ISLAND " << island_id << " WAITING FOR MIGRATION" << endl;
+        //cout << "ISLAND " << island_id << " WAITING FOR MIGRATION" << endl;
+        cout << "Best of island n." << island_id << " has fitness: " << population[0].getFitness() << endl;
         printMutex.unlock();
         b1.arrive_and_wait();
-
         // WAIT ...
         b2.arrive_and_wait();
-
     }
 }
 
@@ -193,10 +178,11 @@ void GeneticAlgorithm::Galapagos_parallel(const Graph& G){
 
         barrier_1_cpp.arrive_and_wait();
 
-        cout << "Migration phase now !! " << endl;// -->DEBUG
+        //cout << "Migration phase now !! " << endl;// -->DEBUG
         Migration_bestOnes();
 
         barrier_2_cpp.arrive_and_wait();
+
 
     }
 
@@ -416,13 +402,13 @@ void GeneticAlgorithm::Migration_bestOnes(){
     srand(std::time(nullptr));
     Individual I;
     int index = 0;
-    cout << "migrazione  " <<endl;
+    //cout << "Migration  " <<endl;
 
     for(auto & i : Population){
-        cout << "isola sceglie  !!" <<endl;
+        //cout << "Island choose" <<endl;
 
         for(int j = 0; j<NUM_MIGRANTS; j++){
-            cout << "migrante  " << j <<endl;
+            //cout << "Migrant n." << j <<endl;
 
             vett_bestOf.emplace_back(i.second.front());
             i.second.erase(i.second.begin());
@@ -432,7 +418,7 @@ void GeneticAlgorithm::Migration_bestOnes(){
 
     for(auto & i : Population){
         for(int j = 0; j<NUM_MIGRANTS; j++){
-            cout << "migrante  " << j <<endl;
+            //cout << "Migrant n." << j <<endl;
 
             (vett_bestOf.size()-1) ? index = rand() % (vett_bestOf.size() - 1) : index = 0;
             i.second.emplace_back(vett_bestOf[index]);
@@ -450,10 +436,10 @@ void GeneticAlgorithm::Migration_randomOnes(){
 
 
     for(auto & i : Population){
-        cout << "isola sceglie  !!" <<endl;
+        //cout << "Island choose" <<endl;
 
         for(int j = 0; j<NUM_MIGRANTS; j++){
-            cout << "migrante  " << j <<endl;
+            //cout << "Migrant n." << j <<endl;
             index = rand() % (i.second.size() - 1);
             vett_randOnes.emplace_back(i.second[index]);
             i.second.erase(i.second.begin()+index);
@@ -463,7 +449,7 @@ void GeneticAlgorithm::Migration_randomOnes(){
 
     for(auto & i : Population){
         for(int j = 0; j<NUM_MIGRANTS; j++){
-            cout << "migrante  "<< j <<endl;
+            //out << "Migrant n."<< j <<endl;
 
             (vett_randOnes.size()-1) ? index = rand() % (vett_randOnes.size() - 1) : index = 0;
             i.second.emplace_back(vett_randOnes[index]);

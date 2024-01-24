@@ -25,32 +25,32 @@ string time_conversion(int delta_t){
     millisec = delta_t%1000;
     delta_t /= 1000;
 
-    string_to_print.insert(0, to_string(millisec)+" ms ");
+    string_to_print.insert(0, to_string(millisec)+"ms ");
     if(delta_t > 0){
         sec = delta_t % 60;
         delta_t /= 60;
-        string_to_print.insert(0, to_string(sec)+" s, ");
+        string_to_print.insert(0, to_string(sec)+"s, ");
 
         if(delta_t > 0){
             min = delta_t%60;
             delta_t /= 60;
-            string_to_print.insert(0, to_string(min)+" m, ");
+            string_to_print.insert(0, to_string(min)+"m, ");
         }
 
         if(delta_t > 0){
             h = delta_t%24;
             delta_t /= 24;
-            string_to_print.insert(0, to_string(h)+" h, ");
+            string_to_print.insert(0, to_string(h)+"h, ");
         }
 
         if(delta_t > 0){
             day = delta_t%365;
             delta_t /= 365;
-            string_to_print.insert(0, to_string(day)+" d, ");
+            string_to_print.insert(0, to_string(day)+"d, ");
 
             if(delta_t > 0){
                 year = delta_t;
-                string_to_print.insert(0, to_string(year)+" y, ");
+                string_to_print.insert(0, to_string(year)+"y, ");
             }
         }
     }
@@ -141,6 +141,7 @@ vector<vector<int>> balanceFactorBetweenPartitions(int num_partitions, const vec
     return balanceFactorPartitions;
 }
 
+/*
 // Cut Size value -> Between each partitions
 vector<vector<int>> calculateCutSizeBetweenPartitions(const Graph& G, const vector<int>& partition) {
     vector<vector<int>> cutSizeBetweenPartitions;
@@ -154,6 +155,7 @@ vector<vector<int>> calculateCutSizeBetweenPartitions(const Graph& G, const vect
 
     return cutSizeBetweenPartitions;
 }
+*/
 // balance factor of 1.0 is perfectly balanced, 0.0 or 2.0 is completely unbalanced -> each partitions against each other
 float avgCutSize(const vector<vector<int>>& cutSizes) {
     float sum = 0.0;
@@ -197,35 +199,33 @@ bool read_input(const string& file, Graph& G, int type_reading, int num_t) {
 void saveInfoToFile(const UsageInfo& usageInfo) {
     ofstream outputFile(usageInfo.fileName);
     if (outputFile.is_open()) {
-        outputFile << "Graph reading. Execution time --> " << time_conversion(usageInfo.executionTimes[0]) << endl;
-        outputFile << "Total nodes weight: " << usageInfo.totalNodesWeight << "\t\t";
-        outputFile << "Total edges weight: " << usageInfo.totalEdgesWeight << endl
-        << endl;
-
-        outputFile << "Execution time partitioning --> " << time_conversion(usageInfo.executionTimes[1]) << endl
-        << endl;
-        outputFile << "Partition " << ": ";
-        for (auto j : usageInfo.partition) {
-            outputFile << j << " ";
-        }
-        for (int i =0 ;i < usageInfo.balanceIndexPartitions.size(); i++) {
-            outputFile << "Partition "<< i << ". Internal weight: " << usageInfo.balanceIndexPartitions[i] << " | ";
-        }
+        outputFile << "Execution times" << endl;
+        outputFile << "Graph reading " << time_conversion(usageInfo.executionTimes[0]) << endl;
+        outputFile << "Partitioning " << time_conversion(usageInfo.executionTimes[1]) << endl;
         outputFile << endl;
+        outputFile << "Total nodes weight: " << usageInfo.totalNodesWeight << endl;
+        outputFile << "Total edges weight: " << usageInfo.totalEdgesWeight << endl;
+        for (int i =0 ;i < usageInfo.balanceIndexPartitions.size(); i++) {
+            outputFile << "Partition "<< i << ". Internal weight: " << usageInfo.balanceIndexPartitions[i] << endl;
+        }
+        /*
         for (int i = 0 ; i < usageInfo.balanceIndexPartitions.size(); i++) {
             for (int j = i+1 ; j < usageInfo.balanceIndexPartitions.size(); j++) {
                 //outputFile << "Cut Size between " << i << " and " << i << ": " << usageInfo.cutSizeBetweenPartitions[i][j] << " | ";
             }
         }
-
-        outputFile << endl << endl << "Balance Index: " << usageInfo.balanceIndex;
-        outputFile << " | | Global Cut Size: " << usageInfo.cutSize << endl;
-        outputFile << "Fitness = " << usageInfo.fitness << endl;
-        outputFile << endl;
+        */
+        outputFile << "Balance Index: " << usageInfo.balanceIndex << endl;
+        outputFile << "Global Cut Size: " << usageInfo.cutSize << endl;
 
         outputFile << "CPU time used: " << usageInfo.usage.ru_utime.tv_sec << " seconds " << usageInfo.usage.ru_utime.tv_usec << " microseconds" << endl;
         outputFile << "Memory usage: " << usageInfo.usage.ru_maxrss << " KBs | " << usageInfo.usage.ru_maxrss / 1024.0 << " MBs | " << usageInfo.usage.ru_maxrss / (1024.0 * 1024.0) << " GBs" << endl;
-        outputFile << "CPU percentage: " << usageInfo.cpu_percentage << "%" << endl;
+        //outputFile << "CPU percentage: " << usageInfo.cpu_percentage << "%" << endl;
+        outputFile << "Fitness value: " << usageInfo.fitness << endl;
+        outputFile << "Result " << endl;
+        for (auto j : usageInfo.partition) {
+            outputFile << j << " ";
+        }
         outputFile.close();
     }
 }

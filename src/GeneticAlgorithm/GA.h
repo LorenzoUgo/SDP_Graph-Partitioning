@@ -103,15 +103,15 @@ public:
 
     /**     Print algorithm parameters    */
     void printParameters() {
-        cout << "USED PARAMETERS" << endl;
+        cout << "PARAMETERS" << endl;
         if (balanced)
-            cout << "Balanced fitness " << balanced << endl;
+            cout << "Balanced fitness" << endl;
         if (parallel) {
-            cout << "Parallel computation " << parallel << endl;
+            cout << "Parallel computation" << endl;
             cout << "Num islands: " << NUM_ISLANDS << endl;
         }
         if (dynamic) {
-            cout << "Dynamic termination " << dynamic << endl;
+            cout << "Dynamic termination" << endl;
             cout << "Learning rate: " << LEARNING_RATE << endl;
             cout << "Num eras no upgrade: " << ERAS_NO_UPGRADE << endl;
         } else

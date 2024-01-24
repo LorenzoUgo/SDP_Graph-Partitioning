@@ -160,7 +160,7 @@ int main(int argc, char** argv) {
     getrusage(RUSAGE_SELF, &_use);
     t_start = time_now();
     G_norm.normalize();
-    GA.run(G_norm);
+    GA.run(G);
     cout << "Fitness value: " << GA.getBestOf().getFitness() << endl;
     t_end = time_now();
     cout << endl;
@@ -179,10 +179,12 @@ int main(int argc, char** argv) {
 
     /**     SAVE RESULTS TO FILE    */
     getrusage(RUSAGE_SELF, &(infos.usage));
+    /*
     double duration = (t_start - t_end) / 1000.0;
     double cpu = (infos.usage.ru_utime.tv_sec - _use.ru_utime.tv_sec) + (infos.usage.ru_utime.tv_usec - _use.ru_utime.tv_usec) / 1000000.0;
     infos.cpu_percentage = 100 * cpu / duration;
     cout << "CPU usage: " << infos.cpu_percentage << "%" << endl;
+    */
     cout << "Memory usage: " << infos.usage.ru_maxrss / (1024.0 * 1024.0) << " GBs" << endl;
 
     infos.fileName = filename + "gapart"
