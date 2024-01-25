@@ -132,6 +132,7 @@ public:
 
     /** misc functions */
     bool check_early_end(const Individual& champ);
+    Individual BestIndividual();
     Individual BestOfGalapagos();
     vector<Individual> IslandsBests();
 
@@ -156,6 +157,8 @@ public:
 
 
     /** Parent selection function */
+    pair<Individual, Individual> parents_selection_tournament(int num_partecipants, vector<Individual> population);
+    pair<Individual, Individual> random_parents_selection(vector<Individual> population);
     Individual parent_selection_tournament(int num_partecipants, const vector<Individual>& population);
     Individual random_parent_selection(const vector<Individual>& population);
 
