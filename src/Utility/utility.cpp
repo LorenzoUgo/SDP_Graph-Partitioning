@@ -217,7 +217,9 @@ void saveInfoToFile(const UsageInfo& usageInfo) {
         */
         outputFile << "Balance Index: " << usageInfo.balanceIndex << endl;
         outputFile << "Global Cut Size: " << usageInfo.cutSize << endl;
-
+        outputFile << endl;
+        outputFile << usageInfo.parameters.str();
+        outputFile << endl;
         outputFile << "CPU time used: " << usageInfo.usage.ru_utime.tv_sec << " seconds " << usageInfo.usage.ru_utime.tv_usec << " microseconds" << endl;
         outputFile << "Memory usage: " << usageInfo.usage.ru_maxrss << " KBs | " << usageInfo.usage.ru_maxrss / 1024.0 << " MBs | " << usageInfo.usage.ru_maxrss / (1024.0 * 1024.0) << " GBs" << endl;
         //outputFile << "CPU percentage: " << usageInfo.cpu_percentage << "%" << endl;

@@ -17,6 +17,7 @@
 using namespace std;
 
 struct UsageInfo {
+    stringstream parameters;
     vector<int> partition;
     vector<int> executionTimes;
     vector<int> balanceIndexPartitions;

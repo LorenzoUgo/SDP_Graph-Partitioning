@@ -1,5 +1,11 @@
 cmake-build-debug/
 
+# Data folder
+./data/*/metis_text.txt
+./data/*/standard_text.txt
+./data/*/standard_binary.bin
+
+# IDE files
 CMakeLists.txt
 .idea/*
 

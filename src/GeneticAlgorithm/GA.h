@@ -13,6 +13,7 @@
 #include <barrier>
 #include <mutex>
 #include <getopt.h>
+#include <sstream>
 
 #include "../Individual/Individual.h"
 
@@ -102,25 +103,27 @@ public:
     Individual getBestOf() const {return bestOf;}
 
     /**     Print algorithm parameters    */
-    void printParameters() {
-        cout << "PARAMETERS" << endl;
+    stringstream printParameters() {
+        stringstream out;
+        out << "PARAMETERS" << endl;
         if (balanced)
-            cout << "Balanced fitness" << endl;
+            out << "Balanced fitness" << endl;
         if (parallel) {
-            cout << "Parallel computation" << endl;
-            cout << "Num islands: " << NUM_ISLANDS << endl;
+            out << "Parallel computation" << endl;
+            out << "Num islands: " << NUM_ISLANDS << endl;
         }
         if (dynamic) {
-            cout << "Dynamic termination" << endl;
-            cout << "Learning rate: " << LEARNING_RATE << endl;
-            cout << "Num eras no upgrade: " << ERAS_NO_UPGRADE << endl;
+            out << "Dynamic termination" << endl;
+            out << "Learning rate: " << LEARNING_RATE << endl;
+            out << "Num eras no upgrade: " << ERAS_NO_UPGRADE << endl;
         } else
-            cout << "Num eras: " << NUM_ERAS << endl;
-        cout << "Num partitions: " << NUM_PARTITIONS << endl;
-        cout << "Population size: " << POPULATION_SIZE << endl;
-        cout << "Num generations: " << NUM_GENERATIONS << endl;
-        cout << "Num offspring: " << NUM_OFFSPRING << endl;
-        cout << "Num migrants: " << NUM_MIGRANTS << endl;
+            out << "Num eras: " << NUM_ERAS << endl;
+        out << "Num partitions: " << NUM_PARTITIONS << endl;
+        out << "Population size: " << POPULATION_SIZE << endl;
+        out << "Num generations: " << NUM_GENERATIONS << endl;
+        out << "Num offspring: " << NUM_OFFSPRING << endl;
+        out << "Num migrants: " << NUM_MIGRANTS << endl;
+        return out;
     }
 
     /**     Reset GA to the origin     */

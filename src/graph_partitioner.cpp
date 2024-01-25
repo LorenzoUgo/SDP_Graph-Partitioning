@@ -6,6 +6,7 @@
 #include "GeneticAlgorithm/GA.h"
 #include "Utility/utility.h"
 
+#include <sstream>
 #include <string>
 #include <chrono>
 #include <sys/resource.h>
@@ -164,7 +165,8 @@ int main(int argc, char** argv) {
     cout << "Fitness value: " << GA.getBestOf().getFitness() << endl;
     t_end = time_now();
     cout << endl;
-    GA.printParameters();
+    cout << GA.printParameters().str();
+    infos.parameters = GA.printParameters();
 
     cout << endl << "Execution time: " << time_conversion(t_end - t_start) << endl;
     infos.executionTimes.push_back(t_end - t_start);
