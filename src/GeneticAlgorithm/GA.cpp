@@ -4,7 +4,7 @@
 
 #include "GA.h"
 
-#define MUTATION_RATE 0.25
+#define MUTATION_RATE 0.50
 
 mutex printMutex;
 
@@ -141,7 +141,7 @@ void GeneticAlgorithm::Eras_parallel(int island_id, vector<Individual>& populati
                     //parents = parents_selection_tournament(rand() % (population.size() / 5 - 1) + 1, population);        
                     //or 
                     parents = random_parents_selection(population);
-                    offspring = two_cut_crossover(parents.first, parents.second);
+                    offspring = n_cut_crossover(parents.first, parents.second);
                     offspring.setFitness(G, balanced);
                 }
                 population.push_back(offspring);
@@ -286,7 +286,8 @@ Individual GeneticAlgorithm::two_cut_crossover(Individual I1, Individual I2){
 Individual GeneticAlgorithm::n_cut_crossover(Individual I1, Individual I2){
 
     srand(std::time(nullptr));
-    int cuts = rand() % (I1.getGenotypeSize() -1) +1;
+    //int cuts = rand() % (I1.getGenotypeSize() -1) +1;
+    int cuts = 100;
     set<int> set_cut;
 
     for (int i = 0; i < cuts; ++i) {

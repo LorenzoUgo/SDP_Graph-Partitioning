@@ -1,18 +1,18 @@
 #include "Individual.h"
 
-//#define MUTATION 0.1 // 10% probability
-#define N 100
+#define FRACTION_MUTATION 20 // maximum number of mutated genes expressed as fraction of genotype size
 
 void Individual::mutation() {
     std::default_random_engine generator(std::chrono::system_clock::now().time_since_epoch().count());
-    std::uniform_real_distribution<float> mutation_incidence(0,genotype.size()/N);
+    std::uniform_real_distribution<float> mutation_incidence(0,genotype.size()/FRACTION_MUTATION);
     std::uniform_int_distribution<int> mutation_value(1,num_alleles-1);
 
     auto incidence = std::bind(mutation_incidence, generator);
     auto value = std::bind(mutation_value, generator);
 
-    for(int i=0;i<incidence();i++){
-        genotype[rand()%genotype.size()] += (value())%num_alleles;
+    int mutations = incidence();
+    for(int i=0;i<mutations;i++){
+        genotype[rand()%genotype.size()] = (genotype[rand()%genotype.size()] + value())%num_alleles;
     }
 }
 
