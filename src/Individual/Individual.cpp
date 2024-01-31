@@ -1,10 +1,10 @@
 #include "Individual.h"
 
-#define FRACTION_MUTATION 20 // maximum number of mutated genes expressed as fraction of genotype size
+#define MUTATION_FRACTION 0.05 // maximum number of mutated genes expressed as fraction of genotype size
 
 void Individual::mutation() {
     std::default_random_engine generator(std::chrono::system_clock::now().time_since_epoch().count());
-    std::uniform_real_distribution<float> mutation_incidence(0,genotype.size()/FRACTION_MUTATION);
+    std::uniform_real_distribution<float> mutation_incidence(0,genotype.size()*MUTATION_FRACTION);
     std::uniform_int_distribution<int> mutation_value(1,num_alleles-1);
 
     auto incidence = std::bind(mutation_incidence, generator);
@@ -14,6 +14,10 @@ void Individual::mutation() {
     for(int i=0;i<mutations;i++){
         genotype[rand()%genotype.size()] = (genotype[rand()%genotype.size()] + value())%num_alleles;
     }
+}
+
+float get_mutation_fraction() {
+    return MUTATION_FRACTION;
 }
 
 // calcola la dimensione del taglio sommando i pesi degli archi che vanno da una partizione ad un'altra

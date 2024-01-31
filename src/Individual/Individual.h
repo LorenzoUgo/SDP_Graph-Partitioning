@@ -40,16 +40,15 @@ public:
     }
 
     // NOTA perchè usare setgenotype in crossover se esiste il constructor?
-    void setGenotype(vector<int> &gtype) { genotype = gtype; }
+    // void setGenotype(vector<int> &gtype) { genotype = gtype; }
     void setFitness(const Graph& G, const bool& balance, float cut_size_weight=0.5 , float balance_index_weight=0.5);
 
     const vector<int> &getGenotype() const { return genotype; }
     float getFitness() const { return fitness_value; }
     int getNumAlleles() { return num_alleles; }
-
     int getGenotypeSize() const { return genotype.size(); }
+    
     void mutation();
-
     void printIndividual();
 
     //Copy Constructor
@@ -77,6 +76,8 @@ public:
         return fitness_value < other.fitness_value;
     }
 };
+
+float get_mutation_fraction();
 
 float cut_size(vector<int> genotype, const Graph& G);
 

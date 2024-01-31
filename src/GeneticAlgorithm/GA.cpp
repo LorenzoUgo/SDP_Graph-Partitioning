@@ -8,6 +8,32 @@
 
 mutex printMutex;
 
+stringstream GeneticAlgorithm::printParameters() {
+        stringstream out;
+        out << "PARAMETERS" << endl;
+        if (balanced)
+            out << "Balanced fitness" << endl;
+        if (parallel) {
+            out << "Parallel computation" << endl;
+            out << "Num islands: " << NUM_ISLANDS << endl;
+        }
+        if (dynamic) {
+            out << "Dynamic termination" << endl;
+            out << "Learning rate: " << LEARNING_RATE << endl;
+            out << "Num eras no upgrade: " << ERAS_NO_UPGRADE << endl;
+        } else
+            out << "Num eras: " << NUM_ERAS << endl;
+        out << "Num partitions: " << NUM_PARTITIONS << endl;
+        out << "Population size: " << POPULATION_SIZE << endl;
+        out << "Num generations: " << NUM_GENERATIONS << endl;
+        out << "Num offspring: " << NUM_OFFSPRING << endl;
+        out << "Num migrants: " << NUM_MIGRANTS << endl;
+        out << "CONSTANTS" << endl;
+        out << "Fraction of genotype that gets mutated: " << get_mutation_fraction()*100 << "%" << endl;
+        out << "Mutation rate: " << MUTATION_RATE*100 << "%" << endl;
+        return out;
+    }
+
 /** Start Algorithm */
 
 void GeneticAlgorithm::run(const Graph& G){

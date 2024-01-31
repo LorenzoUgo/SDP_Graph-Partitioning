@@ -103,28 +103,7 @@ public:
     Individual getBestOf() const {return bestOf;}
 
     /**     Print algorithm parameters    */
-    stringstream printParameters() {
-        stringstream out;
-        out << "PARAMETERS" << endl;
-        if (balanced)
-            out << "Balanced fitness" << endl;
-        if (parallel) {
-            out << "Parallel computation" << endl;
-            out << "Num islands: " << NUM_ISLANDS << endl;
-        }
-        if (dynamic) {
-            out << "Dynamic termination" << endl;
-            out << "Learning rate: " << LEARNING_RATE << endl;
-            out << "Num eras no upgrade: " << ERAS_NO_UPGRADE << endl;
-        } else
-            out << "Num eras: " << NUM_ERAS << endl;
-        out << "Num partitions: " << NUM_PARTITIONS << endl;
-        out << "Population size: " << POPULATION_SIZE << endl;
-        out << "Num generations: " << NUM_GENERATIONS << endl;
-        out << "Num offspring: " << NUM_OFFSPRING << endl;
-        out << "Num migrants: " << NUM_MIGRANTS << endl;
-        return out;
-    }
+    stringstream printParameters();
 
     /**     Reset GA to the origin     */
     void reset(){Population.clear();};
