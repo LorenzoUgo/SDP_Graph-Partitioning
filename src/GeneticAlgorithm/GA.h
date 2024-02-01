@@ -43,14 +43,14 @@ public:
     /**     Constructor with default parameters     */
     explicit GeneticAlgorithm(
         int numPartitions=2, 
-        int populationSize=50, 
-        int numGenerations=25, 
-        int numOffspring=20, 
+        int populationSize=20, 
+        int numGenerations=80, 
+        int numOffspring=12, 
         int numIslands=1,
         int numEras=1, 
         int numMigrants=30, 
         int erasNoUpgrade=5, 
-        float learningRate=0.03, 
+        float learningRate=0.001, 
         bool Parallel=false, 
         bool Dynamic=false, 
         bool Balanced=false) 
@@ -64,18 +64,28 @@ public:
     // Defines default values for parallel version
     void setParallel(bool Parallel) {
         parallel = Parallel;
-        NUM_ISLANDS = 4;
-        NUM_ERAS = 4;
-        POPULATION_SIZE = POPULATION_SIZE / NUM_ISLANDS;
-        NUM_GENERATIONS = NUM_GENERATIONS / NUM_ISLANDS;
-        NUM_OFFSPRING = NUM_OFFSPRING / NUM_ISLANDS;
-        NUM_MIGRANTS = NUM_MIGRANTS / NUM_ISLANDS;
+        NUM_ERAS = 15;
+        if (NUM_ISLANDS == 1) {// num islands not set -> set default values
+            NUM_ISLANDS = 4;
+            //POPULATION_SIZE = POPULATION_SIZE / NUM_ISLANDS;
+            NUM_GENERATIONS = NUM_GENERATIONS / NUM_ISLANDS;
+            //NUM_OFFSPRING = NUM_OFFSPRING / NUM_ISLANDS;
+            NUM_MIGRANTS = NUM_MIGRANTS / NUM_ISLANDS;
+        }
     } 
     void setNumPartitions(int numPartitions) {NUM_PARTITIONS = numPartitions;}
     void setNumOffspring(int numOffspring) {NUM_OFFSPRING = numOffspring;}
     void setNumGenerations(int numGenerations) {NUM_GENERATIONS = numGenerations;}
     void setPopulationSize(int populationSize) {POPULATION_SIZE = populationSize;}
-    void setNumIslands(int numIslands) {NUM_ISLANDS = numIslands;}
+    void setNumIslands(int numIslands) {
+        if (parallel && (NUM_ISLANDS == 4)) { // set parallel has been called before
+            NUM_ISLANDS = numIslands;
+            //POPULATION_SIZE = POPULATION_SIZE*4 / NUM_ISLANDS;
+            NUM_GENERATIONS = NUM_GENERATIONS*4 / NUM_ISLANDS;
+            //NUM_OFFSPRING = NUM_OFFSPRING*4 / NUM_ISLANDS;
+            NUM_MIGRANTS = NUM_MIGRANTS*4 / NUM_ISLANDS;
+        }
+    }
     void setNumEras(int numEras) {NUM_ERAS = numEras;}
     void setNumMigrants(int numMigrants) {NUM_MIGRANTS = numMigrants;}
     void setDynamic(bool Dynamic) {dynamic = Dynamic;}
@@ -128,6 +138,7 @@ public:
     void Galapagos_parallel(  const Graph& G );
     void Galapagos_parallel_LR( const Graph& G );
     void Eras_parallel(int island_id, vector<Individual>& population, const Graph& G, barrier<>& b1, barrier<> &b2);
+    void Eras_parallel_LR(int island_id, vector<Individual>& population, const Graph& G, barrier<>& b1, barrier<>& b2, bool &earlyend);
 
 
     /** Crossover function */

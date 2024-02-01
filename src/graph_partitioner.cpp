@@ -192,6 +192,7 @@ int main(int argc, char** argv) {
     infos.fileName = filename + "gapart"
             + (GA.isBalanced() ?".balanced":"")
             + (GA.isParallel() ?".parallel":"")
+            + (GA.isDynamic() ?".dyn":"")
             + "." + to_string(GA.getNumPartitions())
             + (GA.isParallel() ? "." + to_string(GA.getNumIslands()):"")
             + ".txt";

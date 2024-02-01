@@ -182,15 +182,61 @@ void GeneticAlgorithm::Eras_parallel(int island_id, vector<Individual>& populati
         //cout << "ISLAND " << island_id << " WAITING FOR MIGRATION" << endl;
         cout << "Best of island n." << island_id << " has fitness: " << population[0].getFitness() << endl;
         printMutex.unlock();
+        
         b1.arrive_and_wait();
         // WAIT ...
         b2.arrive_and_wait();
     }
 }
 
-void GeneticAlgorithm::Galapagos_parallel(const Graph& G){
+void GeneticAlgorithm::Eras_parallel_LR(int island_id, vector<Individual>& population, const Graph& G, barrier<>& b1, barrier<>& b2, bool &earlyend) {
+    Individual offspring;
+    pair<Individual, Individual> parents;
+    srand(std::time(nullptr));
 
+    for(int e = 0; e>=0; e++){
+        for (int g = 0; g < NUM_GENERATIONS; g++) {
+            //cout << "Starting Generation n_" << g << endl;
+            for (int i = 0; i < NUM_OFFSPRING; i++) {
+                if ( ( ( (float) rand() ) / ( (float) RAND_MAX+1.0 ) ) < MUTATION_RATE) {
+                    offspring = random_parent_selection(population);        //or: parent_selection_tournament(rand() % (population.size() / 5 - 1) + 1, population); <-- 1 solo genitore !
+                    offspring.mutation();
+                    offspring.setFitness(G, balanced);
+                } else {
+                    //parents = parents_selection_tournament(rand() % (population.size() / 5 - 1) + 1, population);        
+                    //or 
+                    parents = random_parents_selection(population);
+                    offspring = n_cut_crossover(parents.first, parents.second);
+                    offspring.setFitness(G, balanced);
+                }
+                population.push_back(offspring);
+            }
+            sort(population.begin(), population.end(), [](const Individual& a, const Individual& b){return a.getFitness() < b.getFitness();});
+            for (int i = 0; i < NUM_OFFSPRING; i++) {
+                auto it = population.begin() + POPULATION_SIZE;
+                population.erase(it);
+            }
+        }
+        printMutex.lock();
+        //cout << "ISLAND " << island_id << " WAITING FOR MIGRATION" << endl;
+        cout << "Best of island n." << island_id << " has fitness: " << population[0].getFitness() << endl;
+        printMutex.unlock();
+        
+        b1.arrive_and_wait();
+        // check early end
+        printMutex.lock();
+        if (earlyend) {
+            e = -2; //end cycle
+            cout << "Thread n." << island_id << " early end" << endl;
+        }
+        printMutex.unlock();
+        b2.arrive_and_wait();
+    }
+}
+
+void GeneticAlgorithm::Galapagos_parallel(const Graph& G){
     vector<thread> Islands;
+    bool earlyend = false;
 
     barrier<> barrier_1_cpp(NUM_ISLANDS + 1);
     barrier<> barrier_2_cpp(NUM_ISLANDS + 1);
@@ -221,46 +267,55 @@ void GeneticAlgorithm::Galapagos_parallel(const Graph& G){
 
 }
 
-// TO BE FIXED
 void GeneticAlgorithm::Galapagos_parallel_LR(const Graph& G){
-
     vector<thread> Islands;
     barrier<> barrier_1_cpp(NUM_ISLANDS + 1);
     barrier<> barrier_2_cpp(NUM_ISLANDS + 1);
 
-    Individual bestIndividual;
+    bool earlyend = false;
+    Individual best, newbest;
     //bestIndividual = BestIndividual();
-    bestIndividual = BestOfGalapagos();
+    best = BestOfGalapagos();
 
-    int e = 1;// -->DEBUG
-    int era_waited_for_improvement = ERAS_NO_UPGRADE;
+    int e = 0;// -->DEBUG
+    int era_waited_for_improvement = ERAS_NO_UPGRADE-1; //threads will always do a last further cycle
 
     for(int i = 0; i<NUM_ISLANDS; i++) {
-        Islands.emplace_back( [=, &G, &barrier_1_cpp, &barrier_2_cpp] {Eras_parallel(i, Population.at(i), G, barrier_1_cpp, barrier_2_cpp);});
+        Islands.emplace_back( [=, &G, &barrier_1_cpp, &barrier_2_cpp, &earlyend] {Eras_parallel_LR(i, Population.at(i), G, barrier_1_cpp, barrier_2_cpp, earlyend);});
 
     }
     while(era_waited_for_improvement){
         cout << "Starting Era n_" << e << " - - - - - ";// -->DEBUG
-        cout << "Current Champ: " << bestIndividual.getFitness() << endl;// -->DEBUG
+        cout << "Current Champ: " << best.getFitness() << endl;// -->DEBUG
 
         barrier_1_cpp.arrive_and_wait();
+        e++;
 
-        cout << "Migration phase now !! " << endl;// -->DEBUG
-        e++;// -->DEBUG
-
+        cout << "Migration phase now !! " << endl;
         Migration_bestOnes();
 
-        bestIndividual = BestOfGalapagos();
-        if(check_early_end(bestIndividual)){
+        newbest = BestOfGalapagos();
+        if( (best.getFitness() - newbest.getFitness())/best.getFitness() < LEARNING_RATE ){
+            cout << "Improvement is " << (best.getFitness() - newbest.getFitness())/best.getFitness() << " < " << LEARNING_RATE << endl;
             era_waited_for_improvement --;
+            if (era_waited_for_improvement == 0) {
+                earlyend = true;
+                cout << "Early end set true" << endl;
+            }
         }else{
-            //bestIndividual = BestIndividual();
-            era_waited_for_improvement = ERAS_NO_UPGRADE;
+            best = newbest;
+            era_waited_for_improvement = (ERAS_NO_UPGRADE-1); //threads will always do a last further cycle
         }
 
         barrier_2_cpp.arrive_and_wait();
 
     }
+
+    cout << "Starting Final Era" << endl;
+    barrier_1_cpp.arrive_and_wait();
+    cout << "Final migration !! " << endl;
+    Migration_bestOnes();
+    barrier_2_cpp.arrive_and_wait();
 
     for(auto& t: Islands) {
         t.join();
@@ -469,17 +524,13 @@ void GeneticAlgorithm::Migration_bestOnes(){
     srand(std::time(nullptr));
     Individual I;
     int index = 0;
-    //cout << "Migration  " <<endl;
 
     for(auto & i : Population){
         //cout << "Island choose" <<endl;
-
         for(int j = 0; j<NUM_MIGRANTS; j++){
             //cout << "Migrant n." << j <<endl;
-
             vett_bestOf.emplace_back(i.second.front());
             i.second.erase(i.second.begin());
-
         }
     }
 
@@ -492,6 +543,7 @@ void GeneticAlgorithm::Migration_bestOnes(){
             vett_bestOf.erase(vett_bestOf.begin() + index);
 
         }
+    
     }
 }
 
@@ -566,9 +618,12 @@ Individual GeneticAlgorithm::BestOfGalapagos(){
 
 vector<Individual> GeneticAlgorithm::IslandsBests(){
     vector<Individual> v;
-
+    int i=0;
     for(auto vI : Population){
+        sort(vI.second.begin(), vI.second.end(), [](const Individual& a, const Individual& b){return a.getFitness() < b.getFitness();});
+        //cout << "ISLANDBESTS: Best of island " << i << " has fitness " << vI.second[0].getFitness() << endl;
         v.emplace_back(vI.second[0]);
+        i++;
     }
 
     return v;
