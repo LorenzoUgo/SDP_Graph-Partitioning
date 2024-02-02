@@ -85,7 +85,7 @@ void GeneticAlgorithm::Eras(vector<Individual>& population, const Graph& G) {
                 //DAI UN OCCHIO !!!!!
                 //parents = parents_selection_tournament(rand() % (population.size() / 5 - 1) + 1, population);        
                 parents = random_parents_selection(population);
-                offspring = one_cut_crossover(parents.first, parents.second);
+                offspring = n_cut_crossover(parents.first, parents.second);
                 offspring.setFitness(G, balanced);
 
             }

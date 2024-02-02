@@ -48,7 +48,7 @@ public:
         int numOffspring=12, 
         int numIslands=1,
         int numEras=1, 
-        int numMigrants=30, 
+        int numMigrants=7, 
         int erasNoUpgrade=5, 
         float learningRate=0.001, 
         bool Parallel=false, 
@@ -70,7 +70,7 @@ public:
             //POPULATION_SIZE = POPULATION_SIZE / NUM_ISLANDS;
             NUM_GENERATIONS = NUM_GENERATIONS / NUM_ISLANDS;
             //NUM_OFFSPRING = NUM_OFFSPRING / NUM_ISLANDS;
-            NUM_MIGRANTS = NUM_MIGRANTS / NUM_ISLANDS;
+            //NUM_MIGRANTS = NUM_MIGRANTS / NUM_ISLANDS;
         }
     } 
     void setNumPartitions(int numPartitions) {NUM_PARTITIONS = numPartitions;}
@@ -83,7 +83,7 @@ public:
             //POPULATION_SIZE = POPULATION_SIZE*4 / NUM_ISLANDS;
             NUM_GENERATIONS = NUM_GENERATIONS*4 / NUM_ISLANDS;
             //NUM_OFFSPRING = NUM_OFFSPRING*4 / NUM_ISLANDS;
-            NUM_MIGRANTS = NUM_MIGRANTS*4 / NUM_ISLANDS;
+            //NUM_MIGRANTS = NUM_MIGRANTS*4 / NUM_ISLANDS;
         }
     }
     void setNumEras(int numEras) {NUM_ERAS = numEras;}

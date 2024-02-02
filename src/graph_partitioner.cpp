@@ -161,7 +161,7 @@ int main(int argc, char** argv) {
     getrusage(RUSAGE_SELF, &_use);
     t_start = time_now();
     G_norm.normalize();
-    GA.run(G);
+    GA.run(G_norm);
     cout << "Fitness value: " << GA.getBestOf().getFitness() << endl;
     t_end = time_now();
     cout << endl;
