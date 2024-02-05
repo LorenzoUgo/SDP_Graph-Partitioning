@@ -162,13 +162,13 @@ void GeneticAlgorithm::Eras_parallel(int island_id, vector<Individual>& populati
                 if ( ( ( (float) rand() ) / ( (float) RAND_MAX+1.0 ) ) < MUTATION_RATE) {
                     offspring = random_parent_selection(population);        //or: parent_selection_tournament(rand() % (population.size() / 5 - 1) + 1, population); <-- 1 solo genitore !
                     offspring.mutation();
-                    offspring.setFitnessParallel(G, balanced);
+                    offspring.setFitness(G, balanced);
                 } else {
                     //parents = parents_selection_tournament(rand() % (population.size() / 5 - 1) + 1, population);        
                     //or 
                     parents = random_parents_selection(population);
                     offspring = n_cut_crossover(parents.first, parents.second);
-                    offspring.setFitnessParallel(G, balanced);
+                    offspring.setFitness(G, balanced);
                 }
                 population.push_back(offspring);
             }
