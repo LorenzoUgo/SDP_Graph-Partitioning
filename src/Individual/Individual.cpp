@@ -1,6 +1,7 @@
 #include "Individual.h"
 
 #define MUTATION_FRACTION 0.05 // maximum number of mutated genes expressed as fraction of genotype size
+#define NUM_THREADS 4
 
 void Individual::mutation() {
     std::default_random_engine generator(std::chrono::system_clock::now().time_since_epoch().count());
@@ -34,7 +35,7 @@ void cut_evaluator(int index, vector<int> genotype, vector<float>& values, vecto
 
     //cout << edges.size() << endl;
 
-    for (int i=index; i<edges.size(); i+=4){
+    for (int i=index; i<edges.size(); i+=NUM_THREADS){
         if(genotype[edges[i].n1] != genotype[edges[i].n2])
             values[index] += edges[i].weight;
     }
@@ -43,14 +44,14 @@ void cut_evaluator(int index, vector<int> genotype, vector<float>& values, vecto
 void cut_size_parallel(vector<int>& genotype, const Graph& G, float& cut_size){
     auto edges = G.getEdges();
     vector<thread> cut_size_evaluators;
-    vector<float> values(4);
+    vector<float> values(NUM_THREADS);
     float value = 0.0;
     //
-    for(int i = 0; i<4; i++) {
+    for(int i = 0; i<NUM_THREADS; i++) {
         cut_size_evaluators.emplace_back( [=, &genotype, &values, &edges] {cut_evaluator(i, genotype, values, edges);});
     }
 
-    for(int i=0; i<4; i++){
+    for(int i=0; i<NUM_THREADS; i++){
         cut_size_evaluators[i].join();
     }
 
@@ -68,7 +69,7 @@ void balance_evaluator(int index, vector<int> genotype, const Graph& G, vector<v
     
     //cout << genotype.size() << endl;
 
-    for(int i=index; i<genotype.size(); i+=4){
+    for(int i=index; i<genotype.size(); i+=NUM_THREADS){
         partitions_weight_values[index][genotype[i]] += G.getNodeWeight(i);
     }
 }
@@ -77,17 +78,17 @@ void balance_evaluator(int index, vector<int> genotype, const Graph& G, vector<v
 void balance_index_parallel(int num_partitions, const vector<int>& genotype, const Graph& G, float& balance_index){
     vector<float> partitions_weight(num_partitions);
     vector<thread> partitions_weight_evaluators;
-    vector<vector<float>> partitions_weight_values(4, vector<float>(num_partitions));
+    vector<vector<float>> partitions_weight_values(NUM_THREADS, vector<float>(num_partitions));
 
-    for(int i = 0; i<4; i++) {
+    for(int i = 0; i<NUM_THREADS; i++) {
         partitions_weight_evaluators.emplace_back( [=, &genotype, &G, &partitions_weight_values] {balance_evaluator(i, genotype, G, partitions_weight_values);});
     }
 
-    for(int i=0; i<4; i++){
+    for(int i=0; i<NUM_THREADS; i++){
         partitions_weight_evaluators[i].join();
     }
 
-    for(int i=0; i<4; i++){
+    for(int i=0; i<NUM_THREADS; i++){
         for(int j=0; j<num_partitions;j++){
             partitions_weight[j] += partitions_weight_values[i][j];
         }
