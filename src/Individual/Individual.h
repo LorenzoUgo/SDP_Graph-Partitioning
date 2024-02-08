@@ -83,8 +83,8 @@ float get_mutation_fraction();
 
 float cut_size(vector<int> genotype, const Graph& G);
 void cut_size_parallel(vector<int>& genotype, const Graph& G, float& cut_size);
-void cut_evaluator(int index, vector<int> genotype, vector<float> values, vector<Edge> edges);
-void balance_evaluator(int index, vector<int> genotype, const Graph& G, vector<vector<float>> partitions_weight_values);
+void cut_evaluator(int index, vector<int> genotype, vector<float>& values, vector<Edge> edges);
+void balance_evaluator(int index, vector<int> genotype, const Graph& G, vector<vector<float>>& partitions_weight_values);
 
 float balance_index(int num_partitions, const vector<int>& genotype, const Graph& G);
 void balance_index_parallel(int num_partitions, const vector<int>& genotype, const Graph& G, float& balance_index);

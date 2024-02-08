@@ -30,75 +30,73 @@ float cut_size(vector<int> genotype, const Graph& G){
     return cut_size;
 }
 
-void cut_evaluator(int index, vector<int> genotype, vector<float> values, vector<Edge> edges){
+void cut_evaluator(int index, vector<int> genotype, vector<float>& values, vector<Edge> edges){
 
-    cout << edges.size() << endl;
+    //cout << edges.size() << endl;
 
-    for (int i=index; i<edges.size(); i+=2){
+    for (int i=index; i<edges.size(); i+=4){
         if(genotype[edges[i].n1] != genotype[edges[i].n2])
             values[index] += edges[i].weight;
     }
-    return;
 }
 
 void cut_size_parallel(vector<int>& genotype, const Graph& G, float& cut_size){
     auto edges = G.getEdges();
-    // vector<thread> cut_size_evaluators;
-    // vector<float> values(2);
+    vector<thread> cut_size_evaluators;
+    vector<float> values(4);
     float value = 0.0;
     //
-    // for(int i = 0; i<2; i++) {
-    //     cut_size_evaluators.emplace_back( [=, &genotype, &values, &edges] {cut_evaluator(i, genotype, values, edges);});
-    // }
-    //
-    // for(int i=0; i<2; i++){
-    //     cut_size_evaluators[i].join();
-    // }
-
-    for (int i=0; i<edges.size(); i++){
-        if(genotype[edges[i].n1] != genotype[edges[i].n2])
-            cut_size += edges[i].weight;
+    for(int i = 0; i<4; i++) {
+        cut_size_evaluators.emplace_back( [=, &genotype, &values, &edges] {cut_evaluator(i, genotype, values, edges);});
     }
 
+    for(int i=0; i<4; i++){
+        cut_size_evaluators[i].join();
+    }
+
+    //for (int i=0; i<edges.size(); i++){
+    //    if(genotype[edges[i].n1] != genotype[edges[i].n2])
+    //        cut_size += edges[i].weight;
+    //}
 
 
-    //cut_size = reduce(values.begin(), values.end());
+
+    cut_size = reduce(values.begin(), values.end());
 }
 
-void balance_evaluator(int index, vector<int> genotype, const Graph& G, vector<vector<float>> partitions_weight_values){
+void balance_evaluator(int index, vector<int> genotype, const Graph& G, vector<vector<float>>& partitions_weight_values){
     
-    cout << genotype.size() << endl;
+    //cout << genotype.size() << endl;
 
-    for(int i=index; i<genotype.size(); i+=2){
+    for(int i=index; i<genotype.size(); i+=4){
         partitions_weight_values[index][genotype[i]] += G.getNodeWeight(i);
     }
-    return;
 }
 
 // calcola la differenza tra la partizione con il maggior peso e quella con il minor peso dei nodi al suo interno
 void balance_index_parallel(int num_partitions, const vector<int>& genotype, const Graph& G, float& balance_index){
     vector<float> partitions_weight(num_partitions);
-    // vector<thread> partitions_weight_evaluators;
-    // vector<vector<float>> partitions_weight_values(2, vector<float>(num_partitions));
-    //
-    // for(int i = 0; i<2; i++) {
-    //     partitions_weight_evaluators.emplace_back( [=, &genotype, &G, &partitions_weight_values] {balance_evaluator(i, genotype, G, partitions_weight_values);});
-    // }
-    //
-    // for(int i=0; i<2; i++){
-    //     partitions_weight_evaluators[i].join();
-    // }
-    //
-    // for(int i=0; i<2; i++){
-    //     for(int j=0; j<num_partitions;j++){
-    //         partitions_weight[j] += partitions_weight_values[i][j];
-    //     }
-    //
-    // }
+    vector<thread> partitions_weight_evaluators;
+    vector<vector<float>> partitions_weight_values(4, vector<float>(num_partitions));
 
-    for(int i=0; i<genotype.size(); i++){
-        partitions_weight[genotype[i]] += G.getNodeWeight(i);
+    for(int i = 0; i<4; i++) {
+        partitions_weight_evaluators.emplace_back( [=, &genotype, &G, &partitions_weight_values] {balance_evaluator(i, genotype, G, partitions_weight_values);});
     }
+
+    for(int i=0; i<4; i++){
+        partitions_weight_evaluators[i].join();
+    }
+
+    for(int i=0; i<4; i++){
+        for(int j=0; j<num_partitions;j++){
+            partitions_weight[j] += partitions_weight_values[i][j];
+        }
+
+    }
+
+    //for(int i=0; i<genotype.size(); i++){
+    //    partitions_weight[genotype[i]] += G.getNodeWeight(i);
+    //}
 
     float max_partition_weight = *max_element(partitions_weight.begin(), partitions_weight.end());
     float min_partition_weight = *min_element(partitions_weight.begin(), partitions_weight.end());
@@ -147,7 +145,6 @@ void Individual::setFitnessParallel(const Graph& G, const bool& balance, float c
                     :
             (cut_size_value)
     );
-    return;
 }
 
 void Individual::printIndividual(){
