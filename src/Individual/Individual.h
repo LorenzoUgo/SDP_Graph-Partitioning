@@ -38,13 +38,14 @@ public:
         for (int i=0; i<genotypeSize; i++)
             genotype.emplace_back(value());
 
-        setFitnessParallel(G, balance);
+        int internal = 1;
+        setFitnessParallel(G, balance, internal);
     }
 
     // NOTA perchè usare setgenotype in crossover se esiste il constructor?
     // void setGenotype(vector<int> &gtype) { genotype = gtype; }
     void setFitness(const Graph& G, const bool& balance, float cut_size_weight=0.5 , float balance_index_weight=0.5);
-    void setFitnessParallel(const Graph& G, const bool& balance, float cut_size_weight=0.5 , float balance_index_weight=0.5);
+    void setFitnessParallel(const Graph& G, const bool& balance, int internal = 0 , float cut_size_weight=0.5 , float balance_index_weight=0.5);
     const vector<int> &getGenotype() const { return genotype; }
     float getFitness() const { return fitness_value; }
     int getNumAlleles() { return num_alleles; }
@@ -82,11 +83,11 @@ public:
 float get_mutation_fraction();
 
 float cut_size(vector<int> genotype, const Graph& G);
-void cut_size_parallel(vector<int>& genotype, const Graph& G, float& cut_size);
+void cut_size_parallel(vector<int>& genotype, const Graph& G, float& cut_size, int internal);
 void cut_evaluator(int index, vector<int> genotype, vector<float>& values, vector<Edge> edges);
 void balance_evaluator(int index, vector<int> genotype, const Graph& G, vector<vector<float>>& partitions_weight_values);
 
 float balance_index(int num_partitions, const vector<int>& genotype, const Graph& G);
-void balance_index_parallel(int num_partitions, const vector<int>& genotype, const Graph& G, float& balance_index);
+void balance_index_parallel(int num_partitions, const vector<int>& genotype, const Graph& G, float& balance_index, int internal);
 
 #endif //INDIVIDUAL_H

@@ -154,6 +154,7 @@ void GeneticAlgorithm::Eras_parallel(int island_id, vector<Individual>& populati
     Individual offspring;
     pair<Individual, Individual> parents;
     srand(std::time(nullptr));
+    int internal = 0;
 
     for(int e = 0; e<NUM_ERAS; e++){
         for (int g = 0; g < NUM_GENERATIONS; g++) {
@@ -162,13 +163,13 @@ void GeneticAlgorithm::Eras_parallel(int island_id, vector<Individual>& populati
                 if ( ( ( (float) rand() ) / ( (float) RAND_MAX+1.0 ) ) < MUTATION_RATE) {
                     offspring = random_parent_selection(population);        //or: parent_selection_tournament(rand() % (population.size() / 5 - 1) + 1, population); <-- 1 solo genitore !
                     offspring.mutation();
-                    offspring.setFitnessParallel(G, balanced);
+                    offspring.setFitnessParallel(G, balanced, internal);
                 } else {
                     //parents = parents_selection_tournament(rand() % (population.size() / 5 - 1) + 1, population);        
                     //or 
                     parents = random_parents_selection(population);
                     offspring = n_cut_crossover(parents.first, parents.second);
-                    offspring.setFitnessParallel(G, balanced);
+                    offspring.setFitnessParallel(G, balanced, internal);
                 }
                 population.push_back(offspring);
             }
@@ -193,6 +194,7 @@ void GeneticAlgorithm::Eras_parallel_LR(int island_id, vector<Individual>& popul
     Individual offspring;
     pair<Individual, Individual> parents;
     srand(std::time(nullptr));
+    int internal = 0;
 
     for(int e = 0; e>=0; e++){
         for (int g = 0; g < NUM_GENERATIONS; g++) {
@@ -201,13 +203,13 @@ void GeneticAlgorithm::Eras_parallel_LR(int island_id, vector<Individual>& popul
                 if ( ( ( (float) rand() ) / ( (float) RAND_MAX+1.0 ) ) < MUTATION_RATE) {
                     offspring = random_parent_selection(population);        //or: parent_selection_tournament(rand() % (population.size() / 5 - 1) + 1, population); <-- 1 solo genitore !
                     offspring.mutation();
-                    offspring.setFitness(G, balanced);
+                    offspring.setFitnessParallel(G, balanced, internal);
                 } else {
                     //parents = parents_selection_tournament(rand() % (population.size() / 5 - 1) + 1, population);        
                     //or 
                     parents = random_parents_selection(population);
                     offspring = n_cut_crossover(parents.first, parents.second);
-                    offspring.setFitness(G, balanced);
+                    offspring.setFitnessParallel(G, balanced, internal);
                 }
                 population.push_back(offspring);
             }
