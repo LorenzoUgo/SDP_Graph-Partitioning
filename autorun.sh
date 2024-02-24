@@ -36,4 +36,5 @@ for np in $npart; do
 	mv "$gfolder"gapart.balanced."$np".txt "$gfolder"results/"$np"part/
 done
 
-echo "\nDone!\n"
+echo "\n\n#################"
+echo "autorun.sh: Done!\n"

@@ -13,7 +13,6 @@
 #include <algorithm>
 #include "../Graph/Graph.h"
 #include <thread>
-#include <future>
 
 using namespace std;
 
@@ -42,8 +41,6 @@ public:
         setFitnessParallel(G, balance, internal);
     }
 
-    // NOTA perchè usare setgenotype in crossover se esiste il constructor?
-    // void setGenotype(vector<int> &gtype) { genotype = gtype; }
     void setFitness(const Graph& G, const bool& balance, float cut_size_weight=0.5 , float balance_index_weight=0.5);
     void setFitnessParallel(const Graph& G, const bool& balance, int internal = 0 , float cut_size_weight=0.5 , float balance_index_weight=0.5);
     const vector<int> &getGenotype() const { return genotype; }
@@ -54,14 +51,12 @@ public:
     void mutation();
     void printIndividual();
 
-    //Copy Constructor
     Individual(const Individual& altro) {
-        // Copia dei campi
         genotype = altro.genotype;
         fitness_value = altro.fitness_value;
         num_alleles = altro.num_alleles;
     }
-    // operation override
+
     Individual& operator=(const Individual& altro) {
         if (this != &altro) {
             genotype = altro.genotype;

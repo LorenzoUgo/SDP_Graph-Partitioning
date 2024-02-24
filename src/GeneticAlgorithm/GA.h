@@ -39,8 +39,7 @@ private:
     Individual bestOf;
 
 public:
-
-    /**     Constructor with default parameters     */
+    /*      Defines default values for sequential version     */
     explicit GeneticAlgorithm(
         int numPartitions=2, 
         int populationSize=20, 
@@ -59,18 +58,13 @@ public:
             ERAS_NO_UPGRADE(erasNoUpgrade), LEARNING_RATE(learningRate), parallel(Parallel), dynamic(Dynamic), 
             balanced(Balanced) {};
 
-
-    /**     SETTERS     */
-    // Defines default values for parallel version
+    /*      Defines default values for parallel version     */
     void setParallel(bool Parallel) {
         parallel = Parallel;
         NUM_ERAS = 15;
-        if (NUM_ISLANDS == 1) {// num islands not set -> set default values
+        if (NUM_ISLANDS == 1) { // num islands not yet set -> set default parallel values
             NUM_ISLANDS = 4;
-            //POPULATION_SIZE = POPULATION_SIZE / NUM_ISLANDS;
             NUM_GENERATIONS = NUM_GENERATIONS / NUM_ISLANDS;
-            //NUM_OFFSPRING = NUM_OFFSPRING / NUM_ISLANDS;
-            //NUM_MIGRANTS = NUM_MIGRANTS / NUM_ISLANDS;
         }
     } 
     void setNumPartitions(int numPartitions) {NUM_PARTITIONS = numPartitions;}
@@ -80,10 +74,7 @@ public:
     void setNumIslands(int numIslands) {
         if (parallel && (NUM_ISLANDS == 4)) { // set parallel has been called before
             NUM_ISLANDS = numIslands;
-            //POPULATION_SIZE = POPULATION_SIZE*4 / NUM_ISLANDS;
             NUM_GENERATIONS = NUM_GENERATIONS*4 / NUM_ISLANDS;
-            //NUM_OFFSPRING = NUM_OFFSPRING*4 / NUM_ISLANDS;
-            //NUM_MIGRANTS = NUM_MIGRANTS*4 / NUM_ISLANDS;
         }
     }
     void setNumEras(int numEras) {NUM_ERAS = numEras;}
@@ -95,7 +86,8 @@ public:
     void setLearningRate(float learningRate) {LEARNING_RATE = learningRate;}
     void setBalanced(bool Balanced) {balanced = Balanced;}
 
-    /**     GETTERS     */
+
+
     int getNumPartitions() const {return NUM_PARTITIONS;}
     int getNumOffspring() const {return NUM_OFFSPRING;}
     int getNumGenerations() const {return NUM_GENERATIONS;}
@@ -112,13 +104,8 @@ public:
     const map<int, vector<Individual>> &getPopulation() const {return Population;}
     Individual getBestOf() const {return bestOf;}
 
-    /**     Print algorithm parameters    */
     stringstream printParameters();
 
-    /**     Reset GA to the origin     */
-    void reset(){Population.clear();};
-
-    /** Start Algorithm */
     void run(const Graph& G);
 
 
@@ -133,13 +120,11 @@ public:
     void Galapagos( const Graph& G );
     void Galapagos_LR( const Graph& G );
 
-
     /** Parallel implementation */
     void Galapagos_parallel(  const Graph& G );
     void Galapagos_parallel_LR( const Graph& G );
     void Eras_parallel(int island_id, vector<Individual>& population, const Graph& G, barrier<>& b1, barrier<> &b2);
     void Eras_parallel_LR(int island_id, vector<Individual>& population, const Graph& G, barrier<>& b1, barrier<>& b2, bool &earlyend);
-
 
     /** Crossover function */
     Individual one_cut_crossover(Individual I1, Individual I2);
@@ -148,13 +133,11 @@ public:
     Individual uniform_crossover(Individual I1, Individual I2);
     Individual uniform_random_crossover(Individual I1, Individual I2);
 
-
     /** Parent selection function */
     pair<Individual, Individual> parents_selection_tournament(int num_partecipants, vector<Individual> population);
     pair<Individual, Individual> random_parents_selection(vector<Individual> population);
     Individual parent_selection_tournament(int num_partecipants, const vector<Individual>& population);
     Individual random_parent_selection(const vector<Individual>& population);
-
 
     /** Migration function */
     void Migration_randomOnes();

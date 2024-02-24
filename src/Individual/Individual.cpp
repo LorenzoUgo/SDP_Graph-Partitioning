@@ -21,7 +21,6 @@ float get_mutation_fraction() {
     return MUTATION_FRACTION;
 }
 
-// calcola la dimensione del taglio sommando i pesi degli archi che vanno da una partizione ad un'altra
 float cut_size(vector<int> genotype, const Graph& G){
     float cut_size = 0;
     for (auto edge : G.getEdges()){
@@ -32,9 +31,6 @@ float cut_size(vector<int> genotype, const Graph& G){
 }
 
 void cut_evaluator(int index, vector<int> genotype, vector<float>& values, vector<Edge> edges){
-
-    //cout << edges.size() << endl;
-
     for (int i=index; i<edges.size(); i+=NUM_THREADS){
         if(genotype[edges[i].n1] != genotype[edges[i].n2])
             values[index] += edges[i].weight;
@@ -62,26 +58,14 @@ void cut_size_parallel(vector<int>& genotype, const Graph& G, float& cut_size, i
                 cut_size += edges[i].weight;
         }
     }
-    /* DECOMMENTA SE PARALLELIZZI ANCHE CONTRIBUTI INTERNI
-
-
-     */
-
-    /* DECOMMENTA SE CONTRIBUTI INTERNI SEQUENZIALI */
-
-
 }
 
 void balance_evaluator(int index, vector<int> genotype, const Graph& G, vector<vector<float>>& partitions_weight_values){
-    
-    //cout << genotype.size() << endl;
-
     for(int i=index; i<genotype.size(); i+=NUM_THREADS){
         partitions_weight_values[index][genotype[i]] += G.getNodeWeight(i);
     }
 }
 
-// calcola la differenza tra la partizione con il maggior peso e quella con il minor peso dei nodi al suo interno
 void balance_index_parallel(int num_partitions, const vector<int>& genotype, const Graph& G, float& balance_index, int internal){
     vector<float> partitions_weight(num_partitions);
 
@@ -107,12 +91,6 @@ void balance_index_parallel(int num_partitions, const vector<int>& genotype, con
             partitions_weight[genotype[i]] += G.getNodeWeight(i);
         }
     }
-    /* DECOMMENTA SE PARALLELIZZI ANCHE CONTRIBUTI INTERNI
-
-    */
-
-    /* DECOMMENTA SE CONTRIBUTI INTERNI SEQUENZIALI */
-
 
     float max_partition_weight = *max_element(partitions_weight.begin(), partitions_weight.end());
     float min_partition_weight = *min_element(partitions_weight.begin(), partitions_weight.end());
@@ -133,7 +111,6 @@ float balance_index(int num_partitions, const vector<int>& genotype, const Graph
     return max_partition_weight - min_partition_weight;
 }
 
-// calcola il fitness value come combinazione lineare di dimensione taglio e bilanciamento peso partizioni
 void Individual::setFitness(const Graph& G, const bool& balance, float cut_size_weight , float balance_index_weight){
 
     fitness_value= (

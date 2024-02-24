@@ -16,7 +16,7 @@ using namespace std;
 
 bool set_param(int num_param, char* params[], GeneticAlgorithm& GA, int& type_reading, int& num_thread, string& metisFile, bool& compare_metis) {
 
-    const char *const short_opts = "m:l:kabc:d:e:f:g:h:i:j:";    //""abc:d:e:f:g:h:i:j:
+    const char *const short_opts = "m:l:kabc:d:e:f:g:h:i:j:";
     const option long_opts[] = {
             {"mod",        no_argument, nullptr, 'a'},
             {"parallel",   no_argument, nullptr, 'b'},
@@ -113,9 +113,7 @@ bool set_param(int num_param, char* params[], GeneticAlgorithm& GA, int& type_re
     return true;
 }
 
-
 int main(int argc, char** argv) {
-    //unsigned int numThreads = std::thread::hardware_concurrency();
     if (argc < 2) {
         cout << "Missing parameters" << endl << "Usage: ./graph_partitioner <filename> [options]" << endl;
         cout << "README.md for usage info" << endl;
@@ -132,9 +130,6 @@ int main(int argc, char** argv) {
     Graph G, G_norm;
     GeneticAlgorithm GA;
 
-    /** SETTING ALGORITHM PARAMETERS  */
-    //cout << "--> Setting graph parameters ..." << endl;
-
     if(!set_param(argc, argv, GA, type_reading, num_threads, metisFile, compare_metis))
         return 1;
     if(compare_metis){
@@ -147,17 +142,17 @@ int main(int argc, char** argv) {
         return 1;
     int t_end = time_now();
 
-    // TRY TO FIX
+    /* 
     if(!read_input(filename, G_norm, 2, 8))
         return 1;
+    */
+    G_norm = G;
 
     cout << "Graph read from file" << endl << time_conversion(t_end - t_start) << endl;
     infos.executionTimes.push_back(t_end - t_start);
     infos.totalEdgesWeight = G.getTotalEdgesWeight();
     infos.totalNodesWeight = G.getTotalNodesWeight();
 
-    /**     STARTING GENETIC ALGORITHM  */
-    //cout << "--> Starting algorithm ..." << endl;
     getrusage(RUSAGE_SELF, &_use);
     t_start = time_now();
     G_norm.normalize();
@@ -176,17 +171,10 @@ int main(int argc, char** argv) {
     infos.cutSize = cut_size(GA.getBestOf().getGenotype(), G);
     infos.balanceIndex = balance_index(GA.getNumPartitions(), GA.getBestOf().getGenotype(), G);
     infos.balanceIndexPartitions = calculatePartitionsWeight(GA.getNumPartitions(), GA.getBestOf().getGenotype(), G);
-    //infos.cutSizeBetweenPartitions = calculateCutSizeBetweenPartitions(G, GA.getBestOf().getGenotype());
     infos.fitness = GA.getBestOf().getFitness();
 
     /**     SAVE RESULTS TO FILE    */
     getrusage(RUSAGE_SELF, &(infos.usage));
-    /*
-    double duration = (t_start - t_end) / 1000.0;
-    double cpu = (infos.usage.ru_utime.tv_sec - _use.ru_utime.tv_sec) + (infos.usage.ru_utime.tv_usec - _use.ru_utime.tv_usec) / 1000000.0;
-    infos.cpu_percentage = 100 * cpu / duration;
-    cout << "CPU usage: " << infos.cpu_percentage << "%" << endl;
-    */
     cout << "Memory usage: " << infos.usage.ru_maxrss / (1024.0 * 1024.0) << " GBs" << endl;
 
     infos.fileName = filename + "gapart"

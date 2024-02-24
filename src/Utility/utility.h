@@ -6,9 +6,7 @@
 #define SDP_GRAPH_PARTITIONING_UTILITY_H
 
 #include "../Individual/Individual.h"
-//#include "GeneticAlgorithm/GA.h"
 #include <iostream>
-#include <unistd.h>
 #include <vector>
 #include <fstream>
 #include <sstream>
@@ -24,7 +22,6 @@ struct UsageInfo {
     float balanceIndex;
     float balanceFactor;
     float balanceIndexAverage;
-    vector<vector<int>> cutSizeBetweenPartitions;
     float cutSize;
     float cutSizeAverage;
     int totalEdgesWeight;
@@ -37,20 +34,13 @@ struct UsageInfo {
 
 float balanceFactor(int num_partitions, const vector<int>& partition, const Graph& G);
 vector<int> calculatePartitionsWeight(int num_partitions, const vector<int>& partition, const Graph& G);
-vector<vector<int>> calculateCutSizeBetweenPartitions(const Graph& G, const vector<int>& partition);
-float avgCutSize(const vector<vector<int>>& cutSizes);
 float avgBalanceFactor(const vector<int>& balanceFactors);
-
 
 bool read_input(const std::string& filename, Graph& G, int type_reading, int num_t);
 void saveInfoToFile(const UsageInfo& usageInfo);
 
-
-void printPopulation(const vector<Individual>& population);
 string time_conversion(int delta_t);
 int time_now();
 void compute_metis(string filename);
-
-
 
 #endif //SDP_GRAPH_PARTITIONING_UTILITY_H
