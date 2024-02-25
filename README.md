@@ -3,9 +3,20 @@ Developed a GA for **Graph Partitioning**.
 
 Project for *System And Device Programming* course @ PoliTO
 
-## About The Project --> To be modified.
+## Development environment
 
-In computer science, it is common to work with large graphs that need to be divided into non-overlapping sections, known as partitions. This process is called p-way partitioning. Our aim is to minimize the sum of the weights of edges that cross between partitions and balance the sum of weights of nodes in each partition.
+We tested our program with WSL (Windows Subsystem for Linux) with an Intel Core i7-8700K CPU @ 3.70GHz.
+The RAM used was 8 GB and we were allowed to run 12 threads in parallel.
+
+
+## About The Project
+
+The goal of this project was to develop two versions (sequential and parallel) of a _p-way partitioning algorithm_.
+This means that our algorithm's goal is to split the initial graph G into _p_ non-overlapping subgraphs while satisfying two specific properties:
+1. the sum of the weights of the nodes in each subgraph is balanced 
+2. the sum of the weights of the edges crossing between subgraphs is minimized.
+
+In order to do so, we decided to exploit a Genetic Algorithm, using the islands paradigm in its parallel version.
 
 ## Getting Started
 
@@ -28,29 +39,36 @@ make
 ###_How to run ?_
 These are fundamental commands to run our program:
 
-1. `*OPTIONAL*` It creates a new graph to be partitioned
+1. `OPTIONAL` It creates a new graph to be partitioned
 ```sh
 ./graph_generator #nodes #edges
 ```
 
-2.Run program to obtain a reference value using metis application
+2. Run program ([details below](./README.md#Usage)) with a set of command line arguments, using
 
 ```sh
-./graph_partitioner data/graph_#nodes_#edges --compare "name_file_Metis_result"
-```
+./graph_partitioner <data/graph_#nodes_#edges/> --binary [valore] --bal --mod --parallel --part [valore] --population [valore] --gen [valore] --era [valore] --new [valore] --isl [valore] --mig [valore] --lr [valore] 
+``` 
 
-3. Run program (details below[^1]) with a set of command line arguments, using
+Extra. Run metis application to obtain a reference value
 
 ```sh
-./graph_partitioner data/graph_#nodes_#edges --binary [valore] --bal --mod --parallel --part [valore] --population [valore] --gen [valore] --era [valore] --new [valore] --isl [valore] --mig [valore] --lr [valore] 
+sh compute_metis.sh
 ```
 
-#### Benchmark Input directory
+### Autorun
+In order to run the same tests we did, use:
 
-- [graph with 1 M nodes & 2,5 M edges]( ./data/graph_1000000_2500000 )
-- [graph with 3 M nodes & 7,5 M edges]( ./data/graph_3000000_7500000 )
-- [graph with 5 M nodes & 12,5 M edges]( ./data/graph_5000000_12500000 )
-- [graph with 10 M nodes & 25 M edges]( ./data/graph_10000000_25000000 )
+```sh
+sh autorun.sh <data/graph_#nodes_#edges>
+```
+
+## Benchmark Input directory
+- [graph with 250 k nodes & 750 k edges]( ./data/graph_250000_750000 )
+- [graph with 500 k nodes & 1,5 M edges]( ./data/graph_500000_1500000 )
+- [graph with 750 k nodes & 2,25 M edges]( ./data/graph_750000_2250000 )
+- [graph with 1 M nodes & 3 M edges]( ./data/graph_1000000_3000000 )
+
 
 > NOTE
 > 
@@ -58,29 +76,25 @@ These are fundamental commands to run our program:
 > 
 > The file with the extension .bin is used to parallel read the graph 
 
-#### Algorithm name
+## Algorithm name
 
-- GA: Genetic Algorithm sequential (one or more islands executed in sequence);
-- GA: Genetic Algorithm parallel (one thread dedicated for each island);
+- GA: Genetic Algorithm sequential (one thread for one island);
+- GA: Genetic Algorithm parallel (one thread dedicated to each island);
 
-> The GA is provided with DEFAULT SETTINGS, tuned by us in the train phase:
+> The GA is provided with DEFAULT SETTINGS, tuned by us in the train phase. They are used if you run the algorithm without
+> specifying any optional parameters.
 > 
-> BALANCED partitions = false; PARALLEL computation = false; dynamic = false;
-> 
-> number of PARTIITONS = ...; populations size = ...; number of generations = ...;
-> number of OFFSPRING = ...; number of ISLANDS = ...; number of ERAS = ...;
-> number of MIGRANTS = ...; number of consecutive ERAS WITHOUT IMPROVEMENT = ...; Learning Rate = ...;
+> Please refer to the output file if you are interested to see their values.
 
 ## Usage
 
-[^1]:In order to use our program correctly it's important to understand what to pass to run it. The only 
+In order to use our program correctly it's important to understand what to pass to run it. The only 
 **mandatory** argument is the : _Input graph folder name_
 
 All the following argument can be used by the user to change the default setting ( they're **Optional** ).
 
 | Argument | Usage |
 | ----------- | ------ |
-| --metis | if activated use the file name passed to compute the partition using Metis. |
 | --binary | if activated defines how many threads used to read the file in input. |
 | --bal | if activated defines to make a balanced partition.  |
 | --mod | if activated defines that the algorithm stops if there has been no significant improvement for some era.  |
@@ -137,37 +151,3 @@ It contains a ***Individual*** class and related functions to encode it:
 
 - Individual.cpp
 - Individual.h
-
-
-## Files' Content   --> ???
-
-#### GA.cpp
-#### Individual.cpp
-#### utility.cpp
-#### Graph.cpp
-
-
-
-#### MLRSB.cpp
-
-It contains the main function `MLRSB` that implements the MLRSB algorithm. It takes as input the graph and it returns the best partitioning found. It also contains the function `pMLRSB` that implements the pMLRSB algorithm. It takes as input the graph and the number of partitions and it returns the best partitioning found.
-
-#### Parallel_MLRSB.cpp
-
-It contains the main function `Parallel_MLRSB` that implements the Parallel MLRSB algorithm. It takes as input the graph and the number of threads and it returns the best partitioning found. It also contains the function `Parallel_pMLRSB` that implements the Parallel pMLRSB algorithm. It takes as input the graph, the number of partitions and the number of threads and it returns the best partitioning found.
-
-#### RSB.cpp
-
-It contains the main function `RSB` that implements the RSB algorithm. It takes as input the graph and it returns the best partitioning found. It also contains the function `pRSB` that implements the pRSB algorithm. It takes as input the graph and the number of partitions and it returns the best partitioning found.
-
-#### Parallel_RSB.cpp
-
-It contains the main function `Parallel_RSB` that implements the Parallel RSB algorithm. It takes as input the graph and the number of threads and it returns the best partitioning found. It also contains the function `Parallel_pRSB` that implements the Parallel pRSB algorithm. It takes as input the graph, the number of partitions and the number of threads and it returns the best partitioning found.
-
-#### utils.cpp
-
-It contains a set of utility functions. The most important are: `read_graph` that reads the graph from a text file, `uncoarsening` that performs the uncoarsening phase of the algorithm and other functions to calculate the quality of the partitioning.
-
-#### Graph.cpp
-
-It contains the class `Graph` that represents the graph. It contins functions to calculate the adjacency matrix, degree matrix and other utility functions to add/remove nodes and edges. Finally, it contains some functions to help with the coarsening phase.
